@@ -68,6 +68,8 @@ int main(int argc, char** argv){
 		char* preSortColumn = malloc(sizeof(char)*500);
 		char* sortColumn = malloc(sizeof(char)*200);
 		char* postSortColumn = malloc(sizeof(char)*500);
+
+		int firstCommaOfSort = 0; 		//Boolean to detect if the first char parsed into sortColumn is a comma.
 		while(1){
 			eofDetect = read(STDIN, &charIn, 1);
 			if(eofDetect < 1){
@@ -80,23 +82,16 @@ int main(int argc, char** argv){
 				case '\n':
 					//Shrinking char buffer sizes, making them strings, and assigning to movieInfo
 
-					//Code for removing comma in sorted field:
-					/*if(sizeOfPreSortColumn > 0){
-						++sortColumn;			//Doesn't work because apparently moving the pointer that was returned from malloc implodes realloc
-						sizeOfSortColumn--;
-						preSortColumn[sizeOfPreSortColumn] = ',';
-						sizeOfPreSortColumn++;
-					}*/
 					sortColumn = realloc(sortColumn, sizeOfSortColumn+1);
 					sortColumn[sizeOfSortColumn] = '\0';
 					row.toBeSorted = sortColumn;
-					printf("%s\n", row.toBeSorted);
-					printf("%d, %d, %d\n", sizeOfPreSortColumn, sizeOfSortColumn, sizeOfPostSortColumn);
+					//printf("%s\n", row.toBeSorted); (Debug code)
+					//printf("%d, %d, %d\n", sizeOfPreSortColumn, sizeOfSortColumn, sizeOfPostSortColumn);
 
 					preSortColumn = realloc(preSortColumn, sizeOfPreSortColumn+1);
 					preSortColumn[sizeOfPreSortColumn] = '\0';
 					row.beforeSortedCol = preSortColumn;
-					//printf("%s\n", row.beforeSortedCol);
+					//printf("%s\n", row.beforeSortedCol); (Debug code)
 
 
 					postSortColumn = realloc(postSortColumn, sizeOfPostSortColumn+1);
@@ -123,8 +118,15 @@ int main(int argc, char** argv){
 						postSortColumn[sizeOfPostSortColumn-1] = charIn;
 					} 
 					else{	//Implies that parsedCommas == numCommasB4Sort
-						sizeOfSortColumn++;
-						sortColumn[sizeOfSortColumn-1] = charIn;
+						if(charIn == ',' && firstCommaOfSort == 0){
+							firstCommaOfSort = 1; // To prevent any inner commas like in movie titles from interfering
+							sizeOfPreSortColumn++;
+							preSortColumn[sizeOfPreSortColumn -1] = charIn;
+						}
+						else{
+							sizeOfSortColumn++;
+							sortColumn[sizeOfSortColumn-1] = charIn;
+						}
 					}
 			}	
 		}
