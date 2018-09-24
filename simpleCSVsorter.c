@@ -79,14 +79,19 @@ int main(int argc, char** argv){
 					break;
 				case '\n':
 					//Shrinking char buffer sizes, making them strings, and assigning to movieInfo
-						++sortColumn;
+
+					//Code for removing comma in sorted field:
+					/*if(sizeOfPreSortColumn > 0){
+						++sortColumn;			//Doesn't work because apparently moving the pointer that was returned from malloc implodes realloc
 						sizeOfSortColumn--;
 						preSortColumn[sizeOfPreSortColumn] = ',';
 						sizeOfPreSortColumn++;
-					}
+					}*/
 					sortColumn = realloc(sortColumn, sizeOfSortColumn+1);
 					sortColumn[sizeOfSortColumn] = '\0';
 					row.toBeSorted = sortColumn;
+					printf("%s\n", row.toBeSorted);
+					printf("%d, %d, %d\n", sizeOfPreSortColumn, sizeOfSortColumn, sizeOfPostSortColumn);
 
 					preSortColumn = realloc(preSortColumn, sizeOfPreSortColumn+1);
 					preSortColumn[sizeOfPreSortColumn] = '\0';
@@ -124,6 +129,6 @@ int main(int argc, char** argv){
 			}	
 		}
 	} 
-
+	
 	return 0;
 }
