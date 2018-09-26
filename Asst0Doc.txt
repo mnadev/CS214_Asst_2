@@ -1,0 +1,20 @@
+SIMPLECSVSORTER
+simpleCSVsorter is a program that given a csv and a category sorts the csv file by that specific category.
+SYNOPSIS
+
+DESCRIPTION
+
+OPTIONS
+
+EXAMPLES
+
+EXIT STATUS
+The code will return 0 if terminated successfully. The code will return -1 if the command line arguments are not correct.
+SEE ALSO
+
+BUGS
+Bruh, no bugs here.
+AUTHOR(s)
+Eric Lin and Mohammad Nadeem
+COPYRIGHT
+Copyright by P-Diddy.
