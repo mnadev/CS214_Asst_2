@@ -14,11 +14,18 @@ movieInfo** mergesort(movieInfo** arr, int size) {
   	//split array into two and mergesort
       	// i saved return value into array because we 
         // can then merge them easier
-        movieInfo** firstHalf = mergesort(char** arr, size/2);
-        movieInfo** secondHalf = mergesort(char** (arr + (size/2)*sizeof(movieInfo)),size/2);
+        movieInfo** firstHalf = (movieInfo**) malloc((size/2)*sizeof(movieInfo));
+	movieInfo** secondHalf = (movieInfo**) malloc((size - size/2)*sizeof(movieInfo));
+	
+	
+	mergesort(movieInfo** arr, size/2);
+        mergesort(movieInfo** (arr + (size/2)*sizeof(movieInfo)),size/2);
 	
 	// merge the sorted arrays
-	return merge(firstHalf, secondHalf, size/2, size/2);
+	merge(firstHalf, secondHalf, size/2, size/2);
+	free(firstHalf);
+	free(secondHalf);
+	return arr;
 }
 
 //int comparator, will return negative value if 
@@ -91,7 +98,7 @@ movieInfo** merge(movieInfo** A, movieInfo** B, int sizeA, int sizeB){
 	i = 0;
 
         // allocate space for the return array
-        movieInfo** retArr = malloc((sizeA + sizeB)*sizeof(movieInfo));
+        movieInfo** retArr = movieInfo**[sizeA + sizeB];
         
 	// int to store size of struct
         int sizeStruct = sizeof(movieInfo);
@@ -130,7 +137,7 @@ movieInfo** merge(movieInfo** A, movieInfo** B, int sizeA, int sizeB){
         		retArr++;
        	   	}           
 	}
-
+	return retArr;
 }                                                                                                                                                      
 
 

@@ -21,5 +21,5 @@ struct _movieInfo{
 } movieInfo;
 
 //Suggestion: prototype a mergesort function
-char** mergesort(char** arr, int size);                                                                                    
+movieInfo** mergesort(movieInfo** arr, int size);                                                                                    
 

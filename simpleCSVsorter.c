@@ -5,15 +5,21 @@
 #include "simpleCSVsorter.h"
 
 void csvwrite(movieInfo** movieArr,int size ,char* categories){
-       	char* categoryStr = sprintf("%s\n", categories);
+       	char* categoryStr = (char* ) malloc(500*sizeof(char));
+	sprintf(categoryStr, "%s\n", categories);
 	write(STDOUT, categoryStr, 500);
         int i = 0;
         while(i < size){
-          	char* beforeStr = sprintf("%s",beforeSortedCol);
+          	char* beforeStr = (char* ) malloc(1000*sizeof(char));
+	        sprintf(beforeStr, "%s\n", (**movieArr).beforeSortedCol);
         	write(STDOUT, beforeStr, 1000);
-		char* sortedStr = sprintf("%s", toBeSorted);
+
+		char* sortedStr = (char* ) malloc(1000*sizeof(char));
+ 	        sprintf(sortedStr, "%s\n", (**movieArr).toBeSorted);
         	write(STDOUT, sortedStr, 1000);
-		char* afterStr = sprintf("%s\n",afterSortedCol);
+
+		char* afterStr = (char* ) malloc(1000*sizeof(char));
+		sprintf("%s\n", (**movieArr).afterSortedCol);
         	write(STDOUT, afterStr, 1000);
                 movieArr++;
 		i++;
