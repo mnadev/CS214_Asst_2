@@ -4,6 +4,22 @@
 #include<string.h>
 #include "simpleCSVsorter.h"
 
+void csvwrite(movieInfo** movieArr,int size ,char* categories){
+       	char* categoryStr = sprintf("%s\n", categories);
+	write(STDOUT, categoryStr, 500);
+        int i = 0;
+        while(i < size){
+          	char* beforeStr = sprintf("%s",beforeSortedCol);
+        	write(STDOUT, beforeStr, 1000);
+		char* sortedStr = sprintf("%s", toBeSorted);
+        	write(STDOUT, sortedStr, 1000);
+		char* afterStr = sprintf("%s\n",afterSortedCol);
+        	write(STDOUT, afterStr, 1000);
+                movieArr++;
+		i++;
+        }
+}
+
 int main(int argc, char** argv){
 	//Write to STDERR if there are fewer than the required number of args
 	if(argc < 3){
@@ -41,8 +57,17 @@ int main(int argc, char** argv){
 	//(Assumes that column names don't have commas in them, which they shouldn't for this assignment.
 
 	int i;	//Counter variable
+	
+	// this is so we dont count a comma that is in quotes. will kind of act like a stack
+	// when quote starts it will set to 1.
+	// when we reach ending quote reset to -1
+	int isInQuotes = -1;
 	for(i = 0; i <= (locOfColumn - columnNames); i++){
-		if(columnNames[i] == ','){
+		if(columnNames[i] == '\"') {
+			isInQuotes = isInQuotes * -1;
+		}
+
+		if(columnNames[i] == ',' && isInQuotes == -1){
 			numCommasB4Sort++;		
 		}
 	}
@@ -132,5 +157,9 @@ int main(int argc, char** argv){
 		}
 	} 
 	
+
+	movieInfo** sortedArr = mergesort(dataRows, sizeOfArray );
+	csvwrite(sortedArr,sizeOfArray, columnNames);
 	return 0;
 }
+
