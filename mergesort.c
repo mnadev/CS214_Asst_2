@@ -5,6 +5,8 @@
 #include <ctype.h>
 #include "simpleCSVsorter.h"
 
+movieInfo** merge(movieInfo** A, movieInfo** B, int sizeA, int sizeB, int isInt);
+
 movieInfo** mergesort(movieInfo** arr, int size, int isInt) {
 	//base case of merge sort
         if(size == 1 || size == 0) {
