@@ -82,7 +82,7 @@ void merge(movieInfo** arr, int left, int half, int right, int isInt) {
     }
 
     while(j < sizeB){
-      tempB = arr[half + 1 + j];
+      tempB[j] = arr[half + 1 + j];
 
       j++;
     }
