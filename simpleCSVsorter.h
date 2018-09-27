@@ -21,5 +21,5 @@ struct _movieInfo{
 } movieInfo;
 
 //Suggestion: prototype a mergesort function
-movieInfo** mergesort(movieInfo** arr, int leftInd, int rightInd, int isInt);                                                                                    
+void mergesort(movieInfo** arr, int leftInd, int rightInd, int isInt);                                                                                    
 
