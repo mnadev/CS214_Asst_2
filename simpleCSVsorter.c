@@ -6,7 +6,6 @@
 
 void csvwrite(movieInfo** movieArr,int size ,char* categories, int sizeOfCategories){
        	write(STDOUT, categories, sizeOfCategories);
-        printf("writing to csv");
         int i = 0;
         while(i < size){
                 movieInfo* A = movieArr[i];
@@ -15,10 +14,6 @@ void csvwrite(movieInfo** movieArr,int size ,char* categories, int sizeOfCategor
 		write(STDOUT, A->afterSortedCol, A->sizeAfter);	
 		write(STDOUT, "\n", 1);
 		i++;
-		printf("%s",A->beforeSortedCol);
-		printf("%s",A->toBeSorted);
-		printf("%s",A->afterSortedCol);
-                printf("\n");
         }
 }
 
@@ -120,11 +115,6 @@ int main(int argc, char** argv){
 					row.afterSortedCol = postSortColumn;
 					row.sizeAfter = sizeOfPostSortColumn+1;
 						
-					printf("parser");
-					printf("%s",row.beforeSortedCol);
-               				printf("%s",row.toBeSorted);
-               				printf("%s",row.afterSortedCol);
-               				printf("\n");
 					sizeOfArray++;
  					dataRows = realloc(dataRows, sizeof(movieInfo*)*sizeOfArray);
 					memcpy(rowPtr, &row, sizeof(movieInfo));
