@@ -18,7 +18,7 @@ void mergesort(movieInfo** arr, int leftInd, int rightInd, int isInt) {
 	
 	//sort both arrays
 	mergesort(arr, leftInd, half, isInt);
-    mergesort(arr,half + 1, rightInd, isInt);
+    	mergesort(arr,half + 1, rightInd, isInt);
 	
 	// merge the sorted arrays
 	merge(arr, leftInd, half, rightInd, isInt);
@@ -52,14 +52,14 @@ void merge(movieInfo** arr, int left, int half, int right, int isInt){
         int arrInd = left;
 	
 	// iterate through array
-        while(i < half || j < right) {
+        while(i < half && j < right) {
 		//int to hold result of comparison
 		int comparison = 0;
 		
 		movieInfo* A = tempArr[i - left];
 		movieInfo* B = tempArr[j - (half + 1)];
 		
-		printf("merge");
+		printf("merge\n");
                                         printf("%s",A->beforeSortedCol);
                                         printf("%s",A->toBeSorted);
                                         printf("%s",A->afterSortedCol);
