@@ -88,6 +88,7 @@ void merge(movieInfo** arr, int left, int half, int right, int isInt){
 			arrInd++;
        	   	}           
 	}
+	free(tempArr);
 }                                                                                                                                                      
 
 
