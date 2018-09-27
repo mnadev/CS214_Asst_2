@@ -62,18 +62,11 @@ int main(int argc, char** argv){
 	//Searching for number of commas before column to be sorted
 	//(Assumes that column names don't have commas in them, which they shouldn't for this assignment.
 
-	int i;	//Counter variable
-	
-	// this is so we dont count a comma that is in quotes. will kind of act like a stack
-	// when quote starts it will set to 1.
-	// when we reach ending quote reset to -1
+	int i;
 	int isInQuotes = -1;
 	for(i = 0; i <= (locOfColumn - columnNames); i++){
-		if(columnNames[i] == '\"') {
-			isInQuotes = isInQuotes * -1;
-		}
 
-		if(columnNames[i] == ',' && isInQuotes == -1){
+		if(columnNames[i] == ','){
 			numCommasB4Sort++;		
 		}
 	}
