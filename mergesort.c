@@ -17,8 +17,8 @@ void mergesort(movieInfo** arr, int leftInd, int rightInd, int isInt) {
 	int half = (leftInd+rightInd)/2;
 	
 	//sort both arrays
-	mergesort(movieInfo** arr, left, half, isInt);
-        mergesort(movieInfo** arr,half + 1, right, isInt);
+	mergesort(arr, left, half, isInt);
+        mergesort(arr,half + 1, right, isInt);
 	
 	// merge the sorted arrays
 	merge(arr, left, half, right, isInt);
