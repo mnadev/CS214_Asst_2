@@ -1,11 +1,12 @@
 SIMPLECSVSORTER
 simpleCSVsorter is a program that given a csv and a category sorts the csv file by that specific category.
 SYNOPSIS
-
+  simpleCSVsorter.out -c <ColumnToSortBy>
 DESCRIPTION
-
+   
 OPTIONS
-
+  "-c" indicates that the sorting of data entries is to be done based on columns
+  <ColumnToSortBy> is the name of the column that the program is to sort by.
 EXAMPLES
 
 EXIT STATUS
@@ -18,3 +19,8 @@ AUTHOR(s)
 Eric Lin and Mohammad Nadeem
 COPYRIGHT
 Copyright by P-Diddy.
+
+
+The design of the program is as follows:
+	Before the CSV is actually parsed, the program will check the arguments to ensure that the arguments were properly inputted, outputting to STDERR and returning -1 if the arguments did not match the required format.
+	In the first part of the program, the program allocates 500 bytes to be used as a buffer to store the row containing the names of the columns. Characters are then read in one by one from the STDIN file descriptor to the buffer until a newline character '\n' is found, counting the number of characters that are being read in. The assumption is made that the row containing column names will contain less than 500 bytes, as the given test CSV only has around 410 characters in the first row.
