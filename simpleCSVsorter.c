@@ -37,7 +37,6 @@ int main(int argc, char** argv){
 		write(STDERR, "Error: The first argument of the program must be '-c' to sort by column.\n", 75);
 		return -1;
 	}
-	
 	int numCommasB4Sort = 0;		//The number of commas before the column to be sorted is reached.
 	
 	char charIn = '\0';				//Buffer to put each char that's being read in from STDIN
@@ -62,14 +61,14 @@ int main(int argc, char** argv){
 	//Searching for number of commas before column to be sorted
 	//(Assumes that column names don't have commas in them, which they shouldn't for this assignment.
 
-	int i;
+	/*int i;
 	int isInQuotes = -1;
 	for(i = 0; i <= (locOfColumn - columnNames); i++){
 
 		if(columnNames[i] == ','){
 			numCommasB4Sort++;		
 		}
-	}
+	}*/
 
 	//Reading through the rest of STDIN for data:
 	int sizeOfArray = 0;
@@ -156,7 +155,6 @@ int main(int argc, char** argv){
 		}
 	} 
 	
-	
 	// this integer acts as a boolean
 	// is 0 if the data is not an int, now is 1 if the data is an int
 	int isInt = 1;
@@ -165,20 +163,21 @@ int main(int argc, char** argv){
 	//because it is possible for a movie to be a number, e.g. '300', and that would be a problem
 	//so we should check all of them to be sure
 	movieInfo** tempPtrCheckInt = dataRows;
-	
-	i = 0;
+	int i = 0;
 	
 	while(i < sizeOfArray) {
 		//iterate through each char, checking if it is int
 		// NOTENOTENOTE: if you can find a better way, lmk cause this is very inefficient	
-		char* currData = (**(tempPtrCheckInt)).toBeSorted;	
+		char* currData = (*(tempPtrCheckInt[i])).toBeSorted;	
 		
-		while(currData != '\0') {
+		int j = 0;
+		while(currData[j] != '\0') {
 			// current char could be int or decimal point
-			if(isdigit(currData) != 0 &&  *currData == '.' ) {
+			if(isdigit(currData[j]) != 0 &&  currData[j] == '.' ) {
 				isInt = 0;
 				break;			
 			}
+			j++;
 		}
 		
 		//break if we found alphabetic char, no need to check anymore
@@ -186,12 +185,12 @@ int main(int argc, char** argv){
 			break;
 		}
 
-		tempPtrCheckInt++;
+		//tempPtrCheckInt++;
 		i++;
 	}
 	
-	mergesort(dataRows, 0, sizeOfArray - 1, isInt);
-	csvwrite(dataRows,sizeOfArray, columnNames);
+	//mergesort(dataRows, 0, sizeOfArray - 1, isInt);
+	//csvwrite(dataRows,sizeOfArray, columnNames);
 	return 0;
 }
 
