@@ -6,9 +6,7 @@
 
 void csvwrite(movieInfo** movieArr,int size ,char* categories, int sizeOfCategories){
        	write(STDOUT, categories, sizeOfCategories);
-                
         printf("writing to csv");
-
         int i = 0;
         while(i < size){
                 movieInfo* A = movieArr[i];
@@ -59,15 +57,14 @@ int main(int argc, char** argv){
 	
 	//Searching for number of commas before column to be sorted
 	//(Assumes that column names don't have commas in them, which they shouldn't for this assignment.
+	int i;	
 
-	/*int i;
-	int isInQuotes = -1;
 	for(i = 0; i <= (locOfColumn - columnNames); i++){
 
 		if(columnNames[i] == ','){
 			numCommasB4Sort++;		
 		}
-	}*/
+	}
 
 	//Reading through the rest of STDIN for data:
 	int sizeOfArray = 0;
@@ -170,7 +167,7 @@ int main(int argc, char** argv){
 	//because it is possible for a movie to be a number, e.g. '300', and that would be a problem
 	//so we should check all of them to be sure
 	movieInfo** tempPtrCheckInt = dataRows;
-	int i = 0;
+	i = 0;
 	
 	while(i < sizeOfArray) {
 		//iterate through each char, checking if it is int
@@ -195,6 +192,9 @@ int main(int argc, char** argv){
 		//tempPtrCheckInt++;
 		i++;
 	}
+
+	printf("%s\n", dataRows[0]->toBeSorted);
+	printf("%s\n", dataRows[1]->toBeSorted);
 	
 	mergesort(dataRows, 0, sizeOfArray - 1, isInt);
 	csvwrite(dataRows,sizeOfArray, columnNames, columnNamesIndex);
