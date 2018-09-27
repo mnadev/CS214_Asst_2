@@ -17,11 +17,11 @@ void mergesort(movieInfo** arr, int leftInd, int rightInd, int isInt) {
 	int half = (leftInd+rightInd)/2;
 	
 	//sort both arrays
-	mergesort(arr, left, half, isInt);
-        mergesort(arr,half + 1, right, isInt);
+	mergesort(arr, leftInd, half, isInt);
+        mergesort(arr,half + 1, rightInd, isInt);
 	
 	// merge the sorted arrays
-	merge(arr, left, half, right, isInt);
+	merge(arr, leftInd, half, rightInd, isInt);
 }
 
 //int comparator, will return negative value if 
