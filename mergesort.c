@@ -1,127 +1,137 @@
-//Add some includes
 #include <stdlib.h>
 #include <stdio.h>
-#include <string.h>
 #include <ctype.h>
+#include <string.h>
 #include "simpleCSVsorter.h"
 
-void merge(movieInfo** A, int left, int half, int right, int isInt);
+void mergesort(movieInfo** arr, int left, int right, isInt) {
+  if(left >= right) {
+    return;
+  }
 
-void mergesort(movieInfo** arr, int leftInd, int rightInd, int isInt) {
-	//base case of merge sort
-        if(leftInd >= rightInd) {
-		return;
-        }
 
-	//get mid
-	int half = (leftInd+rightInd)/2;
-	
-	//sort both arrays
-	mergesort(arr, leftInd, half, isInt);
-    	mergesort(arr,half + 1, rightInd, isInt);
-	
-	// merge the sorted arrays
-	merge(arr, leftInd, half, rightInd, isInt);
-	printf("%s\n",arr[0]->toBeSorted);
-        printf("%s\n",arr[1]->toBeSorted);
-	printf("%s\n",arr[2]->toBeSorted);
-        printf("%s\n",arr[3]->toBeSorted);
+  //find mid point
+  int half = (left + right)/2;
+
+  //sort both halves
+  mergesort(arr, left, half, isInt);
+  mergesort(arr, half + 1, right, isInt);
+
+  //
+  merge(arr, left, half, right, isInt);
 }
 
-//int comparator, will return negative value if 
-//intA < intB. will return positive if
-//intB < intA, zero if equal
-float intComparator(float intA, float intB) {
-	return intA - intB;
+void swap(movieInfo* A, movieInfo* B){
+  movieInfo* temp = *A;
+  *A = *B;
+  *B = *temp;
 }
 
-void merge(movieInfo** arr, int left, int half, int right, int isInt){
+float intComparison(float intA, float intB) {
+  return intA - intB;
+}
 
-	 printf("%d\n",12312983791827);
-        //index pointers
-        int i = left, j = half + 1;
-	if(right - left <= 1) {
-		
-		return;
-	}
-        
+void merge(movieInfo** arr, int left, int half, int right, int isInt) {
+    //if right and left point to same thing or if somehow right is to the left of left
+    if(right - left < 1) {
+      return;
+    }
 
-	movieInfo** tempArrA = malloc((half - left + 1) * sizeof(movieInfo));
-	movieInfo** tempArrB = malloc((right - half) * sizeof(movieInfo));	
+    // else check if right and left are right next to each other
+    // and swap their values if they ar eout of order and then return;
+    if((right - left) == 1) {
+      movieInfo* A = arr[left];
+      movieInfo* B = arr[right];
 
-	//copy data into new temp array
-	// the temlp array will just allow us to not use in place
-	// otherwise we'd have be in trouble
-	for(i = left; i <= half; i++) {
-		tempArrA[i - left] = arr[i];
-	}
-	
-	for(i = half + 1; i <= right; i++) {
-		tempArrB[i - half - 1] = arr[i];
-	}
+      int comparison = 0;
 
-	i = 0;
-	j = 0;
-	// int to store size of struct
-        int sizeStruct = sizeof(movieInfo);
-        int arrInd = left;
-	
-	// iterate through array
-        while(i < (half - left + 1)  && j < (right - half)) {
-		//int to hold result of comparison
-		int comparison = 0;
-		
-		movieInfo* A = tempArrA[i];
-		movieInfo* B = tempArrB[j];
-		printf("isInt: %d\n", isInt);	
-		//if data is not an int, we will use string compare
-		if(isInt == 0) {
-			comparison = strcmp(A->toBeSorted, B->toBeSorted);
-		} else {
-			//otherwise use int comparator functino that was created.
-			comparison = intComparator(atof(A->toBeSorted), atof(B->toBeSorted));
-		}
-		printf("%d\n",atof(A->toBeSorted));
- 		printf("%d\n",atof(A->toBeSorted));
-		//i++;
-		//j++;
-		printf("%d\n",comparison);	
-       		if(comparison < 0) {
-        		// if comparison is less than 0, then B is more than A, and A should be added first       
-			arr[arrInd] = A;
-                        i++;
-			arrInd++;
-       		} else if(comparison > 0) {
-			//if comparison is greater than 0, then B is less than A, and B should be added first
-       			arr[arrInd] = B;
-        		j++;
-			arrInd++;
-			
-                } else {
-			//otherwise add both and iterate both.
-			arr[arrInd] = A;
-                        i++;
-			arrInd++;
+      if(isInt == 0) {
+        comparison = strcmp((char*)A->toBeSorted,(char*)B->toBeSorted);
+      } else {
+        comparison = intComparison((float)atof(A->toBeSorted), (float)atof(B->toBeSorted));
+      }
 
-       	   	}           
-	}
-	
-	while(i <  (half - left + 1)) {
-              movieInfo* A = tempArrA[i];
-	     arr[arrInd] = A;
-             i++;
-             arrInd++;
-        }
+      if(comparison > 0) {
+        swap(A, B);
+      }
 
-	while(j <= (right - half)) {
-		 movieInfo* B = tempArrB[j];
-             arr[arrInd] = B;
-             j++;
-             arrInd++;
-        }
-	
-	free(tempArrA);
-	free(tempArrB);
-}                                                                                                                                                      
+      return;
+    }
 
+    //otherwise, get size of left half and right half and also store size of movieInfo
+    int sizeA = half - left + 1;
+    int sizeB = right - half;
+    int sizeStruct = sizeof(movieInfo)
 
+    // create two temp arrays
+    // in tempA put left half of arrays
+    // and in temp B put right half
+    // and then we will use this as pointers
+    movieInfo** tempA = malloc(sizeA*sizeStruct);
+    movieInfo** tempB = malloc(sizeB*sizeStruct);
+
+    // create counter variables and then iterate and copy
+    // data from arr into temp arrays
+    int i = 0, j = 0;
+
+    while(i < sizeA) {
+      tempA[i] = arr[left + i];
+
+      i++;
+    }
+
+    while(j < sizeB){
+      tempB = arr[half + 1 + j];
+
+      j++;
+    }
+
+    // now interate through temp arrays and merge
+    // to merge we will have a pointer to left half and right half.
+    // and a pointer to the OG array. then we will see which is less
+    // the data in right pointer or left pointer, and then set the OG array
+    // pointer to the lesser.
+    i = 0, j = 0;
+
+    int arrInd = left;
+    while(i < sizeA && j < sizeB){
+      movieInfo* A = tempA[i];
+      movieInfo* B = tempB[j];
+
+      int comparison = 0;
+      if(isInt == 0) {
+        comparison = strcmp(A->toBeSorted, B->toBeSorted);
+      } else {
+        comparison = intComparison(A->toBeSorted, B->toBeSorted);
+      }
+
+      if(comparison > 0) {
+        arr[arrInd] = B;
+        j++;
+      } else {
+        arr[arrInd] = A;
+        i++;
+      }
+
+      arrInd++;
+    }
+
+    // check again to make sure we iterated through all of the temp arrays
+    while(i < sizeA){
+      movieInfo* A = arr[i];
+      arr[arrInd] = A;
+      i++;
+      arrInd++;
+    }
+
+    while(i < sizeA){
+      movieInfo* B = arr[j];
+      arr[arrInd] = B;
+      j++;
+      arrInd++;
+    }
+
+    //free malloced arrays
+    free(tempA);
+    free(tempB);
+}
