@@ -5,23 +5,16 @@
 #include "simpleCSVsorter.h"
 
 void csvwrite(movieInfo** movieArr,int size ,char* categories){
-       	char* categoryStr = (char* ) malloc(500*sizeof(char));
-	sprintf(categoryStr, "%s\n", categories);
-	write(STDOUT, categoryStr, 500);
+       	write(STDOUT, categories, 500);
+                
+
         int i = 0;
         while(i < size){
-          	char* beforeStr = (char* ) malloc(1000*sizeof(char));
-	        sprintf(beforeStr, "%s\n", (**movieArr).beforeSortedCol);
-        	write(STDOUT, beforeStr, 1000);
-
-		char* sortedStr = (char* ) malloc(1000*sizeof(char));
- 	        sprintf(sortedStr, "%s\n", (**movieArr).toBeSorted);
-        	write(STDOUT, sortedStr, 1000);
-
-		char* afterStr = (char* ) malloc(1000*sizeof(char));
-		sprintf("%s\n", (**movieArr).afterSortedCol);
-        	write(STDOUT, afterStr, 1000);
-                movieArr++;
+                movieInfo* A = movieArr[i];
+                write(STDOUT, A->beforeSortedCol, 500);
+                write(STDOUT, A->toBeSorted, 500);
+                write(STDOUT, A->afterSortedCol, 500);	
+          	write(STDOUT, "\n", 1000);
 		i++;
         }
 }
@@ -189,8 +182,8 @@ int main(int argc, char** argv){
 		i++;
 	}
 	
-	//mergesort(dataRows, 0, sizeOfArray - 1, isInt);
-	//csvwrite(dataRows,sizeOfArray, columnNames);
+	mergesort(dataRows, 0, sizeOfArray - 1, isInt);
+	csvwrite(dataRows,sizeOfArray, columnNames);
 	return 0;
 }
 
