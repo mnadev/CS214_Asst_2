@@ -62,7 +62,7 @@ void merge(movieInfo** arr, int left, int half, int right, int isInt) {
     //otherwise, get size of left half and right half and also store size of movieInfo
     int sizeA = half - left + 1;
     int sizeB = right - half;
-    int sizeStruct = sizeof(movieInfo)
+    int sizeStruct = sizeof(movieInfo);
 
     // create two temp arrays
     // in tempA put left half of arrays
