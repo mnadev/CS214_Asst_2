@@ -7,22 +7,36 @@
 
 movieInfo** mergesort(movieInfo** arr, int size) {
 	//base case of merge sort
-        if(size == 1) {
+        if(size == 1 || size == 0) {
 		return arr;
         }
 
   	//split array into two and mergesort
-      	// i saved return value into array because we 
-        // can then merge them easier
+      	// copy items into both temp arrays
         movieInfo** firstHalf = (movieInfo**) malloc((size/2)*sizeof(movieInfo));
 	movieInfo** secondHalf = (movieInfo**) malloc((size - size/2)*sizeof(movieInfo));
 	
+	int half = size/2;
 	
-	mergesort(movieInfo** arr, size/2);
-        mergesort(movieInfo** (arr + (size/2)*sizeof(movieInfo)),size/2);
+	//copy items into second half
+	for(int i = 0; i < half; i++) {
+		**(firstHalf) = (arr + i*sizeof(movieInfo));
+		firstHalf++;
+	}
+	
+	for(int i = half; i < size) {
+		**(secondHalf) = (arr + i*sizeof(movieInfo));
+		secondHalf++;
+	} 
+	
+	//sort both arrays
+	mergesort(movieInfo** firstHalf, half);
+        mergesort(movieInfo** secondHalf,size-half);
+	
+	
 	
 	// merge the sorted arrays
-	merge(firstHalf, secondHalf, size/2, size/2);
+	arr = merge(firstHalf, secondHalf, half, size-half);
 	free(firstHalf);
 	free(secondHalf);
 	return arr;
@@ -35,7 +49,7 @@ int intComparator(float* intA, float* intB) {
 	return *intA - *intB;
 }
 
-movieInfo** merge(movieInfo** A, movieInfo** B, int sizeA, int sizeB){
+movieInfo** merge(movieInfo** A, movieInfo** B, int sizeA, int sizeB, int isInt){
         //index pointers
         int i = 0, j = 0;
        
@@ -111,28 +125,28 @@ movieInfo** merge(movieInfo** A, movieInfo** B, int sizeA, int sizeB){
 		//if data is not an int, we will use string compare
 		if(isInt == 0) {
 		
-			comparison = strcmp(*(A + i*sizeStruct).toBeSorted, *(B + j*sizeStruct).toBeSorted)
+			comparison = strcmp((**(A + i*sizeStruct)).toBeSorted, (**(B + j*sizeStruct)).toBeSorted)
 		} else {
 			//otherwise use int comparator functino that was created.
-			comparison = intComparator((float) (*(A + i*sizeStruct)).toBeSorted, (float) (*(B + j*sizeStruct)).toBeSorted );
+			comparison = intComparator(atoi((**(A + i*sizeStruct)).toBeSorted), atoi((**(B + j*sizeStruct)).toBeSorted));
 		}
 
        		if(comparison < 0) {
         		// if comparison is less than 0, then B is less than A, and should be added first       
-			*retArr = *(B + j*sizeStruct);
+			**retArr = **(B + j*sizeStruct);
                         j++;
        			retArr++;
        		} else if(comparison > 0) {
 			//if comparison is greater than 0, then B is more than A, and A should be added first
-       			*retArr = *(A + i*sizeStruct);
+       			**retArr = **(A + i*sizeStruct);
         		i++;
         		retArr++;
                 } else {
 			//otherwise add both and iterate first.
-       			*retArr = *(A + i*sizeStruct);
+       			**retArr = **(A + i*sizeStruct);
        			i++;
         		retArr++;
- 			*retArr = *(B + j*sizeStruct);
+ 			**retArr = **(B + j*sizeStruct);
 			j++;
         		retArr++;
        	   	}           
