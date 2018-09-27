@@ -4,6 +4,8 @@
 #include <string.h>
 #include "simpleCSVsorter.h"
 
+void merge(movieInfo** arr, int left, int half, int right, int isInt);
+
 void mergesort(movieInfo** arr, int left, int right, int isInt) {
   if(left >= right) {
     return;
@@ -66,8 +68,8 @@ void merge(movieInfo** arr, int left, int half, int right, int isInt) {
     // in tempA put left half of arrays
     // and in temp B put right half
     // and then we will use this as pointers
-    movieInfo** tempA = malloc(sizeA*sizeStruct);
-    movieInfo** tempB = malloc(sizeB*sizeStruct);
+    movieInfo** tempA = (movieInfo**) malloc(sizeA*sizeStruct);
+    movieInfo** tempB = (movieInfo**) malloc(sizeB*sizeStruct);
 
     // create counter variables and then iterate and copy
     // data from arr into temp arrays
@@ -117,14 +119,14 @@ void merge(movieInfo** arr, int left, int half, int right, int isInt) {
 
     // check again to make sure we iterated through all of the temp arrays
     while(i < sizeA){
-      movieInfo* A = arr[i];
+      movieInfo* A = tempA[i];
       arr[arrInd] = A;
       i++;
       arrInd++;
     }
 
     while(i < sizeA){
-      movieInfo* B = arr[j];
+      movieInfo* B = tempB[j];
       arr[arrInd] = B;
       j++;
       arrInd++;
