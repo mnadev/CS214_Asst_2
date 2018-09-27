@@ -20,14 +20,16 @@ movieInfo** mergesort(movieInfo** arr, int size, int isInt) {
 	
 	int half = size/2;
 	
+	int i = 0;
 	//copy items into second half
-	for(int i = 0; i < half; i++) {
+	for(i = 0; i < half; i++) {
 		**(firstHalf) = (arr + i*sizeof(movieInfo));
 		firstHalf++;
 	}
 	
-	for(int i = half; i < size) {
-		**(secondHalf) = (arr + i*sizeof(movieInfo));
+	int j = half;
+	for(j = half; j < size; j++) {
+		**(secondHalf) = (arr + j*sizeof(movieInfo));
 		secondHalf++;
 	} 
 	
@@ -47,8 +49,8 @@ movieInfo** mergesort(movieInfo** arr, int size, int isInt) {
 //int comparator, will return negative value if 
 //intA < intB. will return positive if
 //intB < intA, zero if equal
-int intComparator(float* intA, float* intB) {
-	return *intA - *intB;
+int intComparator(int intA, int intB) {
+	return intA - intB;
 }
 
 movieInfo** merge(movieInfo** A, movieInfo** B, int sizeA, int sizeB, int isInt){
@@ -56,7 +58,7 @@ movieInfo** merge(movieInfo** A, movieInfo** B, int sizeA, int sizeB, int isInt)
         int i = 0, j = 0;
 
         // allocate space for the return array
-        movieInfo** retArr = movieInfo**[sizeA + sizeB];
+        movieInfo** retArr[sizeA + sizeB];
         
 	// int to store size of struct
         int sizeStruct = sizeof(movieInfo);
