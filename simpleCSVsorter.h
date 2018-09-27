@@ -18,6 +18,9 @@ struct _movieInfo{
 	char* beforeSortedCol;			//All the information before the column that needs to be sorted (might be null if sorted column is first in the list of columns)
 	char* toBeSorted;				//The string containing the information that we're sorting on
 	char* afterSortedCol;			//The information after the column that needs to be sorted on (might be null if sorted column is last in the list of columns)
+	int sizeBefore;
+	int sizeOfSort;
+	int sizeAfter;
 } movieInfo;
 
 //Suggestion: prototype a mergesort function

@@ -4,17 +4,18 @@
 #include<string.h>
 #include "simpleCSVsorter.h"
 
-void csvwrite(movieInfo** movieArr,int size ,char* categories){
-       	write(STDOUT, categories, 500);
+void csvwrite(movieInfo** movieArr,int size ,char* categories, int sizeOfCategories){
+       	write(STDOUT, categories, sizeOfCategories);
+		write(STDOUT, "\n", 1);
                 
 
         int i = 0;
         while(i < size){
                 movieInfo* A = movieArr[i];
-                write(STDOUT, A->beforeSortedCol, 500);
-                write(STDOUT, A->toBeSorted, 500);
-                write(STDOUT, A->afterSortedCol, 500);	
-          	write(STDOUT, "\n", 1000);
+                write(STDOUT, A->beforeSortedCol, A->sizeBefore);
+                write(STDOUT, A->toBeSorted, A->sizeOfSort);
+                write(STDOUT, A->afterSortedCol, A->sizeAfter);	
+          	write(STDOUT, "\n", 1);
 		i++;
         }
 }
@@ -33,7 +34,7 @@ int main(int argc, char** argv){
 	int numCommasB4Sort = 0;		//The number of commas before the column to be sorted is reached.
 	
 	char charIn = '\0';				//Buffer to put each char that's being read in from STDIN
-	char columnNames[500];			//Buffer where we're going to put the first line containing all titles
+	char* columnNames = malloc(sizeof(char)*500);			//Buffer where we're going to put the first line containing all titles
 	int columnNamesIndex = 0;		//For use in the below do-while loop
 	
 	//Reading in from STDIN char by char until a '\n' is reached to get a string containing all column names
@@ -43,6 +44,7 @@ int main(int argc, char** argv){
 		columnNamesIndex++;
 	}while(charIn != '\n');
 	columnNames[columnNamesIndex] = '\0';
+	columnNames = realloc(columnNames, columnNamesIndex+1);
 
 	//Determining if the column to be sorted parameter is in the list of columns using strstr()
 	char* locOfColumn = strstr(columnNames, argv[2]);
@@ -101,18 +103,21 @@ int main(int argc, char** argv){
 					sortColumn = realloc(sortColumn, sizeOfSortColumn+1);
 					sortColumn[sizeOfSortColumn] = '\0';
 					row.toBeSorted = sortColumn;
+					row.sizeOfSort = sizeOfSortColumn+1;
 					//printf("%s\n", row.toBeSorted); (Debug code)
 					//printf("%d, %d, %d\n", sizeOfPreSortColumn, sizeOfSortColumn, sizeOfPostSortColumn);
 
 					preSortColumn = realloc(preSortColumn, sizeOfPreSortColumn+1);
 					preSortColumn[sizeOfPreSortColumn] = '\0';
 					row.beforeSortedCol = preSortColumn;
+					row.sizeBefore = sizeOfPreSortColumn+1;
 					//printf("%s\n", row.beforeSortedCol); (Debug code)
 
 
 					postSortColumn = realloc(postSortColumn, sizeOfPostSortColumn+1);
 					postSortColumn[sizeOfPostSortColumn] = '\0';
 					row.afterSortedCol = postSortColumn;
+					row.sizeAfter = sizeOfPostSortColumn+1;
 
 					sizeOfArray++;
  					dataRows = realloc(dataRows, sizeof(movieInfo*)*sizeOfArray);
@@ -183,7 +188,7 @@ int main(int argc, char** argv){
 	}
 	
 	mergesort(dataRows, 0, sizeOfArray - 1, isInt);
-	csvwrite(dataRows,sizeOfArray, columnNames);
+	csvwrite(dataRows,sizeOfArray, columnNames, columnNamesIndex);
 	return 0;
 }
 
