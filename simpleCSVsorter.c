@@ -163,8 +163,66 @@ int main(int argc, char** argv){
 		}
 	} 
 	
+	int i = 0;
+	
+	// this integer acts as a boolean
+	// is 0 if the data is not an int, now is 1 if the data is an int
+	int isInt = 1;
+	
+	//create temp pointer to iterate through all of array and check if each item is a number
+	//because it is possible for a movie to be a number, e.g. '300', and that would be a problem
+	//so we should check all of them to be sure
+	movieInfo** tempPtrCheckInt = dataRows;
+	while(i < sizeA) {
+		//iterate through each char, checking if it is int
+		// NOTENOTENOTE: if you can find a better way, lmk cause this is very inefficient	
+		char* currData = (**(tempPtrCheckInt)).toBeSorted;	
+		
+		while(currData != '\0') {
+			// current char could be int or decimal point
+			if(isdigit(currData) != 0 ||  *currData == '.' ) {
+				isInt = 0;
+				break;			
+			}
+		}
+		
+		//break if we found alphabetic char, no need to check anymore
+		if(isInt == 0) {
+			break;
+		}
 
-	movieInfo** sortedArr = mergesort(dataRows, sizeOfArray );
+		tempPtrCheckInt++;
+		i++;
+	}
+
+	i = 0;
+	movieInfo** tempPtrCheckInt = B;
+
+	if(isInt == 1) {
+		while(i < sizeB) {
+                	//iterate through each char, checking if it is int
+                	// NOTENOTENOTE: if you can find a better way, lmk cause this is very inefficient       
+                        char* currData = (**(tempPtrCheckInt)).toBeSorted;
+                
+                        while(currData != '\0') {
+                
+                        	if(isdigit(currData) != 0 ||  *currData == '.' ) {
+                                	isInt = 0;
+                                        break;
+                                }
+                        }
+                                                                                                                                                                                                             //break if we found alphabetic char, no need to check anymore
+                                                                                                                                                                                                             if(isInt == 0) {
+                 		break;                                                                                                                                                                       }
+                
+                        tempPtrCheckInt++;
+                        i++;
+                                                                                                                                                                                     		     }
+                      
+	}
+	
+
+	movieInfo** sortedArr = mergesort(dataRows, sizeOfArray, isInt);
 	csvwrite(sortedArr,sizeOfArray, columnNames);
 	return 0;
 }
