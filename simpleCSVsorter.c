@@ -215,7 +215,7 @@ int main(int argc, char** argv){
 	}
 	
 
-	movieInfo** sortedArr = mergesort(dataRows, sizeOfArray, isInt);
+	mergesort(dataRows, 0, sizeOfArray - 1, isInt);
 	csvwrite(sortedArr,sizeOfArray, columnNames);
 	return 0;
 }
