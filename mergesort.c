@@ -59,6 +59,16 @@ void merge(movieInfo** arr, int left, int half, int right, int isInt){
 		movieInfo* A = tempArr[i - left];
 		movieInfo* B = tempArr[j - (half + 1)];
 		
+		printf("merge");
+                                        printf("%s",A->beforeSortedCol);
+                                        printf("%s",A->toBeSorted);
+                                        printf("%s",A->afterSortedCol);
+                                        printf("\n");	
+
+		 printf("%s",B->beforeSortedCol);
+                                        printf("%s",B->toBeSorted);
+                                        printf("%s",B->afterSortedCol);
+                                        printf("\n");	
 		//if data is not an int, we will use string compare
 		if(isInt == 0) {
 			comparison = strcmp(A->toBeSorted, B->toBeSorted);
