@@ -183,8 +183,6 @@ int main(int argc, char** argv){
 		i++;
 	}
 
-	printf("%s\n", dataRows[0]->toBeSorted);
-	printf("%s\n", dataRows[1]->toBeSorted);
 	
 	mergesort(dataRows, 0, sizeOfArray - 1, isInt);
 	csvwrite(dataRows,sizeOfArray, columnNames, columnNamesIndex);

@@ -27,7 +27,7 @@ void mergesort(movieInfo** arr, int leftInd, int rightInd, int isInt) {
 //int comparator, will return negative value if 
 //intA < intB. will return positive if
 //intB < intA, zero if equal
-int intComparator(float intA, float intB) {
+float intComparator(float intA, float intB) {
 	return intA - intB;
 }
 
@@ -36,29 +36,34 @@ void merge(movieInfo** arr, int left, int half, int right, int isInt){
         int i = left, j = half + 1;
 
         
-	movieInfo** tempArr = malloc((right-left+1) * sizeof(movieInfo));
-	
+	movieInfo** tempArrA = malloc((right-half) * sizeof(movieInfo));
+	movieInfo** tempArrB = malloc((half - left + 1) * sizeof(movieInfo));	
+
 	//copy data into new temp array
 	// the temp array will just allow us to not use in place
 	// otherwise we'd have be in trouble
-	for(i = left; i <= (right); i++) {
-		tempArr[i - left] = arr[i];
+	for(i = left; i <= half; i++) {
+		tempArrA[i - left] = arr[i];
 	}
 	
-	i = left;
-	j = half + 1;
+	for(i = half + 1; i <= right; i++) {
+		tempArrB[i - half - 1] = arr[i];
+	}
+
+	i = 0;
+	j = 0;
 	// int to store size of struct
         int sizeStruct = sizeof(movieInfo);
         int arrInd = left;
 	
 	// iterate through array
-        while(i < half && j < right) {
+        while(i <= half || j < (right - half - 1)) {
 		//int to hold result of comparison
 		int comparison = 0;
 		
-		movieInfo* A = tempArr[i - left];
-		movieInfo* B = tempArr[j - (half + 1)];
-		
+		movieInfo* A = tempArrA[i];
+		movieInfo* B = tempArrB[j];
+		printf("isInt: %d\n", isInt);	
 		//if data is not an int, we will use string compare
 		if(isInt == 0) {
 			comparison = strcmp(A->toBeSorted, B->toBeSorted);
@@ -80,15 +85,19 @@ void merge(movieInfo** arr, int left, int half, int right, int isInt){
 			
                 } else {
 			//otherwise add both and iterate both.
-			arr[arrInd] = A;
-                        i++;
-			arrInd++;
-			arr[arrInd] = B;
-        		j++;
-			arrInd++;
+			if(i <= half) {
+				arr[arrInd] = A;
+                        	i++;
+				arrInd++;
+			} else if(j < (right - half - 1)) {
+				arr[arrInd] = B;
+                        	j++;
+                        	arrInd++;	
+			}
        	   	}           
 	}
-	free(tempArr);
+	free(tempArrA);
+	free(tempArrB);
 }                                                                                                                                                      
 
 
