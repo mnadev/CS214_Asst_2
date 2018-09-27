@@ -180,7 +180,7 @@ int main(int argc, char** argv){
 		
 		while(currData != '\0') {
 			// current char could be int or decimal point
-			if(isdigit(currData) != 0 ||  *currData == '.' ) {
+			if(isdigit(currData) != 0 &&  *currData == '.' ) {
 				isInt = 0;
 				break;			
 			}
@@ -206,7 +206,7 @@ int main(int argc, char** argv){
                 
                         while(currData != '\0') {
                 
-                        	if(isdigit(currData) != 0 ||  *currData == '.' ) {
+                        	if(isdigit(currData) != 0 &&  *currData != '.' ) {
                                 	isInt = 0;
                                         break;
                                 }
