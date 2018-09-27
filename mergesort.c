@@ -5,98 +5,82 @@
 #include <ctype.h>
 #include "simpleCSVsorter.h"
 
-movieInfo** merge(movieInfo** A, movieInfo** B, int sizeA, int sizeB, int isInt);
+void merge(movieInfo* A, int left, int half, int right, int isInt);
 
-movieInfo** mergesort(movieInfo** arr, int size, int isInt) {
+void mergesort(movieInfo* arr, int leftInd, int rightInd, int isInt) {
 	//base case of merge sort
-        if(size == 1 || size == 0) {
-		return arr;
+        if(leftInd > rightInd) {
+		return;
         }
 
-  	//split array into two and mergesort
-      	// copy items into both temp arrays
-        movieInfo** firstHalf = (movieInfo**) malloc((size/2)*sizeof(movieInfo));
-	movieInfo** secondHalf = (movieInfo**) malloc((size - size/2)*sizeof(movieInfo));
-	
-	int half = size/2;
-	
-	int i = 0;
-	//copy items into second half
-	for(i = 0; i < half; i++) {
-		**(firstHalf) = (arr + i*sizeof(movieInfo));
-		firstHalf++;
-	}
-	
-	int j = half;
-	for(j = half; j < size; j++) {
-		**(secondHalf) = (arr + j*sizeof(movieInfo));
-		secondHalf++;
-	} 
+	//get mid
+	int half = (leftInd+rightInd)/2;
 	
 	//sort both arrays
-	mergesort(movieInfo** firstHalf, half);
-        mergesort(movieInfo** secondHalf,size-half);
-	
-	
+	mergesort(movieInfo* arr, left, half, isInt);
+        mergesort(movieInfo* arr,half + 1, right, isInt);
 	
 	// merge the sorted arrays
-	arr = merge(firstHalf, secondHalf, half, size-half, isInt);
-	free(firstHalf);
-	free(secondHalf);
-	return arr;
+	merge(arr, left, half, right, isInt);
+}
+
+void swap(movieInfo* A, movieInfo* B) {
+	movieInfo* temp = *A;
+	*A = *B;
+	*B = *A;
 }
 
 //int comparator, will return negative value if 
 //intA < intB. will return positive if
 //intB < intA, zero if equal
-int intComparator(int intA, int intB) {
+int intComparator(float intA, float intB) {
 	return intA - intB;
 }
 
-movieInfo** merge(movieInfo** A, movieInfo** B, int sizeA, int sizeB, int isInt){
+void merge(movieInfo* arr, int left, int half, int right, int isInt){
         //index pointers
-        int i = 0, j = 0;
+        int i = left, j = half + 1;
 
         // allocate space for the return array
-        movieInfo** retArr[sizeA + sizeB];
+        //movieInfo** retArr[sizeA + sizeB];
         
+	movieInfo* A = arr[i];
+	movieInfo* B = arr[j];
+	
 	// int to store size of struct
         int sizeStruct = sizeof(movieInfo);
         
 	// iterate through array
-        while(i < sizeA && j < sizeB) {
+        while(i < right && j < right) {
 		//int to hold result of comparison
 		int comparison = 0;
 		
 		//if data is not an int, we will use string compare
 		if(isInt == 0) {
-		
-			comparison = strcmp((**(A + i*sizeStruct)).toBeSorted, (**(B + j*sizeStruct)).toBeSorted)
+			comparison = strcmp(A->toBeSorted, B->toBeSorted);
 		} else {
 			//otherwise use int comparator functino that was created.
-			comparison = intComparator(atoi((**(A + i*sizeStruct)).toBeSorted), atoi((**(B + j*sizeStruct)).toBeSorted));
+			comparison = intComparator(atof(A->toBeSorted), atof(B->toBeSorted));
 		}
 
-       		if(comparison < 0) {
-        		// if comparison is less than 0, then B is less than A, and should be added first       
-			**retArr = **(B + j*sizeStruct);
+       		if(comparison < 0 && i > j) {
+        		// if comparison is less than 0, then B is more than A, and A should be added first       
+			//TODO: switch places of items
+			swap(*A, *B);
                         j++;
-       			retArr++;
-       		} else if(comparison > 0) {
-			//if comparison is greater than 0, then B is more than A, and A should be added first
-       			**retArr = **(A + i*sizeStruct);
+			B = arr[j];
+			A = arr[i];
+       		} else if(comparison > 0 && i < j) {
+			//if comparison is greater than 0, then B is less than A, and B should be added first
+       			swap(*A, *B);
         		i++;
-        		retArr++;
+			B = arr[j];
+			A = arr[i];
                 } else {
 			//otherwise add both and iterate first.
-       			**retArr = **(A + i*sizeStruct);
-       			i++;
-        		retArr++;
- 			**retArr = **(B + j*sizeStruct);
-			j++;
-        		retArr++;
        	   	}           
 	}
+	
 	return retArr;
 }                                                                                                                                                      
 
