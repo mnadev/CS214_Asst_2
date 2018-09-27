@@ -4,7 +4,7 @@
 #include <string.h>
 #include "simpleCSVsorter.h"
 
-void mergesort(movieInfo** arr, int left, int right, isInt) {
+void mergesort(movieInfo** arr, int left, int right, int isInt) {
   if(left >= right) {
     return;
   }
@@ -22,7 +22,7 @@ void mergesort(movieInfo** arr, int left, int right, isInt) {
 }
 
 void swap(movieInfo* A, movieInfo* B){
-  movieInfo* temp = *A;
+  movieInfo* temp = A;
   *A = *B;
   *B = *temp;
 }
@@ -43,10 +43,9 @@ void merge(movieInfo** arr, int left, int half, int right, int isInt) {
       movieInfo* A = arr[left];
       movieInfo* B = arr[right];
 
-      int comparison = 0;
-
+      float comparison = 0;
       if(isInt == 0) {
-        comparison = strcmp((char*)A->toBeSorted,(char*)B->toBeSorted);
+        comparison = (float)strcmp((char*)A->toBeSorted,(char*)B->toBeSorted);
       } else {
         comparison = intComparison((float)atof(A->toBeSorted), (float)atof(B->toBeSorted));
       }
@@ -98,11 +97,11 @@ void merge(movieInfo** arr, int left, int half, int right, int isInt) {
       movieInfo* A = tempA[i];
       movieInfo* B = tempB[j];
 
-      int comparison = 0;
+      float comparison = 0;
       if(isInt == 0) {
-        comparison = strcmp(A->toBeSorted, B->toBeSorted);
+        comparison = (float)strcmp(A->toBeSorted, B->toBeSorted);
       } else {
-        comparison = intComparison(A->toBeSorted, B->toBeSorted);
+        comparison = intComparison((float) atof(A->toBeSorted),(float) atof(B->toBeSorted));
       }
 
       if(comparison > 0) {
