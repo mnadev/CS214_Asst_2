@@ -9,7 +9,7 @@ void merge(movieInfo** A, int left, int half, int right, int isInt);
 
 void mergesort(movieInfo** arr, int leftInd, int rightInd, int isInt) {
 	//base case of merge sort
-        if(leftInd > rightInd) {
+        if(leftInd >= rightInd) {
 		return;
         }
 
@@ -18,7 +18,7 @@ void mergesort(movieInfo** arr, int leftInd, int rightInd, int isInt) {
 	
 	//sort both arrays
 	mergesort(arr, leftInd, half, isInt);
-        mergesort(arr,half + 1, rightInd, isInt);
+    mergesort(arr,half + 1, rightInd, isInt);
 	
 	// merge the sorted arrays
 	merge(arr, leftInd, half, rightInd, isInt);
