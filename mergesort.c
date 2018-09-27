@@ -22,6 +22,10 @@ void mergesort(movieInfo** arr, int leftInd, int rightInd, int isInt) {
 	
 	// merge the sorted arrays
 	merge(arr, leftInd, half, rightInd, isInt);
+	printf("%s\n",arr[0]->toBeSorted);
+        printf("%s\n",arr[1]->toBeSorted);
+	printf("%s\n",arr[2]->toBeSorted);
+        printf("%s\n",arr[3]->toBeSorted);
 }
 
 //int comparator, will return negative value if 
@@ -32,15 +36,21 @@ float intComparator(float intA, float intB) {
 }
 
 void merge(movieInfo** arr, int left, int half, int right, int isInt){
+
+	 printf("%d\n",12312983791827);
         //index pointers
         int i = left, j = half + 1;
-
+	if(right - left <= 1) {
+		
+		return;
+	}
         
-	movieInfo** tempArrA = malloc((right-half) * sizeof(movieInfo));
-	movieInfo** tempArrB = malloc((half - left + 1) * sizeof(movieInfo));	
+
+	movieInfo** tempArrA = malloc((half - left + 1) * sizeof(movieInfo));
+	movieInfo** tempArrB = malloc((right - half) * sizeof(movieInfo));	
 
 	//copy data into new temp array
-	// the temp array will just allow us to not use in place
+	// the temlp array will just allow us to not use in place
 	// otherwise we'd have be in trouble
 	for(i = left; i <= half; i++) {
 		tempArrA[i - left] = arr[i];
@@ -57,7 +67,7 @@ void merge(movieInfo** arr, int left, int half, int right, int isInt){
         int arrInd = left;
 	
 	// iterate through array
-        while(i <= half || j < (right - half - 1)) {
+        while(i < (half - left + 1)  && j < (right - half)) {
 		//int to hold result of comparison
 		int comparison = 0;
 		
@@ -71,7 +81,11 @@ void merge(movieInfo** arr, int left, int half, int right, int isInt){
 			//otherwise use int comparator functino that was created.
 			comparison = intComparator(atof(A->toBeSorted), atof(B->toBeSorted));
 		}
-
+		printf("%d\n",atof(A->toBeSorted));
+ 		printf("%d\n",atof(A->toBeSorted));
+		//i++;
+		//j++;
+		printf("%d\n",comparison);	
        		if(comparison < 0) {
         		// if comparison is less than 0, then B is more than A, and A should be added first       
 			arr[arrInd] = A;
@@ -85,17 +99,27 @@ void merge(movieInfo** arr, int left, int half, int right, int isInt){
 			
                 } else {
 			//otherwise add both and iterate both.
-			if(i <= half) {
-				arr[arrInd] = A;
-                        	i++;
-				arrInd++;
-			} else if(j < (right - half - 1)) {
-				arr[arrInd] = B;
-                        	j++;
-                        	arrInd++;	
-			}
+			arr[arrInd] = A;
+                        i++;
+			arrInd++;
+
        	   	}           
 	}
+	
+	while(i <  (half - left + 1)) {
+              movieInfo* A = tempArrA[i];
+	     arr[arrInd] = A;
+             i++;
+             arrInd++;
+        }
+
+	while(j <= (right - half)) {
+		 movieInfo* B = tempArrB[j];
+             arr[arrInd] = B;
+             j++;
+             arrInd++;
+        }
+	
 	free(tempArrA);
 	free(tempArrB);
 }                                                                                                                                                      
