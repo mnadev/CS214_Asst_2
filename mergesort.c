@@ -5,9 +5,9 @@
 #include <ctype.h>
 #include "simpleCSVsorter.h"
 
-void merge(movieInfo* A, int left, int half, int right, int isInt);
+void merge(movieInfo** A, int left, int half, int right, int isInt);
 
-void mergesort(movieInfo* arr, int leftInd, int rightInd, int isInt) {
+void mergesort(movieInfo** arr, int leftInd, int rightInd, int isInt) {
 	//base case of merge sort
         if(leftInd > rightInd) {
 		return;
@@ -17,17 +17,11 @@ void mergesort(movieInfo* arr, int leftInd, int rightInd, int isInt) {
 	int half = (leftInd+rightInd)/2;
 	
 	//sort both arrays
-	mergesort(movieInfo* arr, left, half, isInt);
-        mergesort(movieInfo* arr,half + 1, right, isInt);
+	mergesort(movieInfo** arr, left, half, isInt);
+        mergesort(movieInfo** arr,half + 1, right, isInt);
 	
 	// merge the sorted arrays
 	merge(arr, left, half, right, isInt);
-}
-
-void swap(movieInfo* A, movieInfo* B) {
-	movieInfo* temp = *A;
-	*A = *B;
-	*B = *A;
 }
 
 //int comparator, will return negative value if 
@@ -37,12 +31,12 @@ int intComparator(float intA, float intB) {
 	return intA - intB;
 }
 
-void merge(movieInfo* arr, int left, int half, int right, int isInt){
+void merge(movieInfo** arr, int left, int half, int right, int isInt){
         //index pointers
         int i = left, j = half + 1;
 
         
-	movieInfo* tempArr = malloc((right-left+1) * sizeof(movieInfo));
+	movieInfo** tempArr = malloc((right-left+1) * sizeof(movieInfo));
 	
 	//copy data into new temp array
 	// the temp array will just allow us to not use in place
@@ -75,21 +69,21 @@ void merge(movieInfo* arr, int left, int half, int right, int isInt){
 
        		if(comparison < 0) {
         		// if comparison is less than 0, then B is more than A, and A should be added first       
-			arr[arrInd] = *A;
+			arr[arrInd] = A;
                         i++;
 			arrInd++;
        		} else if(comparison > 0) {
 			//if comparison is greater than 0, then B is less than A, and B should be added first
-       			arr[arrInd] = *B;
+       			arr[arrInd] = B;
         		j++;
 			arrInd++;
 			
                 } else {
 			//otherwise add both and iterate both.
-			arr[arrInd] = *A;
+			arr[arrInd] = A;
                         i++;
 			arrInd++;
-			arr[arrInd] = *B;
+			arr[arrInd] = B;
         		j++;
 			arrInd++;
        	   	}           
