@@ -191,7 +191,7 @@ int main(int argc, char** argv){
 	}
 	
 	mergesort(dataRows, 0, sizeOfArray - 1, isInt);
-	csvwrite(sortedArr,sizeOfArray, columnNames);
+	csvwrite(dataRows,sizeOfArray, columnNames);
 	return 0;
 }
 
