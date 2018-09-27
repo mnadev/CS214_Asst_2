@@ -41,19 +41,29 @@ void merge(movieInfo* arr, int left, int half, int right, int isInt){
         //index pointers
         int i = left, j = half + 1;
 
-        // allocate space for the return array
-        //movieInfo** retArr[sizeA + sizeB];
         
-	movieInfo* A = arr[i];
-	movieInfo* B = arr[j];
+	movieInfo* tempArr = malloc((right-left+1) * sizeof(movieInfo));
 	
+	//copy data into new temp array
+	// the temp array will just allow us to not use in place
+	// otherwise we'd have be in trouble
+	for(i = left; i <= (right); i++) {
+		tempArr[i - left] = arr[i];
+	}
+	
+	i = left;
+	j = half + 1;
 	// int to store size of struct
         int sizeStruct = sizeof(movieInfo);
-        
+        int arrInd = left;
+	
 	// iterate through array
-        while(i < right && j < right) {
+        while(i < half || j < right) {
 		//int to hold result of comparison
 		int comparison = 0;
+		
+		movieInfo* A = tempArr[i - left];
+		movieInfo* B = tempArr[j - (half + 1)];
 		
 		//if data is not an int, we will use string compare
 		if(isInt == 0) {
@@ -63,25 +73,27 @@ void merge(movieInfo* arr, int left, int half, int right, int isInt){
 			comparison = intComparator(atof(A->toBeSorted), atof(B->toBeSorted));
 		}
 
-       		if(comparison < 0 && i > j) {
+       		if(comparison < 0) {
         		// if comparison is less than 0, then B is more than A, and A should be added first       
-			//TODO: switch places of items
-			swap(*A, *B);
-                        j++;
-			B = arr[j];
-			A = arr[i];
-       		} else if(comparison > 0 && i < j) {
+			arr[arrInd] = *A;
+                        i++;
+			arrInd++;
+       		} else if(comparison > 0) {
 			//if comparison is greater than 0, then B is less than A, and B should be added first
-       			swap(*A, *B);
-        		i++;
-			B = arr[j];
-			A = arr[i];
+       			arr[arrInd] = *B;
+        		j++;
+			arrInd++;
+			
                 } else {
-			//otherwise add both and iterate first.
+			//otherwise add both and iterate both.
+			arr[arrInd] = *A;
+                        i++;
+			arrInd++;
+			arr[arrInd] = *B;
+        		j++;
+			arrInd++;
        	   	}           
 	}
-	
-	return retArr;
 }                                                                                                                                                      
 
 
