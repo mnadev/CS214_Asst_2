@@ -6,7 +6,7 @@
 
 
 void swap(movieInfo* A, movieInfo* B){
-  movieInfo* temp = A;
+  movieInfo* temp = *A;
   *A = *B;
   *B = *temp;
 }
