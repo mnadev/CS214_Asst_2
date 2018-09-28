@@ -151,14 +151,21 @@ int main(int argc, char** argv){
 	
 	// this integer acts as a boolean
 	// is 0 if the data is not an int, now is 1 if the data is an int
-	int isInt = 1;
+	int isInt = 0;
 	
 	//create temp pointer to iterate through all of array and check if each item is a number
 	//because it is possible for a movie to be a number, e.g. '300', and that would be a problem
 	//so we should check all of them to be sure
 	movieInfo** tempPtrCheckInt = dataRows;
 	i = 0;
-	
+
+
+
+	// THIS IS WHERE THE PROBLEM LIES
+	// LOOK INTO YOUR EYES
+	// AND YOU WILL FIND
+	// SOME PORK RIND
+	/*	
 	while(i < sizeOfArray) {
 		//iterate through each char, checking if it is int
 		// NOTENOTENOTE: if you can find a better way, lmk cause this is very inefficient	
@@ -181,7 +188,7 @@ int main(int argc, char** argv){
 
 		//tempPtrCheckInt++;
 		i++;
-	}
+	}*/
 
 	
 	mergesort(dataRows, 0, sizeOfArray - 1, isInt);

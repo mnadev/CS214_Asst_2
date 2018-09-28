@@ -1,14 +1,14 @@
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
 #include "simpleCSVsorter.h"
 
 
 void swap(movieInfo* A, movieInfo* B){
-  movieInfo* temp = *A;
+  movieInfo temp = *A;
   *A = *B;
-  *B = *temp;
+  *B = temp;
 }
 
 float intComparison(float intA, float intB) {
@@ -63,8 +63,10 @@ void merge(movieInfo** arr, int left, int half, int right, int isInt) {
     if(right - left < 1) {
       return;
     }
+/*
     int i = left;
-     while(i < right){
+     
+while(i < right){
       movieInfo* A = arr[i];
       movieInfo* B = arr[i + 1];
 
@@ -74,10 +76,14 @@ void merge(movieInfo** arr, int left, int half, int right, int isInt) {
       } else {
         comparison = intComparison((float) atof(A->toBeSorted),(float) atof(B->toBeSorted));
       }
-      printf("%s v. %s: %d \n", A->toBeSorted, A->toBeSorted,comparison);
+    	if(comparison > 0) {
+        swap(A,B);
+      }
+	  printf("%s v. %s: %d \n", A->toBeSorted, B->toBeSorted,comparison);
       i++;
     }
-    /*
+    */
+	
     // else check if right and left are right next to each other
     // and swap their values if they ar eout of order and then return;
     if((right - left) == 1) {
@@ -88,11 +94,16 @@ void merge(movieInfo** arr, int left, int half, int right, int isInt) {
       if(isInt == 0) {
         comparison = (float)strcmp((char*)A->toBeSorted,(char*)B->toBeSorted);
       } else {
-        comparison = intComparison((float)atof(A->toBeSorted), (float)atof(B->toBeSorted));
+      	float intA = (float)atof(A->toBeSorted);
+	float intB = (float)atof(B->toBeSorted);
+	//printf("%f\n", intA);
+	//printf("%f\n", intB);
+	//printf("%f\n", intComparison((float)atof(A->toBeSorted), (float)atof(B->toBeSorted)));
+	comparison = intComparison(intA,intB);
       }
 
       if(comparison > 0) {
-        swap(&A, &B);
+        swap(A, B);
       }
 
       return;
@@ -142,7 +153,9 @@ void merge(movieInfo** arr, int left, int half, int right, int isInt) {
       if(isInt == 0) {
         comparison = (float)strcmp(A->toBeSorted, B->toBeSorted);
       } else {
-        comparison = intComparison((float) atof(A->toBeSorted),(float) atof(B->toBeSorted));
+	float intA = (float)atof(A->toBeSorted);
+        float intB = (float)atof(B->toBeSorted);
+        comparison = intComparison(intA,intB);
       }
 
       if(comparison > 0) {
@@ -174,6 +187,6 @@ void merge(movieInfo** arr, int left, int half, int right, int isInt) {
     //free malloced arrays
     free(tempA);
     free(tempB);
-    */
+    
 }
 
