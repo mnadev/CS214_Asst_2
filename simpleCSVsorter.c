@@ -168,13 +168,15 @@ int main(int argc, char** argv){
 	/*	
 	while(i < sizeOfArray) {
 		//iterate through each char, checking if it is int
-		// NOTENOTENOTE: if you can find a better way, lmk cause this is very inefficient	
-		char* currData = (*(tempPtrCheckInt[i])).toBeSorted;	
+		// NOTENOTENOTE: if you can find a better way, lmk cause this is very inefficient
+		movieInfo temp = tempPtrCheckInt[i];
+		char* currData = temp->toBeSorted;	
 		
 		int j = 0;
 		while(currData[j] != '\0') {
+			char c = currData[j];
 			// current char could be int or decimal point
-			if(isdigit(currData[j]) != 0 &&  currData[j] == '.' ) {
+			if(isalpha(c) != 0 &&  c != '.') {
 				isInt = 0;
 				break;			
 			}
