@@ -92,7 +92,15 @@ while(i < right){
 
       float comparison = 0;
       if(isInt == 0) {
-        comparison = (float)strcmp((char*)A->toBeSorted,(char*)B->toBeSorted);
+		char* trimmedA = A->toBeSorted;	//trimmed whitespace version of A
+		char* trimmedB = B->toBeSorted;	//trimmed whitespace version of B
+		while(trimmedA[0] == ' '){
+			trimmedA++;		
+		}
+		while(trimmedB[0] == ' '){
+			trimmedB++;		
+		}
+        comparison = (float)strcmp(trimmedA, trimmedB);
       } else {
       	float intA = (float)atof(A->toBeSorted);
 	float intB = (float)atof(B->toBeSorted);
@@ -151,7 +159,15 @@ while(i < right){
 
       float comparison = 0;
       if(isInt == 0) {
-        comparison = (float)strcmp(A->toBeSorted, B->toBeSorted);
+		char* trimmedA = A->toBeSorted;	//trimmed whitespace version of A
+		char* trimmedB = B->toBeSorted;	//trimmed whitespace version of B
+		while(trimmedA[0] == ' '){
+			trimmedA++;		
+		}
+		while(trimmedB[0] == ' '){
+			trimmedB++;		
+		}
+        comparison = (float)strcmp(trimmedA, trimmedB);
       } else {
 	float intA = (float)atof(A->toBeSorted);
         float intB = (float)atof(B->toBeSorted);
