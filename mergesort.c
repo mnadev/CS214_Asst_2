@@ -72,7 +72,7 @@ void merge(movieInfo** arr, int left, int half, int right, int isInt) {
       if(isInt == 0) {
         comparison = (float)strcmp(A->toBeSorted, B->toBeSorted);
       } else {
-        comparison = intComparison((float) atof(A->toBeSorted),(float) atof(A->toBeSorted));
+        comparison = intComparison((float) atof(A->toBeSorted),(float) atof(B->toBeSorted));
       }
       printf("%s v. %s: %d \n", A->toBeSorted, A->toBeSorted,comparison);
       i++;
