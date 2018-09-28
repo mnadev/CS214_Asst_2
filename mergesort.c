@@ -65,8 +65,8 @@ void merge(movieInfo** arr, int left, int half, int right, int isInt) {
     }
     int i = left;
      while(i < right){
-      movieInfo* A = tempA[left];
-      movieInfo* B = tempB[left + 1];
+      movieInfo* A = arr[left];
+      movieInfo* B = arr[left + 1];
 
       float comparison = 0;
       if(isInt == 0) {
