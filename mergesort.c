@@ -75,6 +75,7 @@ void merge(movieInfo** arr, int left, int half, int right, int isInt) {
         comparison = intComparison((float) atof(A->toBeSorted),(float) atof(A->toBeSorted));
       }
       printf("%s v. %s: %d \n", A->toBeSorted, A->toBeSorted,comparison);
+      left++;
     }
     /*
     // else check if right and left are right next to each other
