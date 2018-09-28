@@ -4,6 +4,38 @@
 #include <string.h>
 #include "simpleCSVsorter.h"
 
+
+void swap(movieInfo* A, movieInfo* B){
+  movieInfo* temp = A;
+  *A = *B;
+  *B = *temp;
+}
+
+
+void mergesort(movieInfo** arr, int left, int right, int isInt) {
+  int i = 0, j = 0;
+  int n = right - left;
+  for(i = 0; i <= right; i++) {
+    for(j = 0; j < right - i; j++) {
+      movieInfo* A = arr[i];
+      movieInfo* B = arr[i + 1];
+
+      float comparison = 0;
+      if(isInt == 0) {
+        comparison = (float)strcmp((char*)A->toBeSorted,(char*)B->toBeSorted);
+      } else {
+        comparison = intComparison((float)atof(A->toBeSorted), (float)atof(B->toBeSorted));
+      }
+
+      if(comparison > 0) {
+        swap(A, B);
+      }
+
+    }
+  }
+}
+
+/*
 void merge(movieInfo** arr, int left, int half, int right, int isInt);
 
 void mergesort(movieInfo** arr, int left, int right, int isInt) {
@@ -22,17 +54,11 @@ void mergesort(movieInfo** arr, int left, int right, int isInt) {
   //
   merge(arr, left, half, right, isInt);
 }
-
-void swap(movieInfo* A, movieInfo* B){
-  movieInfo* temp = A;
-  *A = *B;
-  *B = *temp;
-}
-
+*/
 float intComparison(float intA, float intB) {
   return intA - intB;
 }
-
+/*
 void merge(movieInfo** arr, int left, int half, int right, int isInt) {
     //if right and left point to same thing or if somehow right is to the left of left
     if(right - left < 1) {
@@ -136,3 +162,4 @@ void merge(movieInfo** arr, int left, int half, int right, int isInt) {
     free(tempA);
     free(tempB);
 }
+*/
