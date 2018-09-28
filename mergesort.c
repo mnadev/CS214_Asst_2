@@ -31,7 +31,7 @@ void mergesort(movieInfo** arr, int left, int right, int isInt) {
       }
 
       if(comparison > 0) {
-        swap(A, B);
+        swap(*A, *B);
       }
 
     }
