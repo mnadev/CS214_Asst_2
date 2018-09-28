@@ -1,9 +1,9 @@
-SIMPLECSVSORTER
+SIMPLECSVSORTER.C
 simpleCSVsorter is a program that given a csv and a category sorts the csv file by that specific category.
 SYNOPSIS
   simpleCSVsorter.out -c <ColumnToSortBy>
 DESCRIPTION
-   
+  simpleCSVsorter reads in a CSV file by filename. Then, the CSV file is sorted by the given parameter and the output is printed to stdout.  
 OPTIONS
   "-c" indicates that the sorting of data entries is to be done based on columns
   <ColumnToSortBy> is the name of the column that the program is to sort by.
@@ -12,7 +12,8 @@ EXAMPLES
 EXIT STATUS
 The code will return 0 if terminated successfully. The code will return -1 if the command line arguments are not correct.
 SEE ALSO
-
+simplecsvsorter.h
+mergesort.c
 BUGS
 Bruh, no bugs here.
 AUTHOR(s)
@@ -24,3 +25,47 @@ Copyright by P-Diddy.
 The design of the program is as follows:
 	Before the CSV is actually parsed, the program will check the arguments to ensure that the arguments were properly inputted, outputting to STDERR and returning -1 if the arguments did not match the required format.
 	In the first part of the program, the program allocates 500 bytes to be used as a buffer to store the row containing the names of the columns. Characters are then read in one by one from the STDIN file descriptor to the buffer until a newline character '\n' is found, counting the number of characters that are being read in. The assumption is made that the row containing column names will contain less than 500 bytes, as the given test CSV only has around 410 characters in the first row.
+
+
+SIMPLECSVSORTER.H
+SYNOPSIS
+
+DESCRIPTION
+
+OPTIONS
+
+EXAMPLES
+
+EXIT STATUS
+Since this is a header file, exit status is not defined and not necessary for function of the code.
+SEE ALSO
+
+BUGS
+None currently known.
+AUTHOR(s)
+Eric Lin and Mohammad Nadeem
+COPYRIGHT
+
+
+simpleCSVsorter.h is a header file that defines necessary structs and functions required for our program to operate. 
+
+MERGESORT.C
+SYNOPSIS
+DESCRIPTION
+mergesort.c takes in a an array of movieInfo and then performs mergesort on the array in question given a certain parameter.
+OPTIONS
+
+EXAMPLES
+
+EXIT STATUS
+
+SEE ALSO
+simpleCSVsorter.c
+simpleCSVsorter.h
+BUGS
+
+AUTHOR(s)
+Eric Lin and Mohammad Nadeem
+
+For mergesort, there are 4 parameters needed to run mergesort. The first is, trivially, the array in question that must be sorted. Mergesort also requires the left index and the right index of the (sub)array being sorted. The last parameter that mergesort takes is call isInt. isInt lets the program know if the data is numeric or alphabetic. If isInt is of value 0, then the data is alphabetic and must be sorted as such. If isInt is of value 1, then the data is numeric and must be sorted as such. 
+
