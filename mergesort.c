@@ -14,7 +14,7 @@ void swap(movieInfo* A, movieInfo* B){
 float intComparison(float intA, float intB) {
   return intA - intB;
 }
-
+/*
 void mergesort(movieInfo** arr, int left, int right, int isInt) {
   int i = 0, j = 0;
   int n = right - left;
@@ -36,9 +36,9 @@ void mergesort(movieInfo** arr, int left, int right, int isInt) {
 
     }
   }
-}
+}*/
 
-/*
+
 void merge(movieInfo** arr, int left, int half, int right, int isInt);
 
 void mergesort(movieInfo** arr, int left, int right, int isInt) {
@@ -57,14 +57,26 @@ void mergesort(movieInfo** arr, int left, int right, int isInt) {
   //
   merge(arr, left, half, right, isInt);
 }
-*/
-/*
+
 void merge(movieInfo** arr, int left, int half, int right, int isInt) {
     //if right and left point to same thing or if somehow right is to the left of left
     if(right - left < 1) {
       return;
     }
+    int i = left;
+     while(i < right){
+      movieInfo* A = tempA[left];
+      movieInfo* B = tempB[left + 1];
 
+      float comparison = 0;
+      if(isInt == 0) {
+        comparison = (float)strcmp(A->toBeSorted, B->toBeSorted);
+      } else {
+        comparison = intComparison((float) atof(A->toBeSorted),(float) atof(A->toBeSorted));
+      }
+      printf("%s v. %s: %d \n", A->toBeSorted, A->toBeSorted,comparison);
+    }
+    /*
     // else check if right and left are right next to each other
     // and swap their values if they ar eout of order and then return;
     if((right - left) == 1) {
@@ -79,7 +91,7 @@ void merge(movieInfo** arr, int left, int half, int right, int isInt) {
       }
 
       if(comparison > 0) {
-        swap(A, B);
+        swap(&A, &B);
       }
 
       return;
@@ -161,5 +173,6 @@ void merge(movieInfo** arr, int left, int half, int right, int isInt) {
     //free malloced arrays
     free(tempA);
     free(tempB);
+    */
 }
-*/
+
