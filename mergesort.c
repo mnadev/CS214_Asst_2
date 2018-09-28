@@ -65,8 +65,8 @@ void merge(movieInfo** arr, int left, int half, int right, int isInt) {
     }
     int i = left;
      while(i < right){
-      movieInfo* A = arr[left];
-      movieInfo* B = arr[left + 1];
+      movieInfo* A = arr[i];
+      movieInfo* B = arr[i + 1];
 
       float comparison = 0;
       if(isInt == 0) {
@@ -75,7 +75,7 @@ void merge(movieInfo** arr, int left, int half, int right, int isInt) {
         comparison = intComparison((float) atof(A->toBeSorted),(float) atof(A->toBeSorted));
       }
       printf("%s v. %s: %d \n", A->toBeSorted, A->toBeSorted,comparison);
-      left++;
+      i++;
     }
     /*
     // else check if right and left are right next to each other
