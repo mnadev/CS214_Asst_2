@@ -10,17 +10,14 @@ OPTIONS
 EXAMPLES
 
 EXIT STATUS
-The code will return 0 if terminated successfully. The code will return -1 if the command line arguments are not correct.
+The code will return 0 if terminated successfully. The code will return -1 if the command line arguments are not correct or if there are insufficient arguments. The program will also return -1 if the row that was to be sorted doesn't exist inside the CSV file.
 SEE ALSO
 simplecsvsorter.h
 mergesort.c
 BUGS
-Bruh, no bugs here.
+None currently known.
 AUTHOR(s)
 Eric Lin and Mohammad Nadeem
-COPYRIGHT
-Copyright by P-Diddy.
-
 
 The design of the program is as follows:
 	Before the CSV is actually parsed, the program will check the arguments to ensure that the arguments were properly inputted, outputting to STDERR and returning -1 if the arguments did not match the required format.
@@ -29,9 +26,7 @@ The design of the program is as follows:
 
 SIMPLECSVSORTER.H
 SYNOPSIS
-
-DESCRIPTION
-
+simpleCSVsorter.h is a header file that defines necessary structs and functions required for the CSV sorter to operate.
 OPTIONS
 
 EXAMPLES
@@ -39,33 +34,34 @@ EXAMPLES
 EXIT STATUS
 Since this is a header file, exit status is not defined and not necessary for function of the code.
 SEE ALSO
-
+simpleCSVsorter.c
+mergesort.c
 BUGS
 None currently known.
 AUTHOR(s)
 Eric Lin and Mohammad Nadeem
-COPYRIGHT
 
 
-simpleCSVsorter.h is a header file that defines necessary structs and functions required for our program to operate. 
+This header file defines the struct movieInfo which has threechar * fields. The first field called beforeSortedCol holds all of the data before the sorted column. The second field called toBeSorted holds the column that we will sort. The third field called afterSortedCol holds all of the data after the sorted column. This header file also describes the mergesort function so that it can be used in simpleCSVsorter.c. 
 
 MERGESORT.C
-SYNOPSIS
 DESCRIPTION
 mergesort.c takes in a an array of movieInfo and then performs mergesort on the array in question given a certain parameter.
-OPTIONS
-
-EXAMPLES
-
+void mergesort(movieInfo** arr, int left, int right, int isInt)
 EXIT STATUS
-
+Mergesort does not return a value. It sorts the array using pointers. 
 SEE ALSO
 simpleCSVsorter.c
 simpleCSVsorter.h
 BUGS
-
+None currently known.
 AUTHOR(s)
 Eric Lin and Mohammad Nadeem
 
 For mergesort, there are 4 parameters needed to run mergesort. The first is, trivially, the array in question that must be sorted. Mergesort also requires the left index and the right index of the (sub)array being sorted. The last parameter that mergesort takes is call isInt. isInt lets the program know if the data is numeric or alphabetic. If isInt is of value 0, then the data is alphabetic and must be sorted as such. If isInt is of value 1, then the data is numeric and must be sorted as such. 
+
+
+EXTRA CREDIT
+Regarding sorting the CSV, the struct that we created has been designed such as to allow any CSV to be sorted given a category. The struct only holds three pieces of data, the characters before the sorted column, the string in the sorted column and the characters after the sorted column. As a result, this program has been generally designed to allow for any CSV input and a given column name, and the CSV will be sorted by the given column. 
+
 
