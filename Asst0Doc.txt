@@ -8,7 +8,8 @@ OPTIONS
   "-c" indicates that the sorting of data entries is to be done based on columns
   <ColumnToSortBy> is the name of the column that the program is to sort by.
 EXAMPLES
-
+	cat movie_metadata.csv | ./simpleCSVsorter.out -c title > sorted_movie_metadata.csv
+	Will sort the movie_metadata.csv by titles and place the newly sorted csv into sorted_movie_metadata.csv
 EXIT STATUS
 The code will return 0 if terminated successfully. The code will return -1 if the command line arguments are not correct or if there are insufficient arguments. The program will also return -1 if the row that was to be sorted doesn't exist inside the CSV file.
 SEE ALSO
@@ -27,9 +28,6 @@ The design of the program is as follows:
 SIMPLECSVSORTER.H
 SYNOPSIS
 simpleCSVsorter.h is a header file that defines necessary structs and functions required for the CSV sorter to operate.
-OPTIONS
-
-EXAMPLES
 
 EXIT STATUS
 Since this is a header file, exit status is not defined and not necessary for function of the code.
