@@ -21,10 +21,9 @@ Eric Lin and Mohammad Nadeem
 
 The design of the program is as follows:
 	Before the CSV is actually parsed, the program will check the arguments to ensure that the arguments were properly inputted, outputting to STDERR and returning -1 if the arguments did not match the required format.
-	In the first part of the program, the program allocates 500 bytes to be used as a buffer to store the row containing the names of the columns. Characters are then read in one by one from the STDIN file descriptor to the buffer until a newline character '\n' is found, counting the number of characters that are being read in. The assumption is made that the row containing column names will contain less than 500 bytes, as the given test CSV only has around 410 characters in the first row.
-	Then, the location where the given column name to be sorted is found and stored. Each row is then read and if it is before the column to be sorted, it is stored in the beforeSortedCol field of the movieInfo struct. If it is the column to be sorted, the string is stored in the toBeSorted field in the movieInfo struct. Everything afterwards in a row is stored in the afterSortedCol field in movieInfo struct. 
-	Then, the array holding each movie's info is sent to mergesort. Then, the sorted array is written to standard out using the precalculated sizes of the char arrays.
-	
+	In the first part of the program, the program allocates 500 bytes to be used as a buffer to store the row containing the names of the columns. Characters are then read in one by one from the STDIN file descriptor to the buffer until a newline character '\n' is found, counting the number of characters that are being read in. The assumption is made that the row containing column names will contain less than 500 bytes, as the given test CSV only has around 410 characters in the first row. Once '\n' is found, the program reduces the size of the buffer to the exact space needed to hold all the characters, and searches for the input <ColumnToSortBy>. If not found, the program returns -1. If found, the program counts the number of commas before the <ColumnToSortBy> substring. Each following row then counts the number of commas parsed. When the number of commas parsed is lower than the number of commas before the sorted column, the characters are placed into the beforeSortedCol field of the movieInfo struct. When the number of commas parsed is equal to the number of commas before the sorted column, the characters are placed into the toBeSorted field, and when the number of commas parsed is greater than the number of commas before the sorted column, the characters are placed in the afterSortedCol field. The pointer referring to the movieInfo struct is put into an array of movieInfo pointers, and this is passed into mergesort to be sorted.
+
+
 SIMPLECSVSORTER.H
 SYNOPSIS
 simpleCSVsorter.h is a header file that defines necessary structs and functions required for the CSV sorter to operate.
@@ -43,7 +42,7 @@ AUTHOR(s)
 Eric Lin and Mohammad Nadeem
 
 
-This header file defines the struct movieInfo which has threechar * fields. The first field called beforeSortedCol holds all of the data before the sorted column. The second field called toBeSorted holds the column that we will sort. The third field called afterSortedCol holds all of the data after the sorted column. This header file also describes the mergesort function so that it can be used in simpleCSVsorter.c. 
+This header file defines the struct movieInfo which has threechar * fields and three int fields. The first field called beforeSortedCol holds all of the data before the sorted column. The second field called toBeSorted holds the column that we will sort. The third field called afterSortedCol holds all of the data after the sorted column. The three int fields hold the number of characters in each of the char* fields. This header file also describes the mergesort function so that it can be used in simpleCSVsorter.c. 
 
 MERGESORT.C
 SYNOPSIS
@@ -67,7 +66,7 @@ For mergesort, there are 4 parameters needed to run mergesort. The first is, tri
 	In mergesort.c, there exists a comparator function that is useful for comparing numeric values. The necessity for this was because strcmp does not correctly compare strings that represent numeric values. 
 
 EXTRA CREDIT
-Regarding sorting the CSV, the struct that we created has been designed such as to allow any CSV to be sorted given a category. The struct only holds three pieces of data, the characters before the sorted column, the string in the sorted column and the characters after the sorted column. As a result, this program has been generally designed to allow for any CSV input and a given column name, and the CSV will be sorted by the given column. 
+Regarding sorting the CSV, the struct that we created has been designed such as to allow any CSV to be sorted given a category. The struct only holds three pieces of data, the characters before the sorted column, the string in the sorted column and the characters after the sorted column. As a result, this program has been generally designed to allow for any CSV input and a given column name, and the CSV will be sorted by the given column. If anything, the initial size of the buffers used to parse in the CSV can be enlarged to accomodate CSVs with more columns.
 
 ISSUES
 In creating this program, a number of issues arose. First and foremost, there were a lot of issues with segmentation faults. The primary reason for most of the segmentation faults was the fact that a pointer was left pointing to an arbitrary value when iterated because the iteration was uncontrolled. There were a lot of issues with creating merge sort. The initial algorithm took some time to program. However, afterwards, a number of issues arose. First, there was no base case in the merge function resulting in the arrays not being sorted
