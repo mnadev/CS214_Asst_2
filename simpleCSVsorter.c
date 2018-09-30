@@ -190,7 +190,7 @@ int main(int argc, char** argv){
 			// current char could be int or decimal point
 			// if it is not a digit and also not a decimal
 			// then we know its not a numeric category
-			if(isdigit(c) == 0 &&  c != '.') {
+			if(isdigit(c) == 0 &&  c != '.' && c != ' ') {
 				isInt = 0;
 				break;			
 			}
