@@ -22,8 +22,9 @@ Eric Lin and Mohammad Nadeem
 The design of the program is as follows:
 	Before the CSV is actually parsed, the program will check the arguments to ensure that the arguments were properly inputted, outputting to STDERR and returning -1 if the arguments did not match the required format.
 	In the first part of the program, the program allocates 500 bytes to be used as a buffer to store the row containing the names of the columns. Characters are then read in one by one from the STDIN file descriptor to the buffer until a newline character '\n' is found, counting the number of characters that are being read in. The assumption is made that the row containing column names will contain less than 500 bytes, as the given test CSV only has around 410 characters in the first row.
-
-
+	Then, the location where the given column name to be sorted is found and stored. Each row is then read and if it is before the column to be sorted, it is stored in the beforeSortedCol field of the movieInfo struct. If it is the column to be sorted, the string is stored in the toBeSorted field in the movieInfo struct. Everything afterwards in a row is stored in the afterSortedCol field in movieInfo struct. 
+	Then, the array holding each movie's info is sent to mergesort. Then, the sorted array is written to standard out using the precalculated sizes of the char arrays.
+	
 SIMPLECSVSORTER.H
 SYNOPSIS
 simpleCSVsorter.h is a header file that defines necessary structs and functions required for the CSV sorter to operate.
@@ -45,9 +46,13 @@ Eric Lin and Mohammad Nadeem
 This header file defines the struct movieInfo which has threechar * fields. The first field called beforeSortedCol holds all of the data before the sorted column. The second field called toBeSorted holds the column that we will sort. The third field called afterSortedCol holds all of the data after the sorted column. This header file also describes the mergesort function so that it can be used in simpleCSVsorter.c. 
 
 MERGESORT.C
-DESCRIPTION
+SYNOPSIS
 mergesort.c takes in a an array of movieInfo and then performs mergesort on the array in question given a certain parameter.
+DESCRIPTION
 void mergesort(movieInfo** arr, int left, int right, int isInt)
+void swap(movieInfo* A, movieInfo* B)
+float intComparison(float intA, float intB)
+void merge(movieInfo** arr, int left, int half, int right, int isInt)
 EXIT STATUS
 Mergesort does not return a value. It sorts the array using pointers. 
 SEE ALSO
@@ -58,10 +63,17 @@ None currently known.
 AUTHOR(s)
 Eric Lin and Mohammad Nadeem
 
-For mergesort, there are 4 parameters needed to run mergesort. The first is, trivially, the array in question that must be sorted. Mergesort also requires the left index and the right index of the (sub)array being sorted. The last parameter that mergesort takes is call isInt. isInt lets the program know if the data is numeric or alphabetic. If isInt is of value 0, then the data is alphabetic and must be sorted as such. If isInt is of value 1, then the data is numeric and must be sorted as such. 
-
+For mergesort, there are 4 parameters needed to run mergesort. The first is, trivially, the array in question that must be sorted. Mergesort also requires the left index and the right index of the (sub)array being sorted. The last parameter that mergesort takes is call isInt. isInt lets the program know if the data is numeric or alphabetic. If isInt is of value 0, then the data is alphabetic and must be sorted as such. If isInt is of value 1, then the data is numeric and must be sorted as such. For mergesort, the array is halved continously until the base case of an array of one element is reached. Then, each subarray is merged. To merge, the merge function is called. In merge, the two subarrays are written to temporary arrays. Two pointers point to the leftmost indices of both subarrays and whichever value is less is written to the actual array in which we will add our sorted values. The base case for merge is when both subarrays are the same array or when there is only one element in each subarray. In the case where there is only one element in each subarray, the values are swapped if they are out of order.  
+	In mergesort.c, there exists a comparator function that is useful for comparing numeric values. The necessity for this was because strcmp does not correctly compare strings that represent numeric values. 
 
 EXTRA CREDIT
 Regarding sorting the CSV, the struct that we created has been designed such as to allow any CSV to be sorted given a category. The struct only holds three pieces of data, the characters before the sorted column, the string in the sorted column and the characters after the sorted column. As a result, this program has been generally designed to allow for any CSV input and a given column name, and the CSV will be sorted by the given column. 
 
+ISSUES
+In creating this program, a number of issues arose. First and foremost, there were a lot of issues with segmentation faults. The primary reason for most of the segmentation faults was the fact that a pointer was left pointing to an arbitrary value when iterated because the iteration was uncontrolled. There were a lot of issues with creating merge sort. The initial algorithm took some time to program. However, afterwards, a number of issues arose. First, there was no base case in the merge function resulting in the arrays not being sorted
+correctly. There was also an issue in the swap function which led to swap acting as a copy function because it copied data from one pointer to another rather than swapping. There was also an issue with isInt which was a result of faulty logic in the conditional statements. 
+	There was an issue we came across when writing to stdout. The issue was that the size of the char arrays was unknown so we assumed it to be 500 and wrote 500 bytes to stdout. However, mostof the strings were less than 500 bytes, and thus when we wrote 500 bytes to stdout, alot of random bits of memory were also written to stdout. To remedy this, we just calculate the length of each string as we read it and stored it in a variable. Thus, when we wrote back to stdout, we would know how many bytes to write. 
 
+
+TESTING
+See the attached csv files for test cases. 
