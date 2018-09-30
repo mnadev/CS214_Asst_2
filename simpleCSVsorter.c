@@ -10,7 +10,13 @@ void csvwrite(movieInfo** movieArr,int size ,char* categories, int sizeOfCategor
         while(i < size){
                 movieInfo* A = movieArr[i];
                 write(STDOUT, A->beforeSortedCol, A->sizeBefore);
-		write(STDOUT, A->toBeSorted, A->sizeOfSort);
+		if(A->sortHasQuotes == 1){
+			write(STDOUT,"\"", 1);
+			write(STDOUT, A->toBeSorted, A->sizeOfSort);
+			write(STDOUT, "\"", 1);
+		} else{
+			write(STDOUT, A->toBeSorted, A->sizeOfSort);
+		}
 		write(STDOUT, A->afterSortedCol, A->sizeAfter);	
 		write(STDOUT, "\n", 1);
 		i++;
@@ -76,6 +82,7 @@ int main(int argc, char** argv){
 		int sizeOfPreSortColumn = 0;
 		int sizeOfSortColumn = 0;
 		int sizeOfPostSortColumn = 0;
+		int sortHasQuotes = 0;
 
 		//Because allocating a large chunk of memory then shrinking it is probably more efficient than
 		//constantly realloc-ing the memory, I'm declaring an initial buffer size for the strings here
@@ -92,29 +99,34 @@ int main(int argc, char** argv){
 			switch(charIn){
 				case '"':
 					quoteMode = !quoteMode;	//Switches quoteMode on or off
-					break;
+					if(parsedCommas == numCommasB4Sort){
+						sortHasQuotes = 1;
+						break;
+					}
+					goto fromQuoteMode;		//Gonna do a bad thing here with goto for the sake of not breaking things.
 				case '\n':
 					//Shrinking char buffer sizes, making them strings, and assigning to movieInfo
 
 					sortColumn = realloc(sortColumn, sizeOfSortColumn+1);
 					sortColumn[sizeOfSortColumn] = '\0';
 					row.toBeSorted = sortColumn;
-					row.sizeOfSort = sizeOfSortColumn+1;
+					row.sizeOfSort = sizeOfSortColumn;
 					//printf("%s\n", row.toBeSorted); (Debug code)
 					//printf("%d, %d, %d\n", sizeOfPreSortColumn, sizeOfSortColumn, sizeOfPostSortColumn);
 
 					preSortColumn = realloc(preSortColumn, sizeOfPreSortColumn+1);
 					preSortColumn[sizeOfPreSortColumn] = '\0';
 					row.beforeSortedCol = preSortColumn;
-					row.sizeBefore = sizeOfPreSortColumn+1;
+					row.sizeBefore = sizeOfPreSortColumn;
 					//printf("%s\n", row.beforeSortedCol); (Debug code)
 
 
 					postSortColumn = realloc(postSortColumn, sizeOfPostSortColumn+1);
 					postSortColumn[sizeOfPostSortColumn] = '\0';
 					row.afterSortedCol = postSortColumn;
-					row.sizeAfter = sizeOfPostSortColumn+1;
+					row.sizeAfter = sizeOfPostSortColumn;
 						
+					row.sortHasQuotes = sortHasQuotes;		//To be used for printing later.
 					sizeOfArray++;
  					dataRows = realloc(dataRows, sizeof(movieInfo*)*sizeOfArray);
 					memcpy(rowPtr, &row, sizeof(movieInfo));
@@ -126,7 +138,7 @@ int main(int argc, char** argv){
 					}
 					//No break on comma detection so it goes into pre/post col strings.
 				default:
-					if(parsedCommas < numCommasB4Sort){
+				fromQuoteMode:	if(parsedCommas < numCommasB4Sort){
 						sizeOfPreSortColumn++;
 						preSortColumn[sizeOfPreSortColumn-1] = charIn;
 					}
@@ -199,4 +211,5 @@ int main(int argc, char** argv){
 	csvwrite(dataRows,sizeOfArray, columnNames, columnNamesIndex);
 	return 0;
 }
+
 

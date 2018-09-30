@@ -14,30 +14,6 @@ void swap(movieInfo* A, movieInfo* B){
 float intComparison(float intA, float intB) {
   return intA - intB;
 }
-/*
-void mergesort(movieInfo** arr, int left, int right, int isInt) {
-  int i = 0, j = 0;
-  int n = right - left;
-  for(i = 0; i <= right; i++) {
-    for(j = 0; j < right - i; j++) {
-      movieInfo* A = arr[i];
-      movieInfo* B = arr[i + 1];
-
-      float comparison = 0;
-      if(isInt == 0) {
-        comparison = (float)strcmp((char*)A->toBeSorted,(char*)B->toBeSorted);
-      } else {
-        comparison = intComparison((float)atof(A->toBeSorted), (float)atof(B->toBeSorted));
-      }
-
-      if(comparison > 0) {
-        swap(A, B);
-      }
-
-    }
-  }
-}*/
-
 
 void merge(movieInfo** arr, int left, int half, int right, int isInt);
 
@@ -63,26 +39,6 @@ void merge(movieInfo** arr, int left, int half, int right, int isInt) {
     if(right - left < 1) {
       return;
     }
-/*
-    int i = left;
-     
-while(i < right){
-      movieInfo* A = arr[i];
-      movieInfo* B = arr[i + 1];
-
-      float comparison = 0;
-      if(isInt == 0) {
-        comparison = (float)strcmp(A->toBeSorted, B->toBeSorted);
-      } else {
-        comparison = intComparison((float) atof(A->toBeSorted),(float) atof(B->toBeSorted));
-      }
-    	if(comparison > 0) {
-        swap(A,B);
-      }
-	  printf("%s v. %s: %d \n", A->toBeSorted, B->toBeSorted,comparison);
-      i++;
-    }
-    */
 	
     // else check if right and left are right next to each other
     // and swap their values if they ar eout of order and then return;
@@ -94,13 +50,41 @@ while(i < right){
       if(isInt == 0) {
 		char* trimmedA = A->toBeSorted;	//trimmed whitespace version of A
 		char* trimmedB = B->toBeSorted;	//trimmed whitespace version of B
+		int trimALen = A->sizeOfSort;
+		int trimBLen = B->sizeOfSort;
 		while(trimmedA[0] == ' '){
-			trimmedA++;		
+			trimmedA++;
+			trimALen--;
 		}
 		while(trimmedB[0] == ' '){
 			trimmedB++;		
+			trimBLen--;
 		}
-        comparison = (float)strcmp(trimmedA, trimmedB);
+		char* postTrimA = trimmedA; 	//In case trimmedA has whitespace at end
+		int needToFreeA = 0;			//If we do malloc, we need to free. This is to indicate if we need to or not.
+		if(trimmedA[trimALen-1] == ' '){
+			postTrimA = malloc(trimALen);
+			needToFreeA = 1;
+			memcpy(postTrimA, trimmedA, trimALen);
+			while(postTrimA[trimALen-1] == ' '){
+				postTrimA[trimALen-1] = '\0';
+				trimALen--;			
+			}
+		}
+		char* postTrimB = trimmedB;	//in case trimmedB has whitespace at the end
+		int needToFreeB = 0;
+		if(trimmedB[trimBLen-1] == ' '){
+			postTrimB = malloc(trimBLen);
+			needToFreeB = 1;
+			memcpy(postTrimB, trimmedB, trimBLen);
+			while(postTrimB[trimBLen-1] == ' '){
+				postTrimB[trimBLen-1] = '\0';
+				trimBLen--;			
+			}
+		}
+        comparison = (float)strcmp(postTrimA, postTrimB);
+		if(needToFreeA == 1){	free(postTrimA); }
+		if(needToFreeB == 1){	free(postTrimB); }
       } else {
       	float intA = (float)atof(A->toBeSorted);
 	float intB = (float)atof(B->toBeSorted);
@@ -161,13 +145,39 @@ while(i < right){
       if(isInt == 0) {
 		char* trimmedA = A->toBeSorted;	//trimmed whitespace version of A
 		char* trimmedB = B->toBeSorted;	//trimmed whitespace version of B
+		int trimALen = A->sizeOfSort;
+		int trimBLen = B->sizeOfSort;
 		while(trimmedA[0] == ' '){
 			trimmedA++;		
 		}
 		while(trimmedB[0] == ' '){
 			trimmedB++;		
 		}
-        comparison = (float)strcmp(trimmedA, trimmedB);
+		char* postTrimA = trimmedA; 	//In case trimmedA has whitespace at end
+		int needToFreeA = 0;			//If we do malloc, we need to free. This is to indicate if we need to or not.
+		if(trimmedA[trimALen-1] == ' '){
+			postTrimA = malloc(trimALen);
+			needToFreeA = 1;
+			memcpy(postTrimA, trimmedA, trimALen);
+			while(postTrimA[trimALen-1] == ' '){
+				postTrimA[trimALen-1] = '\0';
+				trimALen--;			
+			}
+		}
+		char* postTrimB = trimmedB;	//in case trimmedB has whitespace at the end
+		int needToFreeB = 0;
+		if(trimmedB[trimBLen-1] == ' '){
+			postTrimB = malloc(trimBLen);
+			needToFreeB = 1;
+			memcpy(postTrimB, trimmedB, trimBLen);
+			while(postTrimB[trimBLen-1] == ' '){
+				postTrimB[trimBLen-1] = '\0';
+				trimBLen--;			
+			}
+		}
+        comparison = (float)strcmp(postTrimA, postTrimB);
+		if(needToFreeA == 1){	free(postTrimA); }
+		if(needToFreeB == 1){	free(postTrimB); }
       } else {
 	float intA = (float)atof(A->toBeSorted);
         float intB = (float)atof(B->toBeSorted);
