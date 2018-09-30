@@ -21,6 +21,7 @@ struct _movieInfo{
 	int sizeBefore;
 	int sizeOfSort;
 	int sizeAfter;
+	int sortHasQuotes;
 } movieInfo;
 
 //Suggestion: prototype a mergesort function
