@@ -73,6 +73,9 @@ In creating this program, a number of issues arose. First and foremost, there we
 correctly. There was also an issue in the swap function which led to swap acting as a copy function because it copied data from one pointer to another rather than swapping. There was also an issue with isInt which was a result of faulty logic in the conditional statements. 
 	There was an issue we came across when writing to stdout. The issue was that the size of the char arrays was unknown so we assumed it to be 500 and wrote 500 bytes to stdout. However, mostof the strings were less than 500 bytes, and thus when we wrote 500 bytes to stdout, alot of random bits of memory were also written to stdout. To remedy this, we just calculate the length of each string as we read it and stored it in a variable. Thus, when we wrote back to stdout, we would know how many bytes to write. 
 
+TESTING METHODOLOGY
+In order to determine the causes of the segmentation faults, portions of the code were commented out to see if the program would run without a segmentation fault. If the program ran without errors, lines of code were uncommented small segments at a time until the segmentation fault appeared again, allowing us to identify the specific portions of the program that were written incorrectly.
+In order to test the functionality of the program, a few test CSVs were made that were specifically tailored to test specific portions of the program, such as having lines with whitespace, null entries, quoted entries, and columns with ony numbers.
 
 TESTING
 See the attached csv files for test cases. 
