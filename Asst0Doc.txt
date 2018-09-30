@@ -42,7 +42,7 @@ AUTHOR(s)
 Eric Lin and Mohammad Nadeem
 
 
-This header file defines the struct movieInfo which has threechar * fields and three int fields. The first field called beforeSortedCol holds all of the data before the sorted column. The second field called toBeSorted holds the column that we will sort. The third field called afterSortedCol holds all of the data after the sorted column. The three int fields hold the number of characters in each of the char* fields. This header file also describes the mergesort function so that it can be used in simpleCSVsorter.c. 
+This header file defines the struct movieInfo which has threechar * fields and three int fields. A fourth int field is also used as a boolean variable. The first field called beforeSortedCol holds all of the data before the sorted column. The second field called toBeSorted holds the column that we will sort. The third field called afterSortedCol holds all of the data after the sorted column. The three int fields hold the number of characters in each of the char* fields. The int used like a boolean is to determine if the sorted column had quotes in it, in which case the quotes need to be placed back when printing results to STDOUT. This header file also describes the mergesort function so that it can be used in simpleCSVsorter.c. 
 
 MERGESORT.C
 SYNOPSIS
