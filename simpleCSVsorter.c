@@ -34,6 +34,30 @@ int main(int argc, char** argv){
 		write(STDERR, "Error: The first argument of the program must be '-c' to sort by column.\n", 75);
 		return -1;
 	}
+	
+	
+	// check for directory to search
+	// using command line argument if inputted
+	char* dirToSearch;
+	if(strcmp("-d",argv[3]) != 0){
+		//set it to what they give
+		*dirToSearch = argv[4];
+	} else {
+		// set dir to curr directory
+		//dirToSearch = getcwd();
+	}
+	
+	// check for directory to write to
+	// using command line argument if inputted
+	char* dirDest;
+	if(strcmp("-o",argv[5]) != 0){
+		//set it to what they give
+		*dirDest = argv[6];
+	} else {
+		// set dir to curr directory
+		//dirDest = getcwd();
+	}
+	
 	int numCommasB4Sort = 0;		//The number of commas before the column to be sorted is reached.
 	
 	char charIn = '\0';				//Buffer to put each char that's being read in from STDIN
