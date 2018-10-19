@@ -2,23 +2,42 @@
 #include<stdlib.h>
 #include<unistd.h>
 #include<string.h>
+#include<dirent.h>
+#include<sys/types.h>
 #include "simpleCSVsorter.h"
 
-void csvwrite(movieInfo** movieArr,int size ,char* categories, int sizeOfCategories){
-       	write(STDOUT, categories, sizeOfCategories);
+
+// function that finds max length of lines in the file, useful when creating buffer. 
+int maxLengthLine(char* filename) {
+
+}
+
+
+// checks if the csv is valid. will return 1 if so, 0 if not valid. 
+int isValidCSV() {
+	
+}
+
+// will write output to csv file
+void csvwrite(movieInfo** movieArr,int size ,char* categories, int sizeOfCategories, char* filename){
+	FILE *csvFile; 
+	csvFile = fopen(filename, "w+");
+	
+       	fprintf(csvFile, categories);
         int i = 0;
         while(i < size){
                 movieInfo* A = movieArr[i];
                 write(STDOUT, A->beforeSortedCol, A->sizeBefore);
 		if(A->sortHasQuotes == 1){
-			write(STDOUT,"\"", 1);
-			write(STDOUT, A->toBeSorted, A->sizeOfSort);
-			write(STDOUT, "\"", 1);
+			fprintf(csvFile,"\"");
+			fprintf(csvFile, A->toBeSorted);
+			fprintf(csvFile, "\"");
 		} else{
-			write(STDOUT, A->toBeSorted, A->sizeOfSort);
+			fprintf(csvFile, A->toBeSorted);
 		}
-		write(STDOUT, A->afterSortedCol, A->sizeAfter);	
-		write(STDOUT, "\n", 1);
+		fprintf(csvFile, A->afterSortedCol);	
+		fprintf(csvFile, "\n");
+		fclose(csvFile);
 		i++;
         }
 }
@@ -44,6 +63,7 @@ int main(int argc, char** argv){
 		*dirToSearch = argv[4];
 	} else {
 		// set dir to curr directory
+		
 		//dirToSearch = getcwd();
 	}
 	
