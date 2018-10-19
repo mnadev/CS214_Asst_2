@@ -9,13 +9,61 @@
 
 // function that finds max length of lines in the file, useful when creating buffer. 
 int maxLengthLine(char* filename) {
+	FILE *csv;
+	csv = fopen(filename);
+}
 
+int isInt(movieInfo** dataRows) {
+	// this integer acts as a boolean
+	// is 0 if the data is not an int, now is 1 if the data is an int
+	int isInt = 1;
+	
+	//create temp pointer to iterate through all of array and check if each item is a number
+	//because it is possible for a movie to be a number, e.g. '300', and that would be a problem
+	//so we should check all of them to be sure
+	movieInfo** tempPtrCheckInt = dataRows;
+	i = 0;
+
+
+
+	// THIS IS WHERE THE PROBLEM LIES
+	// LOOK INTO YOUR EYES
+	// AND YOU WILL FIND
+	// SOME PORK RIND
+		
+	while(i < sizeOfArray) {
+		//iterate through each char, checking if it is int
+		// NOTENOTENOTE: if you can find a better way, lmk cause this is very inefficient
+		movieInfo* temp = tempPtrCheckInt[i];
+		char* currData = temp->toBeSorted;	
+		
+		int j = 0;
+		while(currData[j] != '\0') {
+			char c = currData[j];
+			// current char could be int or decimal point
+			// if it is not a digit and also not a decimal
+			// then we know its not a numeric category
+			if(isdigit(c) == 0 &&  c != '.' && c != ' ') {
+				isInt = 0;
+				break;			
+			}
+			j++;
+		}
+		
+		//break if we found alphabetic char, no need to check anymore
+		if(isInt == 0) {
+			break;
+		}
+
+		//tempPtrCheckInt++;
+		i++;
+	}
 }
 
 
 // checks if the csv is valid. will return 1 if so, 0 if not valid. 
-int isValidCSV() {
-	
+int isValidCSV(char* filename) {
+	csv = fopen(filename);
 }
 
 // will write output to csv file
@@ -37,9 +85,9 @@ void csvwrite(movieInfo** movieArr,int size ,char* categories, int sizeOfCategor
 		}
 		fprintf(csvFile, A->afterSortedCol);	
 		fprintf(csvFile, "\n");
-		fclose(csvFile);
 		i++;
         }
+	fclose(csvFile);
 }
 
 int main(int argc, char** argv){
@@ -64,7 +112,7 @@ int main(int argc, char** argv){
 	} else {
 		// set dir to curr directory
 		
-		//dirToSearch = getcwd();
+		dirToSearch = getcwd();
 	}
 	
 	// check for directory to write to
@@ -75,7 +123,7 @@ int main(int argc, char** argv){
 		*dirDest = argv[6];
 	} else {
 		// set dir to curr directory
-		//dirDest = getcwd();
+		dirDest = getcwd();
 	}
 	
 	int numCommasB4Sort = 0;		//The number of commas before the column to be sorted is reached.
@@ -205,51 +253,7 @@ int main(int argc, char** argv){
 		}
 	} 
 	
-	// this integer acts as a boolean
-	// is 0 if the data is not an int, now is 1 if the data is an int
-	int isInt = 1;
-	
-	//create temp pointer to iterate through all of array and check if each item is a number
-	//because it is possible for a movie to be a number, e.g. '300', and that would be a problem
-	//so we should check all of them to be sure
-	movieInfo** tempPtrCheckInt = dataRows;
-	i = 0;
-
-
-
-	// THIS IS WHERE THE PROBLEM LIES
-	// LOOK INTO YOUR EYES
-	// AND YOU WILL FIND
-	// SOME PORK RIND
-		
-	while(i < sizeOfArray) {
-		//iterate through each char, checking if it is int
-		// NOTENOTENOTE: if you can find a better way, lmk cause this is very inefficient
-		movieInfo* temp = tempPtrCheckInt[i];
-		char* currData = temp->toBeSorted;	
-		
-		int j = 0;
-		while(currData[j] != '\0') {
-			char c = currData[j];
-			// current char could be int or decimal point
-			// if it is not a digit and also not a decimal
-			// then we know its not a numeric category
-			if(isdigit(c) == 0 &&  c != '.' && c != ' ') {
-				isInt = 0;
-				break;			
-			}
-			j++;
-		}
-		
-		//break if we found alphabetic char, no need to check anymore
-		if(isInt == 0) {
-			break;
-		}
-
-		//tempPtrCheckInt++;
-		i++;
-	}
-
+	int isNumeric = isInt(dataRows);
 	
 	mergesort(dataRows, 0, sizeOfArray - 1, isInt);
 	csvwrite(dataRows,sizeOfArray, columnNames, columnNamesIndex);
