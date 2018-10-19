@@ -58,16 +58,29 @@ int isInt(movieInfo** dataRows) {
 		//tempPtrCheckInt++;
 		i++;
 	}
+	
+	
+	return isInt;
 }
 
 
 // checks if the csv is valid. will return 1 if so, 0 if not valid. 
 int isValidCSV(char* filename) {
+	FILE * csv;
 	csv = fopen(filename);
+	
+	//iterate through entire file by each line
+	// in each line count # commas, if they are equal, it's a valid csv.
+	
+	
+	
+	fclose(csv);
+		
+	return 1;
 }
 
 // will write output to csv file
-void csvwrite(movieInfo** movieArr,int size ,char* categories, int sizeOfCategories, char* filename){
+void csvwrite(movieInfo** movieArr, int size ,char* categories, int sizeOfCategories, char* filename){
 	FILE *csvFile; 
 	csvFile = fopen(filename, "w+");
 	
@@ -114,6 +127,20 @@ int main(int argc, char** argv){
 		
 		dirToSearch = getcwd();
 	}
+	
+	DIR *currDir;
+	currDir = openPath(dirToSearch);
+	
+	if(currDir == NULL) {
+		return -2;
+	}
+	dir = readdir(currDir);
+	while(dir != NULL) {
+		char * currFile = dir -> d_name;
+		if() {
+			
+		}
+	} 
 	
 	// check for directory to write to
 	// using command line argument if inputted
@@ -255,8 +282,8 @@ int main(int argc, char** argv){
 	
 	int isNumeric = isInt(dataRows);
 	
-	mergesort(dataRows, 0, sizeOfArray - 1, isInt);
-	csvwrite(dataRows,sizeOfArray, columnNames, columnNamesIndex);
+	mergesort(dataRows, 0, sizeOfArray - 1, isInt(dataRows));
+	csvwrite(dataRows,sizeOfArray, columnNames, columnNamesIndex, dirDest);
 	return 0;
 }
 
