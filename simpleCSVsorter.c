@@ -11,6 +11,24 @@
 int maxLengthLine(char* filename) {
 	FILE *csv;
 	csv = fopen(filename);
+	
+	int count = 0;
+	int maxCount = 0;
+	
+	char * currentChar[1];
+	while(!feof(stdin)) {
+		fgets(currentChar, 1, csv);
+		if(currentChar == '\n') {
+			if(count > maxCount) {
+				maxCount = count;
+			}
+			count = 0;
+		} else {
+			count++;
+		}
+	}
+	fclose(csv);
+	return maxCount;
 }
 
 int isInt(movieInfo** dataRows) {
@@ -66,14 +84,52 @@ int isInt(movieInfo** dataRows) {
 
 // checks if the csv is valid. will return 1 if so, 0 if not valid. 
 int isValidCSV(char* filename) {
-	FILE * csv;
+	FILE *csv;
 	csv = fopen(filename);
 	
-	//iterate through entire file by each line
-	// in each line count # commas, if they are equal, it's a valid csv.
+	// count number of commas in current line and number of commas in 
+	int noCommas = 0;
+	int prevNoCommas = 0;
 	
+	char * currentChar[1];
 	
+	int isInQuotes = 0;
 	
+	// get number of commas in first lne. this will be the base number of commas that should be in each 
+	// line
+	while(currentChar != '\n') {
+		fgets(currentChar, 1, csv);
+		if(currentChar == ',' && !isInQuotes) {
+			noCommas++;
+		}
+		
+		if(currentChar = '\"') {
+			isInQuotes = !isInQuotes;
+		}
+	}
+	
+	prevNoCommas = noCommas;
+	noCommas = 0;
+	
+	while(!feof(stdin)) {
+		fgets(currentChar, 1, csv);
+		if(currentChar == '\n') {
+			if(noCommas != prevNoCommas) {
+				return 0;
+			} else {
+				prevNoCommas = noCommas;
+				prevNoCommas = 0;
+			}
+		} else {
+			if(currentChar == ',' && !isInQuotes) {
+				noCommas++;
+			}
+		
+			if(currentChar = '\"') {
+				isInQuotes = !isInQuotes;
+			}
+		}
+	}
 	fclose(csv);
 		
 	return 1;
@@ -129,19 +185,34 @@ int main(int argc, char** argv){
 	}
 	
 	DIR *currDir;
-	currDir = openPath(dirToSearch);
+	currDir = opendir(dirToSearch);
+	struct dirent* dirStruct;
 	
 	if(currDir == NULL) {
 		return -2;
 	}
-	dir = readdir(currDir);
-	while(dir != NULL) {
+	//dirStruct = 
+	while((dir = readdir(currDir)) != NULL) {
+		
+		// skipping first two file because its current and parent dirs
+		
 		char * currFile = dir -> d_name;
-		if() {
-			
+		if(strcmp(currFile,".") || strcmp(currFile, "..")) {
+			continue;	
+		}
+		openDir(currFile);
+		if(errno == ENOTDIR) {
+			int pid = fork();
+			if(pid == 0) {
+				// to do create data rows array from csv file
+				
+				mergesort(dataRows, 0, sizeOfArray - 1, isInt(dataRows));
+				csvwrite(dataRows,sizeOfArray, columnNames, columnNamesIndex, dirDest);
+			}
 		}
 	} 
 	
+	closedir(dir);
 	// check for directory to write to
 	// using command line argument if inputted
 	char* dirDest;
