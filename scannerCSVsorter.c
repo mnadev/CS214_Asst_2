@@ -4,7 +4,7 @@
 #include<string.h>
 #include<dirent.h>
 #include<sys/types.h>
-#include "simpleCSVsorter.h"
+#include "scannerCSVsorter.h"
 
 
 // function that finds max length of lines in the file, useful when creating buffer. 
@@ -185,7 +185,7 @@ int main(int argc, char** argv){
 	} else {
 		// set dir to curr directory
 		
-		dirToSearch = getcwd();
+		dirToSearch = ".";
 	}
 	
 	DIR *currDir;
@@ -212,6 +212,7 @@ int main(int argc, char** argv){
 				int pid = fork();
 				if(pid == 0) {
 					// to do create data rows array from csv file
+				if(strstr(currFile,".csv"))
 					movieInfo** dataRows = parseCSV(currFile);
 					mergesort(dataRows, 0, sizeOfArray - 1, isInt(dataRows));
 					csvwrite(dataRows,sizeOfArray, columnNames, columnNamesIndex, dirDest);
