@@ -81,6 +81,10 @@ int isInt(movieInfo** dataRows) {
 	return isInt;
 }
 
+//function to parse through csv file
+movieInfo** parseCSV(char* filename, int maxLength) {
+	
+}
 
 // checks if the csv is valid. will return 1 if so, 0 if not valid. 
 int isValidCSV(char* filename) {
@@ -192,22 +196,29 @@ int main(int argc, char** argv){
 		return -2;
 	}
 	//dirStruct = 
-	while((dir = readdir(currDir)) != NULL) {
+	while((currDir = readdir(currDir)) != NULL) {
 		
 		// skipping first two file because its current and parent dirs
 		
-		char * currFile = dir -> d_name;
+		char * currFile = currDir -> d_name;
 		if(strcmp(currFile,".") || strcmp(currFile, "..")) {
 			continue;	
 		}
-		openDir(currFile);
-		if(errno == ENOTDIR) {
-			int pid = fork();
-			if(pid == 0) {
-				// to do create data rows array from csv file
-				
-				mergesort(dataRows, 0, sizeOfArray - 1, isInt(dataRows));
-				csvwrite(dataRows,sizeOfArray, columnNames, columnNamesIndex, dirDest);
+		int pid = fork()
+		if(pid == 0) {
+			openDir(currFile);
+		
+			if(errno == ENOTDIR) {
+				int pid = fork();
+				if(pid == 0) {
+					// to do create data rows array from csv file
+					movieInfo** dataRows = parseCSV(currFile);
+					mergesort(dataRows, 0, sizeOfArray - 1, isInt(dataRows));
+					csvwrite(dataRows,sizeOfArray, columnNames, columnNamesIndex, dirDest);
+				}
+			} else {
+				// recursively run program on this directory.
+			 	exec(./scannerCSVsorter, "-o", argv[2],argv[3],argv[4],argv[5],argv[6]);
 			}
 		}
 	} 
