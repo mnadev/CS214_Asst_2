@@ -10,14 +10,14 @@
 // function that finds max length of lines in the file, useful when creating buffer. 
 int maxLengthLine(char* filename) {
 	FILE *csv;
-	csv = fopen(filename);
+	csv = fopen(filename, 'r');
 	
 	int count = 0;
 	int maxCount = 0;
 	
-	char * currentChar[1];
+	char currentChar;
 	while(!feof(stdin)) {
-		fgets(currentChar, 1, csv);
+		currentChar = (char)(fgetc(csv));
 		if(currentChar == '\n') {
 			if(count > maxCount) {
 				maxCount = count;
@@ -31,7 +31,7 @@ int maxLengthLine(char* filename) {
 	return maxCount;
 }
 
-int isInt(movieInfo** dataRows) {
+int isInt(movieInfo** dataRows, int sizeOfArray) {
 	// this integer acts as a boolean
 	// is 0 if the data is not an int, now is 1 if the data is an int
 	int isInt = 1;
@@ -40,7 +40,7 @@ int isInt(movieInfo** dataRows) {
 	//because it is possible for a movie to be a number, e.g. '300', and that would be a problem
 	//so we should check all of them to be sure
 	movieInfo** tempPtrCheckInt = dataRows;
-	i = 0;
+	int i = 0;
 
 
 
@@ -82,160 +82,7 @@ int isInt(movieInfo** dataRows) {
 }
 
 //function to parse through csv file
-movieInfo** parseCSV(char* filename, int maxLength) {
-	
-}
-
-// checks if the csv is valid. will return 1 if so, 0 if not valid. 
-int isValidCSV(char* filename) {
-	FILE *csv;
-	csv = fopen(filename);
-	
-	// count number of commas in current line and number of commas in 
-	int noCommas = 0;
-	int prevNoCommas = 0;
-	
-	char * currentChar[1];
-	
-	int isInQuotes = 0;
-	
-	// get number of commas in first lne. this will be the base number of commas that should be in each 
-	// line
-	while(currentChar != '\n') {
-		fgets(currentChar, 1, csv);
-		if(currentChar == ',' && !isInQuotes) {
-			noCommas++;
-		}
-		
-		if(currentChar = '\"') {
-			isInQuotes = !isInQuotes;
-		}
-	}
-	
-	prevNoCommas = noCommas;
-	noCommas = 0;
-	
-	while(!feof(stdin)) {
-		fgets(currentChar, 1, csv);
-		if(currentChar == '\n') {
-			if(noCommas != prevNoCommas) {
-				return 0;
-			} else {
-				prevNoCommas = noCommas;
-				prevNoCommas = 0;
-			}
-		} else {
-			if(currentChar == ',' && !isInQuotes) {
-				noCommas++;
-			}
-		
-			if(currentChar = '\"') {
-				isInQuotes = !isInQuotes;
-			}
-		}
-	}
-	fclose(csv);
-		
-	return 1;
-}
-
-// will write output to csv file
-void csvwrite(movieInfo** movieArr, int size ,char* categories, int sizeOfCategories, char* filename){
-	FILE *csvFile; 
-	csvFile = fopen(filename, "w+");
-	
-       	fprintf(csvFile, categories);
-        int i = 0;
-        while(i < size){
-                movieInfo* A = movieArr[i];
-                write(STDOUT, A->beforeSortedCol, A->sizeBefore);
-		if(A->sortHasQuotes == 1){
-			fprintf(csvFile,"\"");
-			fprintf(csvFile, A->toBeSorted);
-			fprintf(csvFile, "\"");
-		} else{
-			fprintf(csvFile, A->toBeSorted);
-		}
-		fprintf(csvFile, A->afterSortedCol);	
-		fprintf(csvFile, "\n");
-		i++;
-        }
-	fclose(csvFile);
-}
-
-int main(int argc, char** argv){
-	//Write to STDERR if there are fewer than the required number of args
-	if(argc < 3){
-		write(STDERR, "Insufficient arguments.\n", 25);
-		return -1;
-	}
-	//Write to STDERR if the 1st program argument is not -c
-	else if(strcmp("-c", argv[1]) != 0){
-		write(STDERR, "Error: The first argument of the program must be '-c' to sort by column.\n", 75);
-		return -1;
-	}
-	
-	
-	// check for directory to search
-	// using command line argument if inputted
-	char* dirToSearch;
-	if(strcmp("-d",argv[3]) != 0){
-		//set it to what they give
-		*dirToSearch = argv[4];
-	} else {
-		// set dir to curr directory
-		
-		dirToSearch = ".";
-	}
-	
-	DIR *currDir;
-	currDir = opendir(dirToSearch);
-	struct dirent* dirStruct;
-	
-	if(currDir == NULL) {
-		return -2;
-	}
-	//dirStruct = 
-	while((currDir = readdir(currDir)) != NULL) {
-		
-		// skipping first two file because its current and parent dirs
-		
-		char * currFile = currDir -> d_name;
-		if(strcmp(currFile,".") || strcmp(currFile, "..")) {
-			continue;	
-		}
-		int pid = fork()
-		if(pid == 0) {
-			openDir(currFile);
-		
-			if(errno == ENOTDIR) {
-				int pid = fork();
-				if(pid == 0) {
-					// to do create data rows array from csv file
-				if(strstr(currFile,".csv"))
-					movieInfo** dataRows = parseCSV(currFile);
-					mergesort(dataRows, 0, sizeOfArray - 1, isInt(dataRows));
-					csvwrite(dataRows,sizeOfArray, columnNames, columnNamesIndex, dirDest);
-				}
-			} else {
-				// recursively run program on this directory.
-			 	exec(./scannerCSVsorter, "-o", argv[2],argv[3],argv[4],argv[5],argv[6]);
-			}
-		}
-	} 
-	
-	closedir(dir);
-	// check for directory to write to
-	// using command line argument if inputted
-	char* dirDest;
-	if(strcmp("-o",argv[5]) != 0){
-		//set it to what they give
-		*dirDest = argv[6];
-	} else {
-		// set dir to curr directory
-		dirDest = getcwd();
-	}
-	
+movieInfo** parseCSV(char* filename, int maxLength, char* columnToSort) {
 	int numCommasB4Sort = 0;		//The number of commas before the column to be sorted is reached.
 	
 	char charIn = '\0';				//Buffer to put each char that's being read in from STDIN
@@ -252,7 +99,7 @@ int main(int argc, char** argv){
 	columnNames = realloc(columnNames, columnNamesIndex+1);
 
 	//Determining if the column to be sorted parameter is in the list of columns using strstr()
-	char* locOfColumn = strstr(columnNames, argv[2]);
+	char* locOfColumn = strstr(columnNames, columnToSort);
 	if(locOfColumn == NULL){
 		write(STDERR, "Error: The column to be sorted that was input as the 2nd parameter is not contained within the CSV.\n", 100);
 		return -1;
@@ -260,8 +107,7 @@ int main(int argc, char** argv){
 	
 	//Searching for number of commas before column to be sorted
 	//(Assumes that column names don't have commas in them, which they shouldn't for this assignment.
-	int i;	
-
+	int i;
 	for(i = 0; i <= (locOfColumn - columnNames); i++){
 
 		if(columnNames[i] == ','){
@@ -382,11 +228,173 @@ int main(int argc, char** argv){
 			}	
 		}
 	} 
+	int isNumeric = isInt(dataRows, sizeOfArray);
 	
-	int isNumeric = isInt(dataRows);
+	mergesort(dataRows, 0, sizeOfArray - 1, isNumeric);
+	//csvwrite(dataRows,sizeOfArray, columnNames, columnNamesIndex, dirDest);
+	//^^^^^^^^^ Need to reassign later, just commented out for debugging purposes atm
+
+}
+
+// checks if the csv is valid. will return 1 if so, 0 if not valid. 
+int isValidCSV(char* filename) {
+	FILE *csv;
+	csv = fopen(filename, 'r');
 	
-	mergesort(dataRows, 0, sizeOfArray - 1, isInt(dataRows));
-	csvwrite(dataRows,sizeOfArray, columnNames, columnNamesIndex, dirDest);
+	// count number of commas in current line and number of commas in 
+	int noCommas = 0;
+	int prevNoCommas = 0;
+	
+	char currentChar = '\0';	//establishing a default value. If the first char is a null terminator, we have bigger problems
+	
+	int isInQuotes = 0;
+	
+	// get number of commas in first lne. this will be the base number of commas that should be in each 
+	// line
+	while(currentChar != '\n') {
+		fgetc(csv);
+		if(currentChar == ',' && !isInQuotes) {
+			noCommas++;
+		}
+		
+		if(currentChar = '\"') {
+			isInQuotes = !isInQuotes;
+		}
+	}
+	
+	prevNoCommas = noCommas;
+	noCommas = 0;
+	
+	while(!feof(stdin)) {
+		fgetc(csv);
+		if(currentChar == '\n') {
+			if(noCommas != prevNoCommas) {
+				return 0;
+			} else {
+				prevNoCommas = noCommas;
+				prevNoCommas = 0;
+			}
+		} else {
+			if(currentChar == ',' && !isInQuotes) {
+				noCommas++;
+			}
+		
+			if(currentChar = '\"') {
+				isInQuotes = !isInQuotes;
+			}
+		}
+	}
+	fclose(csv);
+		
+	return 1;
+}
+
+// will write output to csv file
+void csvwrite(movieInfo** movieArr, int size ,char* categories, int sizeOfCategories, char* filename){
+	FILE *csvFile; 
+	csvFile = fopen(filename, "w+");
+	
+       	fprintf(csvFile, categories);
+        int i = 0;
+        while(i < size){
+                movieInfo* A = movieArr[i];
+                write(STDOUT, A->beforeSortedCol, A->sizeBefore);
+		if(A->sortHasQuotes == 1){
+			fprintf(csvFile,"\"");
+			fprintf(csvFile, A->toBeSorted);
+			fprintf(csvFile, "\"");
+		} else{
+			fprintf(csvFile, A->toBeSorted);
+		}
+		fprintf(csvFile, A->afterSortedCol);	
+		fprintf(csvFile, "\n");
+		i++;
+        }
+	fclose(csvFile);
+}
+
+int main(int argc, char** argv){
+	
+	//Input flags of the program and whether they are present: Index 0 = -c, Index 1 = -d, Index 2 = -o
+	int flags[] = {0,0,0};		
+
+	//Write to STDERR if there are fewer than the required number of args
+	if(argc < 3){
+		write(STDERR, "Insufficient arguments.\n", 25);
+		return -1;
+	}
+	//Write to STDERR if the 1st program argument is not -c
+	else if(strcmp("-c", argv[1]) != 0){
+		write(STDERR, "Error: The first argument of the program must be '-c' to sort by column.\n", 75);
+		return -1;
+		}
+
+	/* Edit the above if the "Order of Flags" question says that order doesn't matter*/
+	
+
+	
+	// check for directory to search
+	// using command line argument if inputted
+	char* dirToSearch;
+	if(strcmp("-d",argv[3]) != 0){
+		//set it to what they give
+		*dirToSearch = argv[4];
+	} else {
+		// set dir to curr directory
+		
+		dirToSearch = ".";
+	}
+	
+	DIR *currDir;
+	currDir = opendir(dirToSearch);
+	struct dirent* dirStruct;
+	
+	if(currDir == NULL) {
+		return -2;
+	}
+	//dirStruct = 
+	while((currDir = readdir(currDir)) != NULL) {
+		printf("Testing\n");
+		break;
+		// skipping first two file because its current and parent dirs
+		/*
+		char * currFile = currDir -> d_name;
+		if(strcmp(currFile,".") || strcmp(currFile, "..")) {
+			continue;	
+		}
+		int pid = fork()
+		if(pid == 0) {
+			openDir(currFile);
+		
+			if(errno == ENOTDIR) {
+				int pid = fork();
+				if(pid == 0) {
+					// to do create data rows array from csv file
+				if(strstr(currFile,".csv"))
+					movieInfo** dataRows = parseCSV(currFile);
+					mergesort(dataRows, 0, sizeOfArray - 1, isInt(dataRows));
+					csvwrite(dataRows,sizeOfArray, columnNames, columnNamesIndex, dirDest);
+				}
+			} else {
+				// recursively run program on this directory.
+			 	
+			}
+		}*/
+	} 
+	
+	//closedir(dir);
+	// check for directory to write to
+	// using command line argument if inputted
+	char* dirDest;
+	/*if(strcmp("-o",argv[5]) != 0){
+		//set it to what they give
+		*dirDest = argv[6];
+	} else {
+		// set dir to curr directory
+		dirDest = getcwd();
+	}
+	*/
+	
 	return 0;
 }
 
