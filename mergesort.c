@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
-#include "simpleCSVsorter.h"
+#include "scannerCSVsorter.h"
 
 
 void swap(movieInfo* A, movieInfo* B){
