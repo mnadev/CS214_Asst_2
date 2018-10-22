@@ -1,9 +1,0 @@
-Keeping notes here for when we have to write the summary thing:
-
-For the parser:
-	Problem 1: Accidentally tried to realloc memory declared as an array. Never again.
-	Problem 2: Had a while statement in the wrong place, code never ran.
-	Problem 3: Had the sizeOfCol ints inside the 2nd while loop instead of the first. Everything was null :(
-	Problem 4: The "toBeSorted" field started with a comma. No solution yet?
-	Problem 5: ptr to "row" did not change on each loop of rowIterator
-			solution: had to malloc memory for a rowPtr, then use memcpy to copy to that pointer
