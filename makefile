@@ -1,5 +1,5 @@
-all: simpleCSVsorter.c mergesort.o
-	gcc simpleCSVsorter.c mergesort.o
+all: scannerCSVsorter.c mergesort.o
+	gcc scannerCSVsorter.c mergesort.o -o scannerCSVSorter
 
 mergesort.o: mergesort.o
 	gcc -c mergesort.c
