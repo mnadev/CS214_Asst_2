@@ -354,27 +354,65 @@ void csvwrite(movieInfo** movieArr, int size ,char* categories, char* filename){
 int main(int argc, char** argv){
 	
 	//Input flags of the program and whether they are present: Index 0 = -c, Index 1 = -d, Index 2 = -o
-	int flags[] = {0,0,0};		
+	int flagsPresent[] = {0,0,0};		
+	char* columnToSort;
+	char* dirToSearch = ".";	//dirToSearch defaults to current directory if not changed by flag later.
+	char* dirDest = NULL;
 
 	//Write to STDERR if there are fewer than the required number of args
 	if(argc < 3){
 		write(STDERR, "Insufficient arguments.\n", 25);
 		return -1;
 	}
-	//Write to STDERR if the 1st program argument is not -c
-	else if(strcmp("-c", argv[1]) != 0){
-		write(STDERR, "Error: The first argument of the program must be '-c' to sort by column.\n", 75);
-		return -1;
+	//Flag Handling:
+	int flag;
+	while((flags = getopt(argc, argv, ":if:cdo")) != -1){
+		switch(flag){		
+			case 'c':
+				if(flagsPresent[0] == 1){
+					write(STDERR, "Error: Repeated argument -c.\n", 30); 
+					return -1;
+				} else{
+					flagsPresent[0] = 1;				//The -c parameter is present
+					strcpy(columnToSort, optarg);		//copying the column name from optarg to columnToSort
+					break;
+				}
+			case 'd':
+				if(flagsPresent[1] == 1){
+					write(STDERR, "Error: Repeated argument -d.\n", 30); 
+					return -1;
+				} else{
+					flagsPresent[1] = 1;
+					strcpy(dirToSearch, optarg);
+					break;
+				}
+			case 'o':
+				if(flagsPresent[2] == 1){
+					write(STDERR, "Error: Repeated argument -o.\n", 30); 
+					return -1;
+				} else{
+					flagsPresent[2] = 1;
+					strcpy(dirDest, optarg);
+					break;
+				}				
+			case '?':
+				write(STDERR, "Error: Unknown arguments.\n", 27);
+				return -1;
 		}
 
-	/* Edit the above if the "Order of Flags" question says that order doesn't matter*/
+	}
+	//Write to STDERR if -c flag is not present
+	if(flagsPresent[0] != 1){
+		write(STDERR, "Error: The first argument of the program must be '-c to sort by column.\n", 75);
+		return -1;
+	}
+
 	printf("Initial PID: ");
 	int pid = getpid();
 	printf("%d\n",pid);
 	
 	// check for directory to search
 	// using command line argument if inputted
-	char* dirToSearch = ".";		//Defaults to current directory unless changed by -d flag
 	if(argc > 3){
 		if(strcmp("-d",argv[3]) != 0){
 			//set it to what they give
@@ -384,17 +422,12 @@ int main(int argc, char** argv){
 		}
 	}
 	
-	
-	// check for directory to write to
-	// using command line argument if inputted
-	char* dirDest = ".";
-	if(strcmp("-o",argv[5]) != 0){
-		//set it to what they give
-		dirDest = argv[6];
-	}
-	
 	DIR *currDir;
 	currDir = opendir(dirToSearch);
+	if(errno == ENOENT){
+		dirToSearch = ".";
+		currDir = opendir(dirToSearch);	
+	}
 	struct dirent* dirStruct;
 	
 	if(currDir == NULL) {
