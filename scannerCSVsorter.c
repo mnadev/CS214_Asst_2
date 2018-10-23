@@ -10,7 +10,7 @@
 
 void csvwrite(movieInfo** movieArr, int size ,char* categories, char* filename);
 int isInt(movieInfo** dataRows, int sizeOfArray);
-void parseCSV(char* filename, int maxLength, char* columnToSort, char* destDirectory);
+void parseCSV(char* filename, char* columnToSort, char* destDirectory);
 int isValidCSV(char* filename, char* columnToSort);
 
 int isInt(movieInfo** dataRows, int sizeOfArray) {
@@ -64,7 +64,7 @@ int isInt(movieInfo** dataRows, int sizeOfArray) {
 }
 
 //function to parse through csv file
-void parseCSV(char* filename, int maxLength, char* columnToSort, char* destDirectory) {
+void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 	int numCommasB4Sort = 0;		//The number of commas before the column to be sorted is reached.
 	
 	char charIn = '\0';				//Buffer to put each char that's being read in from STDIN
@@ -425,7 +425,6 @@ int main(int argc, char** argv){
 	
 	DIR * dir;
 	dir = opendir(dirToSearch);
-	struct dirent* dirStruct;
 	char * file;
 	int count = 0;
 	while(1) {
@@ -450,9 +449,10 @@ int main(int argc, char** argv){
 		if(pid == 0) {
  			if(S_ISREG(stat_file.st_mode)){
 				printf(", %d ",getpid());
-				if(strstr(currFile,".csv") != NULL && strstr(currFile, sortedFileEnding) == NULL){
-					if(isValidCSV(currFile, columnToSort)) {
-						parseCSV(currFile, maxLengthLine(currFile), columnToSort, dirDest);
+				char* sortedFileEnding = strcat("-sorted-", columnToSort);
+				if(strstr(currFile,".csv") != NULL && strstr(file, sortedFileEnding) == NULL){
+					if(isValidCSV(file, columnToSort)) {
+						parseCSV(file, columnToSort, dirDest);
 					}
 				}
 				exit(1);	
