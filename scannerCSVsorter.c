@@ -239,7 +239,7 @@ void parseCSV(char* filename, int maxLength, char* columnToSort, char* destDirec
 	int isNumeric = isInt(dataRows, sizeOfArray);
 	
 	mergesort(dataRows, 0, sizeOfArray - 1, isNumeric);
-	char* fileToWrite[255];
+	char fileToWrite[255];
 	
 	snprintf(fileToWrite, 255, "%s/%s-sorted-%s.csv",destDirectory,filename,columnToSort);
 	csvwrite(dataRows,sizeOfArray, columnNames, columnNamesIndex, fileToWrite);
@@ -248,7 +248,7 @@ void parseCSV(char* filename, int maxLength, char* columnToSort, char* destDirec
 }
 
 // checks if the csv is valid. will return 1 if so, 0 if not valid. 
-int isValidCSV(char* filename) {
+int isValidCSV(char* filename, char* columnToSort) {
 	FILE *p_csv;
 	p_csv = fopen(filename, "r");
 	
@@ -426,7 +426,7 @@ int main(int argc, char** argv){
 				// cheack to make sure we are sorting a csv file and we are not
 				//sorting an already sorted file.
 				/*if(strstr(currFile,".csv") != NULL && strstr(currFile, sortedFileEnding) == NULL){
-					if(isValidCSV(currFile)) {
+					if(isValidCSV(currFile, argv[2])) {
 						parseCSV(currFile, maxLengthLine(filename), argv[2], char* dirDest));
 					}
 				}*/
