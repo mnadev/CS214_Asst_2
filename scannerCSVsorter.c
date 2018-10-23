@@ -383,16 +383,22 @@ int main(int argc, char** argv){
 	//dirStruct = 
 	printf("PIDS of all child processes: ");
 	int noProcesses = 1;
-	while((dirStruct = readdir(currDir)) != NULL) {
-		int noProcessesBase = 1;
+	while(1337) {
+		if((dirStruct = readdir(currDir) != NULL){
+			if(getpid() != pid){			
+				exit(noProcesses+1);
+			} else{
+				break;
+			}
+		}
 		// skipping first two file because its current and parent dirs
 		int* statusLoc = (int*)malloc(sizeof(int));
 		char * currFile = dirStruct -> d_name;
 		if(strcmp(currFile,".") == 0 || strcmp(currFile, "..") == 0) {
 			continue;	
 		}
-		int pid = fork();
-		if(pid == 0) {
+		int cpid = fork();
+		if(cpid == 0) {
 			int fileType = dirStruct -> d_type;		//fileType = 4 for directory, 8 for file
 		
 			if(fileType == 8) {
@@ -405,7 +411,7 @@ int main(int argc, char** argv){
 						parseCSV(currFile, maxLengthLine(filename), argv[2], char* dirDest));
 					}
 				}*/
-				exit(noProcesses);
+				exit(1);
 			} else {	//Implies that next "file" is actually a directory, so we fork() to process directory.
 				int anotherPID = fork();	//variable name pending?
 				if(anotherPID == 0) {
@@ -418,7 +424,6 @@ int main(int argc, char** argv){
 					// noProcesses = noProcesses + waitRet;
 					wait(statusLoc);		//placeholder wait
 					noProcessesBase += *statusLoc;	//Adds by the number of processes spawned from child
-					noProcesses++;								//Adds by 1 to account for process used to process directory
 					continue;
 				}
 			 	//Might need to add more things here later to account for writing all the child PIDs to STDOUT.
