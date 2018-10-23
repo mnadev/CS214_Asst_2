@@ -366,6 +366,9 @@ int main(int argc, char** argv){
 		if(pid == 0) {
 			opendir(currFile);
 		
+			char * fileToWrite = strcat(currFile, "-sorted-");
+			char * fileToWrite = strcat(fileToWrite, argv[2]);
+			char * fileToWrite = strcat(fileToWrite, ".csv");
 			if(errno == ENOTDIR) {
 				pid = fork();
 				if(pid == 0) {
