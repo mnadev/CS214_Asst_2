@@ -240,7 +240,7 @@ void parseCSV(char* filename, int maxLength, char* columnToSort, char* destDirec
 	
 	mergesort(dataRows, 0, sizeOfArray - 1, isNumeric);
 	char fileToWrite[255];
-	
+	fclose(csv);	
 	snprintf(fileToWrite, 255, "%s/%s-sorted-%s.csv",destDirectory,filename,columnToSort);
 	csvwrite(dataRows,sizeOfArray, columnNames, columnNamesIndex, fileToWrite);
 	//^^^^^^^^^ Need to reassign later, just commented out for debugging purposes atm
@@ -269,7 +269,7 @@ int isValidCSV(char* filename, char* columnToSort) {
 	char* locOfColumn = strstr(columnNames, columnToSort);
 	if(locOfColumn == NULL){
 		write(STDERR, "Error: The column to be sorted that was input as the 2nd parameter is not contained within the CSV.\n", 100);
-		fclose(csv);
+		fclose(p_csv);
 		return 0;
 	}
 	
