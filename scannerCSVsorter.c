@@ -302,7 +302,7 @@ void csvwrite(movieInfo** movieArr, int size ,char* categories, int sizeOfCatego
         int i = 0;
         while(i < size){
                 movieInfo* A = movieArr[i];
-                write(STDOUT, A->beforeSortedCol, A->sizeBefore);
+                fprintf(csvFIle, A->beforeSortedCol);
 		if(A->sortHasQuotes == 1){
 			fprintf(csvFile,"\"");
 			fprintf(csvFile, A->toBeSorted);
@@ -343,7 +343,9 @@ int main(int argc, char** argv){
 	if(argc > 3){
 		if(strcmp("-d",argv[3]) != 0){
 			//set it to what they give
-			dirToSearch = argv[4];
+			if(argc > 4) {
+				dirToSearch = argv[4];
+			}
 		}
 	}
 	
@@ -376,7 +378,7 @@ int main(int argc, char** argv){
 					/*if(strstr(currFile,".csv")){
 						movieInfo** dataRows = parseCSV(currFile);
 						mergesort(dataRows, 0, sizeOfArray - 1, isInt(dataRows));
-						csvwrite(dataRows,sizeOfArray, columnNames, columnNamesIndex, dirDest);
+						csvwrite(dataRows,sizeOfArray, columnNames, columnNamesIndex, fileToWrite);
 					}*/
 				}
 			} else {	//Implies that next "file" is actually a directory, so we fork() to process directory.
