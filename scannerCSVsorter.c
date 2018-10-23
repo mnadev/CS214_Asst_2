@@ -306,7 +306,7 @@ void csvwrite(movieInfo** movieArr, int size ,char* categories, int sizeOfCatego
         int i = 0;
         while(i < size){
                 movieInfo* A = movieArr[i];
-                fprintf(csvFIle, A->beforeSortedCol);
+                fprintf(csvFile, A->beforeSortedCol);
 		if(A->sortHasQuotes == 1){
 			fprintf(csvFile,"\"");
 			fprintf(csvFile, A->toBeSorted);
@@ -370,18 +370,15 @@ int main(int argc, char** argv){
 		}
 		int pid = fork();
 		if(pid == 0) {
-			opendir(currFile);
+			int fileType = dirStruct -> d_type;		//fileType = 4 for directory, 8 for file
 		
-			if(errno == ENOTDIR) {
-				pid = fork();
-				if(pid == 0) {
-					// to do create data rows array from csv file
-					/*if(strstr(currFile,".csv")){
-						movieInfo** dataRows = parseCSV(currFile);
-						mergesort(dataRows, 0, sizeOfArray - 1, isInt(dataRows));
-						csvwrite(dataRows,sizeOfArray, columnNames, columnNamesIndex, fileToWrite);
-					}*/
-				}
+			if(fileType == 8) {
+				// to do create data rows array from csv file
+				/*if(strstr(currFile,".csv")){
+					movieInfo** dataRows = parseCSV(currFile);
+					mergesort(dataRows, 0, sizeOfArray - 1, isInt(dataRows));
+					csvwrite(dataRows,sizeOfArray, columnNames, columnNamesIndex, fileToWrite);
+				}*/
 			} else {	//Implies that next "file" is actually a directory, so we fork() to process directory.
 				int anotherPID = fork();	//variable name pending?
 				if(anotherPID == 0) {
@@ -389,10 +386,13 @@ int main(int argc, char** argv){
 					currDir = opendir(currFile);
 					continue;		
 				} else{
+					wait();		//placeholder wait
 					continue;
 				}
 			 	//Might need to add more things here later to account for writing all the child PIDs to STDOUT.
 			}
+		} else{
+			wait(); //placeholder wait
 		}
 	}
 	
