@@ -239,11 +239,11 @@ void parseCSV(char* filename, int maxLength, char* columnToSort, char* destDirec
 	int isNumeric = isInt(dataRows, sizeOfArray);
 	
 	mergesort(dataRows, 0, sizeOfArray - 1, isNumeric);
-	char * fileToWrite = strcat(destDirectory, filename);
-	char * fileToWrite = strcat(fileToWrite, "-sorted-");
-	char * fileToWrite = strcat(fileToWrite, argv[2]);
-	char * fileToWrite = strcat(fileToWrite, ".csv");
-	csvwrite(dataRows,sizeOfArray, columnNames, columnNamesIndex, fileToWrite);
+	//char * fileToWrite = strcat(destDirectory, filename);
+	//char * fileToWrite = strcat(fileToWrite, "-sorted-");
+	//char * fileToWrite = strcat(fileToWrite, argv[2]);
+	//char * fileToWrite = strcat(fileToWrite, ".csv");
+	//csvwrite(dataRows,sizeOfArray, columnNames, columnNamesIndex, fileToWrite);
 	//^^^^^^^^^ Need to reassign later, just commented out for debugging purposes atm
 
 }
