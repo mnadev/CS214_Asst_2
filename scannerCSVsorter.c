@@ -366,7 +366,7 @@ int main(int argc, char** argv){
 	}
 	//Flag Handling:
 	int flag;
-	while((flag = getopt(argc, argv, ":if:cdo")) != -1){
+	while((flag = getopt(argc, argv, "c:d:o:")) != -1){
 		switch(flag){		
 			case 'c':
 				if(flagsPresent[0] == 1){
@@ -374,7 +374,8 @@ int main(int argc, char** argv){
 					return -1;
 				} else{
 					flagsPresent[0] = 1;				//The -c parameter is present
-					strcpy(columnToSort, optarg);		//copying the column name from optarg to columnToSort
+					//columnToSort = (char*)malloc(sizeof(char)*(strlen(optarg)+1));
+					//strcpy(columnToSort, optarg);		//copying the column name from optarg to columnToSort
 					break;
 				}
 			case 'd':
@@ -383,6 +384,7 @@ int main(int argc, char** argv){
 					return -1;
 				} else{
 					flagsPresent[1] = 1;
+					dirToSearch = (char*)malloc(sizeof(char)*(strlen(optarg)+1));
 					strcpy(dirToSearch, optarg);
 					break;
 				}
@@ -392,6 +394,7 @@ int main(int argc, char** argv){
 					return -1;
 				} else{
 					flagsPresent[2] = 1;
+					dirDest = (char*)malloc(sizeof(char)*(strlen(optarg)+1));
 					strcpy(dirDest, optarg);
 					break;
 				}				
