@@ -270,7 +270,7 @@ int isValidCSV(char* filename, char* columnToSort) {
 	// get number of commas in first lne. this will be the base number of commas that should be in each 
 	// line
 	while(currentChar != '\n') {
-		fgetc(csv);
+		currentChar = fgetc(csv);
 		if(currentChar == ',' && !isInQuotes) {
 			noCommas++;
 		}
@@ -284,7 +284,7 @@ int isValidCSV(char* filename, char* columnToSort) {
 	noCommas = 0;
 	
 	while(!feof(stdin)) {
-		fgetc(csv);
+		currentChar = fgetc(csv);
 		if(currentChar == '\n') {
 			if(noCommas != prevNoCommas) {
 				return 0;
