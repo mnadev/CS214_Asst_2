@@ -4,6 +4,7 @@
 #include<string.h>
 #include<dirent.h>
 #include<sys/types.h>
+#include<sys/stat.h>
 #include<errno.h>
 #include "scannerCSVsorter.h"
 
@@ -412,7 +413,7 @@ int main(int argc, char** argv){
 
 	printf("\nInitial PID: ");
 	int pid = getpid();
-	printf("%d",pid);
+	printf("%d\n",pid);
 	
 	// check for directory to search
 	// using command line argument if inputted
@@ -437,15 +438,71 @@ int main(int argc, char** argv){
 		return -2;
 	}
 	//dirStruct = 
-	printf("\nPIDS of all child processes: ");
+	//printf("\nPIDS of all child processes: ");
 	int noProcesses = 1;
 	int totalProcesses = 1;
 	FILE * pidFile;
 	pidFile = fopen("donotopen","w");
 	fprintf(pidFile, "%d\n", pid);	
 	fclose(pidFile);
+	printf("PIDS of all child processes: ");
+	
+	fflush(stdout);
+	DIR * as;
+	as = opendir(dirToSearch);
+	struct dirent* it;
+	char * file;
+	int counta = 0;
+	while(1) {
+		if((it = readdir(as)) == NULL) {
+			exit(counta);
+		}
 
-	while(1337) {
+		file = it -> d_name;
+		struct stat is;
+		stat(file, &is);
+		if(!strcmp(file, ".git") || strcmp(file, ".") == 0 || strcmp(file, "..") == 0) {
+			continue;
+		}
+
+ 		int pd = fork();
+		int status = 0;
+		if(pd == 0) {
+ 			if(S_ISREG(is.st_mode)){
+				//printf("I am a file: %s\n", file);
+				//fflush(stdout);
+				printf(", %d ",getpid());
+				exit(1);	
+			} else {
+				if(!strcmp(file, ".git") || strcmp(file, ".") == 0 || strcmp(file, "..") == 0) {
+					exit(0);
+				}
+				counta = 0;
+				//printf("I am a dir: %s\n", file);
+				//fflush(stdout);
+				printf(" ,%d ",getpid());
+				as = opendir(file);
+				continue;
+			}
+		} else {
+			waitpid(pd,&status);
+		}
+		
+		//printf("\nISFILE: %d  COUNT:%d\n",S_ISREG(is.st_mode),counta);
+		//printf("^^^%s\n",file);
+		//int sa = isValidCSV(file, argv[2]);
+		//printf("isVALIDCSV: %c\n", sa);
+		//printf("column sorting:%s \n",argv[2]);
+		//printf("D-TYPE: %d\n", it->d_type);
+		counta = counta + status;
+	}
+	int i;
+	for( i = 0; i < 20; i ++) {
+		i*i*i*i;
+	}
+
+	printf("\n Total number of Processes: %d\n", counta);
+	/*while(1337) {
 		if((dirStruct = readdir(currDir)) == NULL){
 			if(getpid() != pid){			
 				
@@ -470,7 +527,13 @@ int main(int argc, char** argv){
 		int cpid = fork();
 		if(cpid == 0) {
 			int fileType = dirStruct -> d_type;		//fileType = 4 for directory, 8 for file
+<<<<<<< HEAD
 			if(fileType == 8) {
+=======
+			struct stat isFileorNot;
+			stat(currFile, &isFileorNot);
+			if(S_ISREG(isFileorNot.st_mode)) {
+>>>>>>> e60159e5ac3b0d7cb93c387968b4626bd07b12ac
 				// to do create data rows array from csv file
 				char* sortedFileEnding = strcat("-sorted-", argv[2]);
 				// cheack to make sure we are sorting a csv file and we are not
@@ -490,31 +553,36 @@ int main(int argc, char** argv){
 		
 				exit(1);
 			} else {	//Implies that next "file" is actually a directory, so we fork() to process directory.
-				int anotherPID = fork();	//variable name pending?
+		//		int anotherPID = fork();	//variable name pending?
 				noProcesses = 1;
-				if(anotherPID == 0) {
+		//		if(anotherPID == 0) {
 					//More directory stuff	(placeholder comment while i think some things through)
 					currDir = opendir(currFile);
 					continue;		
-				} else{
+		//		} else{
 					// add noProcesses to wait to count noProcesses
 					// int waitRet = wait();
 					// noProcesses = noProcesses + waitRet;
-					wait(&statusLoc);		//placeholder wait
-					totalProcesses += statusLoc;	//Adds by the number of processes spawned from child
-					continue;
-				}
+		//			waitpid(anotherPID, &statusLoc);		//placeholder wait
+		//			totalProcesses += statusLoc;	//Adds by the number of processes spawned from child
+		//			continue;
+		//		}
 			 	//Might need to add more things here later to account for writing all the child PIDs to STDOUT.
 			}
 		} else{
+<<<<<<< HEAD
 			wait(&statusLoc); //placeholder wait
 			printf("RAWR%d\n", &statusLoc);
+=======
+			waitpid(cpid, &statusLoc); //placeholder wait
+>>>>>>> e60159e5ac3b0d7cb93c387968b4626bd07b12ac
 			totalProcesses = totalProcesses + statusLoc;
 			fflush(stdout);
+			printf("\n%d\n",totalProcesses);
 			if(totalProcesses <= 2){
-				printf(" ,%d ", cpid);
+	//			printf("\n%d\n", cpid);
 			} else {
-				printf(" %d ", cpid);
+	//			printf(" %d ", cpid);
 			}
 		}
 	}
@@ -522,8 +590,19 @@ int main(int argc, char** argv){
 	printf("\nTotal Number of Processes: %d\n", totalProcesses);
 	
 	//closedir(dir);
-	
-	
+	FILE *pidFile1;
+				int count = 0;
+				pidFile1 = fopen("donotopen","r+");
+				while(!feof(pidFile1)) {
+					char c = fgetc(pidFile1);
+					printf("%c",c);
+					if(c == '\n') {
+						count++;
+					}
+				}
+				fclose(pidFile1);
+				printf("\nAMount of processes: %d\n",count);
+	*/
 	return 0;
 }
 
