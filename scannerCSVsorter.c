@@ -410,9 +410,9 @@ int main(int argc, char** argv){
 		return -1;
 	}
 
-	printf("Initial PID: ");
+	printf("\nInitial PID: ");
 	int pid = getpid();
-	printf("%d\n",pid);
+	printf("%d",pid);
 	
 	// check for directory to search
 	// using command line argument if inputted
@@ -437,13 +437,25 @@ int main(int argc, char** argv){
 		return -2;
 	}
 	//dirStruct = 
-	printf("PIDS of all child processes: ");
+	printf("\nPIDS of all child processes: ");
 	int noProcesses = 1;
 	int totalProcesses = 1;
-	
+	FILE * pidFile;
+	pidFile = fopen("donotopen","w");
+	fprintf(pidFile, "%d\n", pid);	
+	fclose(pidFile);
+
 	while(1337) {
 		if((dirStruct = readdir(currDir)) == NULL){
 			if(getpid() != pid){			
+				
+				FILE *pidFile1;
+				pidFile1 = fopen("donotopen","r+");
+				while(!feof(pidFile1)) {
+					fgetc(pidFile1);
+				}
+				fprintf(pidFile1, "%d\n", getpid());	
+				fclose(pidFile1);
 				exit(noProcesses+1);
 			} else{
 				break;
@@ -469,6 +481,14 @@ int main(int argc, char** argv){
 						parseCSV(currFile, maxLengthLine(currFile), argv[2], dirDest);
 					}
 				}
+				FILE *pidFile1;
+				pidFile1 = fopen("donotopen","r+");
+				while(!feof(pidFile1)) {
+					fgetc(pidFile1);
+				}
+				fprintf(pidFile1, "%d\n", getpid());	
+				fclose(pidFile1);
+		
 				exit(1);
 			} else {	//Implies that next "file" is actually a directory, so we fork() to process directory.
 				int anotherPID = fork();	//variable name pending?
@@ -491,15 +511,15 @@ int main(int argc, char** argv){
 			wait(&statusLoc); //placeholder wait
 			totalProcesses = totalProcesses + statusLoc;
 			fflush(stdout);
-			if(noProcesses <= 2){
-				printf(",%d", pid);
+			if(totalProcesses <= 2){
+				printf(" ,%d ", cpid);
 			} else {
-				printf("%d", pid);
+				printf(" %d ", cpid);
 			}
 		}
 	}
 	
-	printf("\nTotal Number of Processes: %d\n", noProcesses);
+	printf("\nTotal Number of Processes: %d\n", totalProcesses);
 	
 	//closedir(dir);
 	
