@@ -450,7 +450,7 @@ int main(int argc, char** argv){
  			if(S_ISREG(stat_file.st_mode)){
 				printf(", %d ",getpid());
 				char* sortedFileEnding = strcat("-sorted-", columnToSort);
-				if(strstr(currFile,".csv") != NULL && strstr(file, sortedFileEnding) == NULL){
+				if(strstr(file,".csv") != NULL && strstr(file, sortedFileEnding) == NULL){
 					if(isValidCSV(file, columnToSort)) {
 						parseCSV(file, columnToSort, dirDest);
 					}
