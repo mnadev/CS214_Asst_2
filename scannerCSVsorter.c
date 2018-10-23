@@ -354,6 +354,15 @@ int main(int argc, char** argv){
 		}
 	}
 	
+	
+	// check for directory to write to
+	// using command line argument if inputted
+	char* dirDest = ".";
+	if(strcmp("-o",argv[5]) != 0){
+		//set it to what they give
+		dirDest = argv[6];
+	}
+	
 	DIR *currDir;
 	currDir = opendir(dirToSearch);
 	struct dirent* dirStruct;
@@ -410,17 +419,7 @@ int main(int argc, char** argv){
 	printf("\nTotal Number of Processes: %d", noProcesses);
 	
 	//closedir(dir);
-	// check for directory to write to
-	// using command line argument if inputted
-	char* dirDest;
-	/*if(strcmp("-o",argv[5]) != 0){
-		//set it to what they give
-		*dirDest = argv[6];
-	} else {
-		// set dir to curr directory
-		dirDest = getcwd();
-	}
-	*/
+	
 	
 	return 0;
 }
