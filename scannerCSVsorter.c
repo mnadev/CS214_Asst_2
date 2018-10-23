@@ -242,7 +242,7 @@ void parseCSV(char* filename, int maxLength, char* columnToSort, char* destDirec
 	char fileToWrite[255];
 	fclose(csv);	
 	snprintf(fileToWrite, 255, "%s/%s-sorted-%s.csv",destDirectory,filename,columnToSort);
-	csvwrite(dataRows,sizeOfArray, columnNames, columnNamesIndex, fileToWrite);
+	csvwrite(dataRows,sizeOfArray, columnNames, fileToWrite);
 	//^^^^^^^^^ Need to reassign later, just commented out for debugging purposes atm
 
 }
@@ -327,7 +327,7 @@ int isValidCSV(char* filename, char* columnToSort) {
 }
 
 // will write output to csv file
-void csvwrite(movieInfo** movieArr, int size ,char* categories, int sizeOfCategories, char* filename){
+void csvwrite(movieInfo** movieArr, int size ,char* categories, char* filename){
 	FILE *csvFile; 
 	csvFile = fopen(filename, "w+");
 	
