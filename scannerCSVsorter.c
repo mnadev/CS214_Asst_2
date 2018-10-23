@@ -522,7 +522,18 @@ int main(int argc, char** argv){
 	printf("\nTotal Number of Processes: %d\n", totalProcesses);
 	
 	//closedir(dir);
-	
+	FILE *pidFile1;
+				int count = 0;
+				pidFile1 = fopen("donotopen","r+");
+				while(!feof(pidFile1)) {
+					char c = fgetc(pidFile1);
+					printf("%c",c);
+					if(c == '\n') {
+						count++;
+					}
+				}
+				fclose(pidFile1);
+				printf("\nAMount of processes: %d\n",count);
 	
 	return 0;
 }
