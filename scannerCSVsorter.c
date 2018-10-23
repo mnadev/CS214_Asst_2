@@ -470,7 +470,6 @@ int main(int argc, char** argv){
 		int cpid = fork();
 		if(cpid == 0) {
 			int fileType = dirStruct -> d_type;		//fileType = 4 for directory, 8 for file
-		
 			if(fileType == 8) {
 				// to do create data rows array from csv file
 				char* sortedFileEnding = strcat("-sorted-", argv[2]);
@@ -509,6 +508,7 @@ int main(int argc, char** argv){
 			}
 		} else{
 			wait(&statusLoc); //placeholder wait
+			printf("RAWR%d\n", &statusLoc);
 			totalProcesses = totalProcesses + statusLoc;
 			fflush(stdout);
 			if(totalProcesses <= 2){
