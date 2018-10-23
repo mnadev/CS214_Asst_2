@@ -273,7 +273,7 @@ int isValidCSV(char* filename) {
 		return 0;
 	}
 	
-	fclose(csv);
+	fclose(p_csv);
 	
 	FILE *csv;
 	csv = fopen(filename, "r");
@@ -403,7 +403,7 @@ int main(int argc, char** argv){
 	printf("PIDS of all child processes: ");
 	int noProcesses = 1;
 	while(1337) {
-		if((dirStruct = readdir(currDir) != NULL){
+		if((dirStruct = readdir(currDir) != NULL)){
 			if(getpid() != pid){			
 				exit(noProcesses+1);
 			} else{
@@ -442,7 +442,7 @@ int main(int argc, char** argv){
 					// int waitRet = wait();
 					// noProcesses = noProcesses + waitRet;
 					wait(statusLoc);		//placeholder wait
-					noProcessesBase += *statusLoc;	//Adds by the number of processes spawned from child
+					noProcesses += *statusLoc;	//Adds by the number of processes spawned from child
 					continue;
 				}
 			 	//Might need to add more things here later to account for writing all the child PIDs to STDOUT.
