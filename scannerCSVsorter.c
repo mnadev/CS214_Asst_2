@@ -9,30 +9,9 @@
 #include "scannerCSVsorter.h"
 
 void csvwrite(movieInfo** movieArr, int size ,char* categories, char* filename);
-
-// function that finds max length of lines in the file, useful when creating buffer. 
-int maxLengthLine(char* filename) {
-	FILE *csv;
-	csv = fopen(filename, "r");
-	
-	int count = 0;
-	int maxCount = 0;
-	
-	char currentChar;
-	while(!feof(stdin)) {
-		currentChar = (char)(fgetc(csv));
-		if(currentChar == '\n') {
-			if(count > maxCount) {
-				maxCount = count;
-			}
-			count = 0;
-		} else {
-			count++;
-		}
-	}
-	fclose(csv);
-	return maxCount;
-}
+int isInt(movieInfo** dataRows, int sizeOfArray);
+void parseCSV(char* filename, int maxLength, char* columnToSort, char* destDirectory);
+int isValidCSV(char* filename, char* columnToSort);
 
 int isInt(movieInfo** dataRows, int sizeOfArray) {
 	// this integer acts as a boolean
@@ -441,67 +420,59 @@ int main(int argc, char** argv){
 	//printf("\nPIDS of all child processes: ");
 	int noProcesses = 1;
 	int totalProcesses = 1;
-	FILE * pidFile;
-	pidFile = fopen("donotopen","w");
-	fprintf(pidFile, "%d\n", pid);	
-	fclose(pidFile);
 	printf("PIDS of all child processes: ");
-	
 	fflush(stdout);
-	DIR * as;
-	as = opendir(dirToSearch);
-	struct dirent* it;
+	
+	DIR * dir;
+	dir = opendir(dirToSearch);
+	struct dirent* dirStruct;
 	char * file;
-	int counta = 0;
+	int count = 0;
 	while(1) {
-		if((it = readdir(as)) == NULL) {
-			exit(counta);
+		if((dirStruct = readdir(dir)) == NULL) {
+			if(getpid() == pid) {
+				break;
+			} else {
+				exit(count);
+			}
 		}
+		
 		isValidCSV(file, columnToSort);
-		file = it -> d_name;
-		struct stat is;
-		stat(file, &is);
+		file = dirStruct -> d_name;
+		struct stat stat_file;
+		stat(file, &stat_file);
 		if(!strcmp(file, ".git") || strcmp(file, ".") == 0 || strcmp(file, "..") == 0) {
 			continue;
 		}
 
- 		int pd = fork();
+ 		int cpid = fork();
 		int status = 0;
-		if(pd == 0) {
- 			if(S_ISREG(is.st_mode)){
-				//printf("I am a file: %s\n", file);
-				//fflush(stdout);
+		if(pid == 0) {
+ 			if(S_ISREG(stat_file.st_mode)){
 				printf(", %d ",getpid());
+				if(strstr(currFile,".csv") != NULL && strstr(currFile, sortedFileEnding) == NULL){
+					if(isValidCSV(currFile, columnToSort)) {
+						parseCSV(currFile, maxLengthLine(currFile), columnToSort, dirDest);
+					}
+				}
 				exit(1);	
 			} else {
 				if(!strcmp(file, ".git") || strcmp(file, ".") == 0 || strcmp(file, "..") == 0) {
 					exit(0);
 				}
-				counta = 0;
-				//printf("I am a dir: %s\n", file);
-				//fflush(stdout);
+				count = 0;
 				printf(" ,%d ",getpid());
-				as = opendir(file);
+				dir = opendir(file);
 				continue;
 			}
 		} else {
-			waitpid(pd,&status);
+			waitpid(cpid,&status);
 		}
 		
-		//printf("\nISFILE: %d  COUNT:%d\n",S_ISREG(is.st_mode),counta);
-		//printf("^^^%s\n",file);
-		//int sa = isValidCSV(file, argv[2]);
-		//printf("isVALIDCSV: %c\n", sa);
-		//printf("column sorting:%s \n",argv[2]);
-		//printf("D-TYPE: %d\n", it->d_type);
-		counta = counta + status;
-	}
-	int i;
-	for( i = 0; i < 20; i ++) {
-		i*i*i*i;
+		count = count + status;
 	}
 
-	printf("\n Total number of Processes: %d\n", counta);
+	printf("\n Total number of Processes: %d\n", count);
 	/*while(1337) {
 		if((dirStruct = readdir(currDir)) == NULL){
 			if(getpid() != pid){			
