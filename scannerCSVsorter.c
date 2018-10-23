@@ -235,7 +235,11 @@ movieInfo** parseCSV(char* filename, int maxLength, char* columnToSort) {
 	int isNumeric = isInt(dataRows, sizeOfArray);
 	
 	mergesort(dataRows, 0, sizeOfArray - 1, isNumeric);
-	//csvwrite(dataRows,sizeOfArray, columnNames, columnNamesIndex, dirDest);
+	
+	//char * fileToWrite = strcat(filename, "-sorted-");
+	//char * fileToWrite = strcat(fileToWrite, argv[2]);
+	//char * fileToWrite = strcat(fileToWrite, ".csv");
+	//csvwrite(dataRows,sizeOfArray, columnNames, columnNamesIndex, fileToWrite);
 	//^^^^^^^^^ Need to reassign later, just commented out for debugging purposes atm
 
 }
@@ -368,9 +372,6 @@ int main(int argc, char** argv){
 		if(pid == 0) {
 			opendir(currFile);
 		
-			char * fileToWrite = strcat(currFile, "-sorted-");
-			char * fileToWrite = strcat(fileToWrite, argv[2]);
-			char * fileToWrite = strcat(fileToWrite, ".csv");
 			if(errno == ENOTDIR) {
 				pid = fork();
 				if(pid == 0) {
