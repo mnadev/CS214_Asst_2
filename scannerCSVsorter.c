@@ -338,8 +338,9 @@ int main(int argc, char** argv){
 		}
 
 	/* Edit the above if the "Order of Flags" question says that order doesn't matter*/
-	
-
+	printf("Initial PID: ");
+	int pid = getpid();
+	printf("%d\n",pid);
 	
 	// check for directory to search
 	// using command line argument if inputted
@@ -361,9 +362,11 @@ int main(int argc, char** argv){
 		return -2;
 	}
 	//dirStruct = 
+	printf("PIDS of all child processes: ");
+	int noProcesses = 1;
 	while((dirStruct = readdir(currDir)) != NULL) {
 		// skipping first two file because its current and parent dirs
-
+		
 		char * currFile = dirStruct -> d_name;
 		if(strcmp(currFile,".") == 0 || strcmp(currFile, "..") == 0) {
 			continue;	
@@ -386,6 +389,9 @@ int main(int argc, char** argv){
 					currDir = opendir(currFile);
 					continue;		
 				} else{
+					// add noProcesses to wait to count noProcesses
+					// int waitRet = wait();
+					// noProcesses = noProcesses + waitRet;
 					wait();		//placeholder wait
 					continue;
 				}
@@ -393,8 +399,15 @@ int main(int argc, char** argv){
 			}
 		} else{
 			wait(); //placeholder wait
+			if(noProcesses <= 2){
+				printf(",%d", pid);
+			} else {
+				printf("%d", pid);
+			}
 		}
 	}
+	
+	printf("\nTotal Number of Processes: %d", noProcesses);
 	
 	//closedir(dir);
 	// check for directory to write to
