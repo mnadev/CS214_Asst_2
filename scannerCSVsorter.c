@@ -436,6 +436,8 @@ int main(int argc, char** argv){
 	//dirStruct = 
 	printf("PIDS of all child processes: ");
 	int noProcesses = 1;
+	int totalProcesses = 1;
+	
 	while(1337) {
 		if((dirStruct = readdir(currDir)) == NULL){
 			if(getpid() != pid){			
@@ -467,6 +469,7 @@ int main(int argc, char** argv){
 				exit(1);
 			} else {	//Implies that next "file" is actually a directory, so we fork() to process directory.
 				int anotherPID = fork();	//variable name pending?
+				noProcesses = 1;
 				if(anotherPID == 0) {
 					//More directory stuff	(placeholder comment while i think some things through)
 					currDir = opendir(currFile);
@@ -476,14 +479,14 @@ int main(int argc, char** argv){
 					// int waitRet = wait();
 					// noProcesses = noProcesses + waitRet;
 					wait(&statusLoc);		//placeholder wait
-					noProcesses += statusLoc;	//Adds by the number of processes spawned from child
+					totalProcesses += statusLoc;	//Adds by the number of processes spawned from child
 					continue;
 				}
 			 	//Might need to add more things here later to account for writing all the child PIDs to STDOUT.
 			}
 		} else{
 			wait(&statusLoc); //placeholder wait
-			noProcesses = noProcesses + statusLoc;
+			totalProcesses = totalProcesses + statusLoc;
 			fflush(stdout);
 			if(noProcesses <= 2){
 				printf(",%d", pid);
