@@ -4,13 +4,14 @@
 #include<string.h>
 #include<dirent.h>
 #include<sys/types.h>
+#include<errno.h>
 #include "scannerCSVsorter.h"
 
 
 // function that finds max length of lines in the file, useful when creating buffer. 
 int maxLengthLine(char* filename) {
 	FILE *csv;
-	csv = fopen(filename, 'r');
+	csv = fopen(filename, "r");
 	
 	int count = 0;
 	int maxCount = 0;
@@ -102,9 +103,12 @@ movieInfo** parseCSV(char* filename, int maxLength, char* columnToSort) {
 	char* locOfColumn = strstr(columnNames, columnToSort);
 	if(locOfColumn == NULL){
 		write(STDERR, "Error: The column to be sorted that was input as the 2nd parameter is not contained within the CSV.\n", 100);
-		return -1;
+		exit(-1);
 	}
-	
+	/**************************************************************************************
+	Probably need to move ^^^^ to isValidCSV
+	**************************************************************************************/	
+
 	//Searching for number of commas before column to be sorted
 	//(Assumes that column names don't have commas in them, which they shouldn't for this assignment.
 	int i;
@@ -239,7 +243,7 @@ movieInfo** parseCSV(char* filename, int maxLength, char* columnToSort) {
 // checks if the csv is valid. will return 1 if so, 0 if not valid. 
 int isValidCSV(char* filename) {
 	FILE *csv;
-	csv = fopen(filename, 'r');
+	csv = fopen(filename, "r");
 	
 	// count number of commas in current line and number of commas in 
 	int noCommas = 0;
@@ -335,14 +339,12 @@ int main(int argc, char** argv){
 	
 	// check for directory to search
 	// using command line argument if inputted
-	char* dirToSearch;
-	if(strcmp("-d",argv[3]) != 0){
-		//set it to what they give
-		*dirToSearch = argv[4];
-	} else {
-		// set dir to curr directory
-		
-		dirToSearch = ".";
+	char* dirToSearch = ".";		//Defaults to current directory unless changed by -d flag
+	if(argc > 3){
+		if(strcmp("-d",argv[3]) != 0){
+			//set it to what they give
+			dirToSearch = argv[4];
+		}
 	}
 	
 	DIR *currDir;
@@ -353,34 +355,40 @@ int main(int argc, char** argv){
 		return -2;
 	}
 	//dirStruct = 
-	while((currDir = readdir(currDir)) != NULL) {
-		printf("Testing\n");
-		break;
+	while((dirStruct = readdir(currDir)) != NULL) {
 		// skipping first two file because its current and parent dirs
-		/*
-		char * currFile = currDir -> d_name;
-		if(strcmp(currFile,".") || strcmp(currFile, "..")) {
+
+		char * currFile = dirStruct -> d_name;
+		if(strcmp(currFile,".") == 0 || strcmp(currFile, "..") == 0) {
 			continue;	
 		}
-		int pid = fork()
+		int pid = fork();
 		if(pid == 0) {
-			openDir(currFile);
+			opendir(currFile);
 		
 			if(errno == ENOTDIR) {
-				int pid = fork();
+				pid = fork();
 				if(pid == 0) {
 					// to do create data rows array from csv file
-				if(strstr(currFile,".csv"))
-					movieInfo** dataRows = parseCSV(currFile);
-					mergesort(dataRows, 0, sizeOfArray - 1, isInt(dataRows));
-					csvwrite(dataRows,sizeOfArray, columnNames, columnNamesIndex, dirDest);
+					/*if(strstr(currFile,".csv")){
+						movieInfo** dataRows = parseCSV(currFile);
+						mergesort(dataRows, 0, sizeOfArray - 1, isInt(dataRows));
+						csvwrite(dataRows,sizeOfArray, columnNames, columnNamesIndex, dirDest);
+					}*/
 				}
-			} else {
-				// recursively run program on this directory.
-			 	
+			} else {	//Implies that next "file" is actually a directory, so we fork() to process directory.
+				int anotherPID = fork();	//variable name pending?
+				if(anotherPID == 0) {
+					//More directory stuff	(placeholder comment while i think some things through)
+					currDir = opendir(currFile);
+					continue;		
+				} else{
+					continue;
+				}
+			 	//Might need to add more things here later to account for writing all the child PIDs to STDOUT.
 			}
-		}*/
-	} 
+		}
+	}
 	
 	//closedir(dir);
 	// check for directory to write to
