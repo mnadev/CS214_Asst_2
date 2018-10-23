@@ -274,7 +274,7 @@ int isValidCSV(char* filename, char* columnToSort) {
 		fclose(p_csv);
 		return 0;
 	}
-	
+	free(columnNames);	
 	fclose(p_csv);
 	
 	FILE *csv;
@@ -375,8 +375,8 @@ int main(int argc, char** argv){
 					return -1;
 				} else{
 					flagsPresent[0] = 1;				//The -c parameter is present
-					//columnToSort = (char*)malloc(sizeof(char)*(strlen(optarg)+1));
-					//strcpy(columnToSort, optarg);		//copying the column name from optarg to columnToSort
+					columnToSort = (char*)malloc(sizeof(char)*(strlen(optarg)+1));
+					strcpy(columnToSort, optarg);		//copying the column name from optarg to columnToSort
 					break;
 				}
 			case 'd':
@@ -457,7 +457,7 @@ int main(int argc, char** argv){
 		if((it = readdir(as)) == NULL) {
 			exit(counta);
 		}
-
+		isValidCSV(file, columnToSort);
 		file = it -> d_name;
 		struct stat is;
 		stat(file, &is);
