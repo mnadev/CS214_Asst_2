@@ -255,12 +255,12 @@ int isValidCSV(char* filename, char* columnToSort) {
 	p_csv = fopen(filename, "r");
 	
 	char charIn = '\0';				//Buffer to put each char that's being read in from STDIN
-	char* columnNames = malloc(sizeof(char)*500);			//Buffer where we're going to put the first line containing all titles
+	char* columnNames = (char*)malloc(sizeof(char)*500);		//Buffer where we're going to put the first line containing all titles
 	int columnNamesIndex = 0;		//For use in the below do-while loop
 	
 	//Reading in from STDIN char by char until a '\n' is reached to get a string containing all column names
 	do{
-		fgets(&charIn, 1, p_csv);
+		charIn = fgetc(p_csv);
 		columnNames[columnNamesIndex] = charIn;
 		columnNamesIndex++;
 	}while(charIn != '\n');
