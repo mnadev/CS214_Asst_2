@@ -428,7 +428,7 @@ int main(int argc, char** argv){
 				//sorting an already sorted file.
 				if(strstr(currFile,".csv") != NULL && strstr(currFile, sortedFileEnding) == NULL){
 					if(isValidCSV(currFile, argv[2])) {
-						parseCSV(currFile, maxLengthLine(filename), argv[2], char* dirDest));
+						parseCSV(currFile, maxLengthLine(currFile), argv[2], dirDest);
 					}
 				}
 				exit(1);
