@@ -239,25 +239,44 @@ void parseCSV(char* filename, int maxLength, char* columnToSort, char* destDirec
 	int isNumeric = isInt(dataRows, sizeOfArray);
 	
 	mergesort(dataRows, 0, sizeOfArray - 1, isNumeric);
-	//char * fileToWrite = strcat(destDirectory, filename);
-	//char * fileToWrite = strcat(fileToWrite, "-sorted-");
-	//char * fileToWrite = strcat(fileToWrite, argv[2]);
-	//char * fileToWrite = strcat(fileToWrite, ".csv");
-	//csvwrite(dataRows,sizeOfArray, columnNames, columnNamesIndex, fileToWrite);
+	char* fileToWrite[255];
+	
+	snprintf(fileToWrite, 255, "%s/%s-sorted-%s.csv",destDirectory,filename,columnToSort);
+	csvwrite(dataRows,sizeOfArray, columnNames, columnNamesIndex, fileToWrite);
 	//^^^^^^^^^ Need to reassign later, just commented out for debugging purposes atm
 
 }
 
 // checks if the csv is valid. will return 1 if so, 0 if not valid. 
 int isValidCSV(char* filename) {
-	FILE *csv;
-	csv = fopen(filename, "r");
+	FILE *p_csv;
+	p_csv = fopen(filename, "r");
 	
+	char charIn = '\0';				//Buffer to put each char that's being read in from STDIN
+	char* columnNames = malloc(sizeof(char)*500);			//Buffer where we're going to put the first line containing all titles
+	int columnNamesIndex = 0;		//For use in the below do-while loop
+	
+	//Reading in from STDIN char by char until a '\n' is reached to get a string containing all column names
+	do{
+		fgets(&charIn, 1, p_csv);
+		columnNames[columnNamesIndex] = charIn;
+		columnNamesIndex++;
+	}while(charIn != '\n');
+	columnNames[columnNamesIndex] = '\0';
+	columnNames = realloc(columnNames, columnNamesIndex+1);
+
+	//Determining if the column to be sorted parameter is in the list of columns using strstr()
 	char* locOfColumn = strstr(columnNames, columnToSort);
 	if(locOfColumn == NULL){
 		write(STDERR, "Error: The column to be sorted that was input as the 2nd parameter is not contained within the CSV.\n", 100);
+		fclose(csv);
 		return 0;
 	}
+	
+	fclose(csv);
+	
+	FILE *csv;
+	csv = fopen(filename, "r");
 	
 	// count number of commas in current line and number of commas in 
 	int noCommas = 0;
