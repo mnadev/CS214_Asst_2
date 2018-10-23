@@ -448,7 +448,7 @@ int main(int argc, char** argv){
 			}
 		}
 		// skipping first two file because its current and parent dirs
-		int* statusLoc = (int*)malloc(sizeof(int));
+		int statusLoc = 0;
 		char * currFile = dirStruct -> d_name;
 		if(strcmp(currFile,".") == 0 || strcmp(currFile, "..") == 0) {
 			continue;	
@@ -478,26 +478,25 @@ int main(int argc, char** argv){
 					// add noProcesses to wait to count noProcesses
 					// int waitRet = wait();
 					// noProcesses = noProcesses + waitRet;
-					wait(statusLoc);		//placeholder wait
-					noProcesses += *statusLoc;	//Adds by the number of processes spawned from child
+					wait(&statusLoc);		//placeholder wait
+					noProcesses += statusLoc;	//Adds by the number of processes spawned from child
 					continue;
 				}
 			 	//Might need to add more things here later to account for writing all the child PIDs to STDOUT.
 			}
 		} else{
-			wait(statusLoc); //placeholder wait
-			noProcesses = noProcesses + *statusLoc;
-			fflush(STDOUT);
+			wait(&statusLoc); //placeholder wait
+			noProcesses = noProcesses + statusLoc;
+			fflush(stdout);
 			if(noProcesses <= 2){
 				printf(",%d", pid);
 			} else {
 				printf("%d", pid);
 			}
 		}
-		free(statusLoc);
 	}
 	
-	printf("\nTotal Number of Processes: %d", noProcesses);
+	printf("\nTotal Number of Processes: %d\n", noProcesses);
 	
 	//closedir(dir);
 	
