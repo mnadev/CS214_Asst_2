@@ -83,16 +83,20 @@ int isInt(movieInfo** dataRows, int sizeOfArray) {
 }
 
 //function to parse through csv file
-movieInfo** parseCSV(char* filename, int maxLength, char* columnToSort) {
+void parseCSV(char* filename, int maxLength, char* columnToSort, char* destDirectory) {
 	int numCommasB4Sort = 0;		//The number of commas before the column to be sorted is reached.
 	
 	char charIn = '\0';				//Buffer to put each char that's being read in from STDIN
 	char* columnNames = malloc(sizeof(char)*500);			//Buffer where we're going to put the first line containing all titles
 	int columnNamesIndex = 0;		//For use in the below do-while loop
 	
+	
+	FILE *csv;
+	csv = fopen(filename,"r");
+	
 	//Reading in from STDIN char by char until a '\n' is reached to get a string containing all column names
 	do{
-		read(STDIN, &charIn, 1);
+		read(&charIn, 1, csv);
 		columnNames[columnNamesIndex] = charIn;
 		columnNamesIndex++;
 	}while(charIn != '\n');
@@ -103,7 +107,7 @@ movieInfo** parseCSV(char* filename, int maxLength, char* columnToSort) {
 	char* locOfColumn = strstr(columnNames, columnToSort);
 	if(locOfColumn == NULL){
 		write(STDERR, "Error: The column to be sorted that was input as the 2nd parameter is not contained within the CSV.\n", 100);
-		exit(-1);
+		return -1;
 	}
 	/**************************************************************************************
 	Probably need to move ^^^^ to isValidCSV
@@ -148,7 +152,7 @@ movieInfo** parseCSV(char* filename, int maxLength, char* columnToSort) {
 
 		int firstCommaOfSort = 0; 		//Boolean to detect if the first char parsed into sortColumn is a comma.
 		while(1){
-			eofDetect = read(STDIN, &charIn, 1);
+			eofDetect = fgets(&charIn, 1, csv);
 			if(eofDetect < 1){
 				break;
 			}
@@ -235,11 +239,11 @@ movieInfo** parseCSV(char* filename, int maxLength, char* columnToSort) {
 	int isNumeric = isInt(dataRows, sizeOfArray);
 	
 	mergesort(dataRows, 0, sizeOfArray - 1, isNumeric);
-	
-	//char * fileToWrite = strcat(filename, "-sorted-");
-	//char * fileToWrite = strcat(fileToWrite, argv[2]);
-	//char * fileToWrite = strcat(fileToWrite, ".csv");
-	//csvwrite(dataRows,sizeOfArray, columnNames, columnNamesIndex, fileToWrite);
+	char * fileToWrite = strcat(destDirectory, filename);
+	char * fileToWrite = strcat(fileToWrite, "-sorted-");
+	char * fileToWrite = strcat(fileToWrite, argv[2]);
+	char * fileToWrite = strcat(fileToWrite, ".csv");
+	csvwrite(dataRows,sizeOfArray, columnNames, columnNamesIndex, fileToWrite);
 	//^^^^^^^^^ Need to reassign later, just commented out for debugging purposes atm
 
 }
@@ -248,6 +252,12 @@ movieInfo** parseCSV(char* filename, int maxLength, char* columnToSort) {
 int isValidCSV(char* filename) {
 	FILE *csv;
 	csv = fopen(filename, "r");
+	
+	char* locOfColumn = strstr(columnNames, columnToSort);
+	if(locOfColumn == NULL){
+		write(STDERR, "Error: The column to be sorted that was input as the 2nd parameter is not contained within the CSV.\n", 100);
+		return 0;
+	}
 	
 	// count number of commas in current line and number of commas in 
 	int noCommas = 0;
@@ -387,10 +397,13 @@ int main(int argc, char** argv){
 		
 			if(fileType == 8) {
 				// to do create data rows array from csv file
-				/*if(strstr(currFile,".csv")){
-					movieInfo** dataRows = parseCSV(currFile);
-					mergesort(dataRows, 0, sizeOfArray - 1, isInt(dataRows));
-					csvwrite(dataRows,sizeOfArray, columnNames, columnNamesIndex, fileToWrite);
+				char* sortedFileEnding = strcat("-sorted-", argv[2]);
+				// cheack to make sure we are sorting a csv file and we are not
+				//sorting an already sorted file.
+				/*if(strstr(currFile,".csv") != NULL && strstr(currFile, sortedFileEnding) == NULL){
+					if(isValidCSV(currFile)) {
+						parseCSV(currFile, maxLengthLine(filename), argv[2], char* dirDest));
+					}
 				}*/
 				exit(noProcesses);
 			} else {	//Implies that next "file" is actually a directory, so we fork() to process directory.
@@ -404,7 +417,7 @@ int main(int argc, char** argv){
 					// int waitRet = wait();
 					// noProcesses = noProcesses + waitRet;
 					wait(statusLoc);		//placeholder wait
-					noProcessesBase = noProcessesBase += *statusLoc;	//Adds by the number of processes spawned from child
+					noProcessesBase += *statusLoc;	//Adds by the number of processes spawned from child
 					noProcesses++;								//Adds by 1 to account for process used to process directory
 					continue;
 				}
