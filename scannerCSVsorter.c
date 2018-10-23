@@ -7,6 +7,7 @@
 #include<errno.h>
 #include "scannerCSVsorter.h"
 
+void csvwrite(movieInfo** movieArr, int size ,char* categories, char* filename);
 
 // function that finds max length of lines in the file, useful when creating buffer. 
 int maxLengthLine(char* filename) {
