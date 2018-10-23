@@ -404,7 +404,7 @@ int main(int argc, char** argv){
 	printf("PIDS of all child processes: ");
 	int noProcesses = 1;
 	while(1337) {
-		if((dirStruct = readdir(currDir)) != NULL){
+		if((dirStruct = readdir(currDir)) == NULL){
 			if(getpid() != pid){			
 				exit(noProcesses+1);
 			} else{
@@ -426,11 +426,11 @@ int main(int argc, char** argv){
 				char* sortedFileEnding = strcat("-sorted-", argv[2]);
 				// cheack to make sure we are sorting a csv file and we are not
 				//sorting an already sorted file.
-				/*if(strstr(currFile,".csv") != NULL && strstr(currFile, sortedFileEnding) == NULL){
+				if(strstr(currFile,".csv") != NULL && strstr(currFile, sortedFileEnding) == NULL){
 					if(isValidCSV(currFile, argv[2])) {
 						parseCSV(currFile, maxLengthLine(filename), argv[2], char* dirDest));
 					}
-				}*/
+				}
 				exit(1);
 			} else {	//Implies that next "file" is actually a directory, so we fork() to process directory.
 				int anotherPID = fork();	//variable name pending?
