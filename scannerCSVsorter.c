@@ -96,7 +96,7 @@ void parseCSV(char* filename, int maxLength, char* columnToSort, char* destDirec
 	
 	//Reading in from STDIN char by char until a '\n' is reached to get a string containing all column names
 	do{
-		read(&charIn, 1, csv);
+		fgets(&charIn, 1, csv);
 		columnNames[columnNamesIndex] = charIn;
 		columnNamesIndex++;
 	}while(charIn != '\n');
@@ -107,7 +107,7 @@ void parseCSV(char* filename, int maxLength, char* columnToSort, char* destDirec
 	char* locOfColumn = strstr(columnNames, columnToSort);
 	if(locOfColumn == NULL){
 		write(STDERR, "Error: The column to be sorted that was input as the 2nd parameter is not contained within the CSV.\n", 100);
-		return -1;
+		//return -1;
 	}
 	/**************************************************************************************
 	Probably need to move ^^^^ to isValidCSV
@@ -152,8 +152,8 @@ void parseCSV(char* filename, int maxLength, char* columnToSort, char* destDirec
 
 		int firstCommaOfSort = 0; 		//Boolean to detect if the first char parsed into sortColumn is a comma.
 		while(1){
-			eofDetect = fgets(&charIn, 1, csv);
-			if(eofDetect < 1){
+			fgets(&charIn, 1, csv);
+			if(feof(csv)){
 				break;
 			}
 			switch(charIn){
