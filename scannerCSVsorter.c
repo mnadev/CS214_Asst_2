@@ -234,7 +234,7 @@ int isValidCSV(char* filename, char* columnToSort) {
 	p_csv = fopen(filename, "r");
 	
 	char charIn = '\0';				//Buffer to put each char that's being read in from STDIN
-	char* columnNames = (char*)malloc(sizeof(char)*500);		//Buffer where we're going to put the first line containing all titles
+	char* columnNames = (char*)malloc(sizeof(char)*1000);		//Buffer where we're going to put the first line containing all titles
 	int columnNamesIndex = 0;		//For use in the below do-while loop
 	
 	//Reading in from STDIN char by char until a '\n' is reached to get a string containing all column names
@@ -243,7 +243,7 @@ int isValidCSV(char* filename, char* columnToSort) {
 		columnNames[columnNamesIndex] = charIn;
 		columnNamesIndex++;
 	}while(charIn != '\n');
-	columnNames[columnNamesIndex] = '\0';
+	/*columnNames[columnNamesIndex] = '\0';
 	columnNames = realloc(columnNames, columnNamesIndex+1);
 
 	//Determining if the column to be sorted parameter is in the list of columns using strstr()
@@ -303,7 +303,7 @@ int isValidCSV(char* filename, char* columnToSort) {
 		}
 	}
 	fclose(csv);
-		
+		*/
 	return 1;
 }
 
