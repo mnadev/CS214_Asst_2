@@ -451,6 +451,7 @@ int main(int argc, char** argv){
 		} else{
 			wait(statusLoc); //placeholder wait
 			noProcesses = noProcesses + *statusLoc;
+			fflush(STDOUT);
 			if(noProcesses <= 2){
 				printf(",%d", pid);
 			} else {
