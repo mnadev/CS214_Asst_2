@@ -366,7 +366,7 @@ int main(int argc, char** argv){
 	}
 	//Flag Handling:
 	int flag;
-	while((flags = getopt(argc, argv, ":if:cdo")) != -1){
+	while((flag = getopt(argc, argv, ":if:cdo")) != -1){
 		switch(flag){		
 			case 'c':
 				if(flagsPresent[0] == 1){
