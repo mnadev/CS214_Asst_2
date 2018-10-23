@@ -403,7 +403,7 @@ int main(int argc, char** argv){
 	printf("PIDS of all child processes: ");
 	int noProcesses = 1;
 	while(1337) {
-		if((dirStruct = readdir(currDir) != NULL)){
+		if((dirStruct = readdir(currDir)) != NULL){
 			if(getpid() != pid){			
 				exit(noProcesses+1);
 			} else{
