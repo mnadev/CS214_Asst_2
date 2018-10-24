@@ -6,6 +6,7 @@
 #include<sys/types.h>
 #include<sys/stat.h>
 #include<errno.h>
+#include<fcntl.h>
 #include "scannerCSVsorter.h"
 
 void csvwrite(movieInfo** movieArr, int size ,char* categories, char* filename);
@@ -230,27 +231,33 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 
 // checks if the csv is valid. will return 1 if so, 0 if not valid. 
 int isValidCSV(char* filename, char* columnToSort) {
-	FILE *p_csv;
-	p_csv = fopen(filename, "r");
+	int pathLen = strlen(filename);
+	if(filename[pathLen-1] == 'v' && filename[pathLen-2] == 's' && filename[pathLen-3] == 'c' && filename[pathLen-4] == '.'){
+		//Yay it's a CSV
+	} else{
+		return 0;
+	}
+	int p_csv;		//file descriptor for file to be opened.
+	p_csv = open(filename, O_RDONLY);
 	
 	char charIn = '\0';				//Buffer to put each char that's being read in from STDIN
-	char* columnNames = (char*)malloc(sizeof(char)*1000);		//Buffer where we're going to put the first line containing all titles
+	char* columnNames = (char*)malloc(sizeof(char)*500);		//Buffer where we're going to put the first line containing all titles
 	int columnNamesIndex = 0;		//For use in the below do-while loop
 	
 	//Reading in from STDIN char by char until a '\n' is reached to get a string containing all column names
 	do{
-		charIn = fgetc(p_csv);
+		read(p_csv, &charIn, 1);
 		columnNames[columnNamesIndex] = charIn;
 		columnNamesIndex++;
 	}while(charIn != '\n');
-	/*columnNames[columnNamesIndex] = '\0';
+	columnNames[columnNamesIndex] = '\0';
 	columnNames = realloc(columnNames, columnNamesIndex+1);
 
 	//Determining if the column to be sorted parameter is in the list of columns using strstr()
 	char* locOfColumn = strstr(columnNames, columnToSort);
 	if(locOfColumn == NULL){
 		write(STDERR, "Error: The column to be sorted that was input as the 2nd parameter is not contained within the CSV.\n", 100);
-		fclose(p_csv);
+		close(p_csv);
 		return 0;
 	}
 	free(columnNames);	
@@ -303,7 +310,7 @@ int isValidCSV(char* filename, char* columnToSort) {
 		}
 	}
 	fclose(csv);
-		*/
+		
 	return 1;
 }
 
@@ -336,7 +343,7 @@ int main(int argc, char** argv){
 	//Input flags of the program and whether they are present: Index 0 = -c, Index 1 = -d, Index 2 = -o
 	int flagsPresent[] = {0,0,0};		
 	char* columnToSort;
-	char* dirToSearch = ".";	//dirToSearch defaults to current directory if not changed by flag later.
+	char* dirToSearch = "./";	//dirToSearch defaults to current directory if not changed by flag later.
 	char* dirDest = NULL;
 
 	//Write to STDERR if there are fewer than the required number of args
@@ -408,7 +415,7 @@ int main(int argc, char** argv){
 	DIR *currDir;
 	currDir = opendir(dirToSearch);
 	if(errno == ENOENT){
-		dirToSearch = ".";
+		dirToSearch = "./";
 		currDir = opendir(dirToSearch);	
 	}
 	struct dirent* dirStruct;
@@ -422,21 +429,23 @@ int main(int argc, char** argv){
 	int totalProcesses = 1;
 	printf("PIDS of all child processes: ");
 	fflush(stdout);
-	
-	DIR * dir;
-	dir = opendir(dirToSearch);
-	char * file;
-	int count = 0;
-	while(1) {
-		if((dirStruct = readdir(dir)) == NULL) {
+
+	char * file;		//used to determine i-node type: directory, file, or some other thing
+	while(31337) {
+		if((dirStruct = readdir(currDir)) == NULL) {
 			if(getpid() == pid) {
 				break;
 			} else {
-				exit(count);
+				int subdirProcs = 1;
+				int subdirExitStatus = 0;
+				while(wait(&subdirExitStatus) > 0){
+					subdirProcs += WEXITSTATUS(subdirExitStatus);
+				}
+				exit(subdirProcs);
 			}
 		}
 		
-		isValidCSV(file, columnToSort);
+		//isValidCSV(file, columnToSort);		//debug temp
 		file = dirStruct -> d_name;
 		struct stat stat_file;
 		stat(file, &stat_file);
@@ -444,35 +453,57 @@ int main(int argc, char** argv){
 			continue;
 		}
 
- 		int cpid = fork();
 		int status = 0;
-		if(pid == 0) {
- 			if(S_ISREG(stat_file.st_mode)){
+ 		if(S_ISREG(stat_file.st_mode)){
+			int fileFork = fork();
+			if(fileFork == 0){
 				printf(", %d ",getpid());
-				char* sortedFileEnding = strcat("-sorted-", columnToSort);
+				/*char* sortedFileEnding = strcat("-sorted-", columnToSort);
 				if(strstr(file,".csv") != NULL && strstr(file, sortedFileEnding) == NULL){
 					if(isValidCSV(file, columnToSort)) {
 						parseCSV(file, columnToSort, dirDest);
 					}
+				}*/
+				//Don't need the above. We can check for that in isValidCSV
+				char* filepath = (char*)malloc(sizeof(char)*10000);
+				strcpy(filepath, dirToSearch);		//Because i need to create a new string for full file path.
+				strcat(filepath, file);				//Concatting filename to file path for full file path 
+				if(isValidCSV(filepath, columnToSort)){
+					//parseCSV(filepath, columnToSort, dirDest);
 				}
-				exit(1);	
-			} else {
-				if(!strcmp(file, ".git") || strcmp(file, ".") == 0 || strcmp(file, "..") == 0) {
-					exit(0);
-				}
-				count = 0;
-				printf(" ,%d ",getpid());
-				dir = opendir(file);
+				free(filepath);
+				exit(1);
+			} else{
+				continue;
+			}	
+		} else if(S_ISDIR(stat_file.st_mode)){
+			if(!strcmp(file, ".git") || strcmp(file, ".") == 0 || strcmp(file, "..") == 0) {
 				continue;
 			}
-		} else {
-			waitpid(cpid,&status);
+			int dirFork = fork();
+			if(dirFork == 0){
+				printf(" ,%d ",getpid());
+				dirToSearch = realloc(dirToSearch, sizeof(char)*(strlen(dirToSearch)+strlen(file)+2));
+				strcat(dirToSearch, file);		//Appending new directory to current directory path;
+				strcat(dirToSearch, "/");		//Forcing the current directory path to always end in / for reasons.
+				currDir = opendir(dirToSearch);
+				continue;
+			}
+			else{
+				continue;
+			}
+		} else{
+			//If for some reason there's a thing that's not a file or directory. Gotta handle all the errors dawg.	
+			continue;
 		}
-		
-		count = count + status;
 	}
-
-	printf("\n Total number of Processes: %d\n", count);
+	int rootDirExitStatus;		//For the root directory; helps to sum all the process numbers 
+	int totalProcs = 1;
+	while(wait(&rootDirExitStatus) > 0){
+		//Waiting for all the child processes to return.
+		totalProcs += WEXITSTATUS(rootDirExitStatus);
+	}
+	printf("\n Total number of Processes: %d\n", totalProcs);
 	/*while(1337) {
 		if((dirStruct = readdir(currDir)) == NULL){
 			if(getpid() != pid){			
