@@ -67,7 +67,7 @@ int isInt(movieInfo** dataRows, int sizeOfArray) {
 //function to parse through csv file
 void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 	int numCommasB4Sort = 0;		//The number of commas before the column to be sorted is reached.
-	
+	printf("\nparsing csv\n");
 	char charIn = '\0';				//Buffer to put each char that's being read in from STDIN
 	char* columnNames = malloc(sizeof(char)*500);			//Buffer where we're going to put the first line containing all titles
 	int columnNamesIndex = 0;		//For use in the below do-while loop
@@ -75,7 +75,25 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 	
 	FILE *csv;
 	csv = fopen(filename,"r");
+/*	
+	int p_csv;		//file descriptor for file to be opened.
+	p_csv = open(filename, O_RDONLY);
 	
+	char charIn = '\0';				//Buffer to put each char that's being read in from STDIN
+	char* columnNames = (char*)malloc(sizeof(char)*500);		//Buffer where we're going to put the first line containing all titles
+	int columnNamesIndex = 0;		//For use in the below do-while loop
+	
+	//Reading in from STDIN char by char until a '\n' is reached to get a string containing all column names
+	do{
+		read(p_csv, &charIn, 1);
+		columnNames[columnNamesIndex] = charIn;
+		columnNamesIndex++;
+	}while(charIn != '\n');
+	columnNames[columnNamesIndex] = '\0';
+	columnNames = realloc(columnNames, columnNamesIndex+1);
+*/
+
+
 	//Reading in from STDIN char by char until a '\n' is reached to get a string containing all column names
 	do{
 		fgets(&charIn, 1, csv);
@@ -89,8 +107,27 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 	char* locOfColumn = strstr(columnNames, columnToSort);
 	if(locOfColumn == NULL){
 		write(STDERR, "Error: The column to be sorted that was input as the 2nd parameter is not contained within the CSV.\n", 100);
-		//return -1;
+		fclose(csv);
+		return;
 	}
+	/**************************************************************************************
+	Probably need to move ^^^^ to isValidCSV
+	**************************************************************************************/	
+
+	//Searching for number of commas before column to be sorted
+	//(Assumes that column names don't have commas in them, which they shouldn't for this assignment.
+	/*int i;
+	for(i = 0; i <= (locOfColumn - columnNames); i++){
+
+		if(columnNames[i] == ','){
+			numCommasB4Sort++;		
+		}
+	} */
+
+	//Reading through the rest of STDIN for data:
+	//int sizeOfArray = 0;
+	//movieInfo** dataRows = NULL; //Array of pointers to each instance of movieInfo
+
 	/**************************************************************************************
 	Probably need to move ^^^^ to isValidCSV
 	**************************************************************************************/	
@@ -135,6 +172,7 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 		int firstCommaOfSort = 0; 		//Boolean to detect if the first char parsed into sortColumn is a comma.
 		while(1){
 			fgets(&charIn, 1, csv);
+			//printf("\ninfinite loop\n");
 			if(feof(csv)){
 				break;
 			}
@@ -145,7 +183,7 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 						sortHasQuotes = 1;
 						break;
 					}
-					goto fromQuoteMode;		//Gonna do a bad thing here with goto for the sake of not breaking things.
+					//goto fromQuoteMode;		//Gonna do a bad thing here with goto for the sake of not breaking things.
 				case '\n':
 					//Shrinking char buffer sizes, making them strings, and assigning to movieInfo
 
@@ -180,50 +218,31 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 					}
 					//No break on comma detection so it goes into pre/post col strings.
 				default:
-				fromQuoteMode:	if(parsedCommas < numCommasB4Sort){
-						sizeOfPreSortColumn++;
-						if(sizeOfPreSortColumn > preArraySize){
-								preSortColumn = realloc(preSortColumn, sizeof(char)*preArraySize*2);
-								preArraySize = preArraySize*2;					
-						}
-						preSortColumn[sizeOfPreSortColumn-1] = charIn;
-					}
-					else if(parsedCommas > numCommasB4Sort){
-						sizeOfPostSortColumn++;
-						if(sizeOfPostSortColumn > postArraySize){
-								postSortColumn = realloc(postSortColumn, sizeof(char)*postArraySize*2);
-								postArraySize = postArraySize*2;					
-						}
-						postSortColumn[sizeOfPostSortColumn-1] = charIn;
-					} 
-					else{	//Implies that parsedCommas == numCommasB4Sort
-						if(charIn == ',' && firstCommaOfSort == 0){
 							firstCommaOfSort = 1; // To prevent any inner commas like in movie titles from interfering
 							sizeOfPreSortColumn++;
+							preSortColumn[sizeOfPreSortColumn -1] = charIn;
+
 							if(sizeOfPostSortColumn > postArraySize){
 								postSortColumn = realloc(postSortColumn, sizeof(char)*postArraySize*2);
 								postArraySize = postArraySize*2;					
+							} else {
+								sizeOfSortColumn++;
+								if(sizeOfSortColumn > sortArraySize){
+									sortColumn = realloc(sortColumn, sizeof(char)*sortArraySize*2);
+									sortArraySize = sortArraySize*2;
+								}
+								sortColumn[sizeOfSortColumn-1] = charIn;
 							}
-							preSortColumn[sizeOfPreSortColumn -1] = charIn;
-						}
-						else{
-							sizeOfSortColumn++;
-							if(sizeOfSortColumn > sortArraySize){
-								sortColumn = realloc(sortColumn, sizeof(char)*sortArraySize*2);
-								sortArraySize = sortArraySize*2;
-							}
-							sortColumn[sizeOfSortColumn-1] = charIn;
-						}
-					}
-			}	
+			}
+		    }	
 		}
-	} 
+//	} 
 	int isNumeric = isInt(dataRows, sizeOfArray);
 	
 	mergesort(dataRows, 0, sizeOfArray - 1, isNumeric);
 	char fileToWrite[255];
 	fclose(csv);	
-	snprintf(fileToWrite, 255, "%s/%s-sorted-%s.csv",destDirectory,filename,columnToSort);
+	snprintf(fileToWrite,(int) 255, "%s/%s-sorted-%s.csv",destDirectory,filename,columnToSort);
 	csvwrite(dataRows,sizeOfArray, columnNames, fileToWrite);
 	//^^^^^^^^^ Need to reassign later, just commented out for debugging purposes atm
 
@@ -261,7 +280,7 @@ int isValidCSV(char* filename, char* columnToSort) {
 		return 0;
 	}
 	free(columnNames);	
-	fclose(p_csv);
+	close(p_csv);
 	
 	FILE *csv;
 	csv = fopen(filename, "r");
@@ -313,7 +332,25 @@ int isValidCSV(char* filename, char* columnToSort) {
 		
 	return 1;
 }
-
+/*
+// will write output to csv file
+void csvwrite(movieInfo** movieArr, int size ,char* categories, char* filename){
+	FILE *csvFile; 
+		} else {
+			if(currentChar == ',' && !isInQuotes) {
+				noCommas++;
+			}
+		
+			if(currentChar = '\"') {
+				isInQuotes = !isInQuotes;
+			}
+		}
+	}
+	fclose(csv);
+		
+	return 1;
+}
+*/
 // will write output to csv file
 void csvwrite(movieInfo** movieArr, int size ,char* categories, char* filename){
 	FILE *csvFile; 
@@ -432,6 +469,7 @@ int main(int argc, char** argv){
 
 	char * file;		//used to determine i-node type: directory, file, or some other thing
 	while(31337) {
+		printf("infnite\n");
 		if((dirStruct = readdir(currDir)) == NULL) {
 			if(getpid() == pid) {
 				break;
@@ -469,7 +507,7 @@ int main(int argc, char** argv){
 				strcpy(filepath, dirToSearch);		//Because i need to create a new string for full file path.
 				strcat(filepath, file);				//Concatting filename to file path for full file path 
 				if(isValidCSV(filepath, columnToSort)){
-					//parseCSV(filepath, columnToSort, dirDest);
+//					parseCSV(filepath, columnToSort, dirDest);
 				}
 				free(filepath);
 				exit(1);
@@ -500,6 +538,7 @@ int main(int argc, char** argv){
 	int rootDirExitStatus;		//For the root directory; helps to sum all the process numbers 
 	int totalProcs = 1;
 	while(wait(&rootDirExitStatus) > 0){
+		//printf("infinite loop");
 		//Waiting for all the child processes to return.
 		totalProcs += WEXITSTATUS(rootDirExitStatus);
 	}
@@ -541,24 +580,6 @@ int main(int argc, char** argv){
 				// cheack to make sure we are sorting a csv file and we are not
 				//sorting an already sorted file.
 				if(strstr(currFile,".csv") != NULL && strstr(currFile, sortedFileEnding) == NULL){
-					if(isValidCSV(currFile, argv[2])) {
-						parseCSV(currFile, maxLengthLine(currFile), argv[2], dirDest);
-					}
-				}
-				FILE *pidFile1;
-				pidFile1 = fopen("donotopen","r+");
-				while(!feof(pidFile1)) {
-					fgetc(pidFile1);
-				}
-				fprintf(pidFile1, "%d\n", getpid());	
-				fclose(pidFile1);
-		
-				exit(1);
-			} else {	//Implies that next "file" is actually a directory, so we fork() to process directory.
-		//		int anotherPID = fork();	//variable name pending?
-				noProcesses = 1;
-		//		if(anotherPID == 0) {
-					//More directory stuff	(placeholder comment while i think some things through)
 					currDir = opendir(currFile);
 					continue;		
 		//		} else{
