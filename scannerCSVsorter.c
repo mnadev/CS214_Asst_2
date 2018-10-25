@@ -74,12 +74,6 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 	
 	int csv = open(filename,O_RDONLY);
 	
-<<<<<<< HEAD
-=======
-	FILE *csv;
-	csv = fopen(filename,"r");
-	
->>>>>>> parent of f9344b0... trying to fix issues in parse csv and forking
 	//Reading in from STDIN char by char until a '\n' is reached to get a string containing all column names
 	do{
 		read(csv, &charIn, 1);
@@ -138,13 +132,8 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 
 		int firstCommaOfSort = 0; 		//Boolean to detect if the first char parsed into sortColumn is a comma.
 		while(1){
-<<<<<<< HEAD
 			eofDetect = read(csv, &charIn, 1);
 			if(eofDetect < 1){
-=======
-			fgets(&charIn, 1, csv);
-			if(feof(csv)){
->>>>>>> parent of f9344b0... trying to fix issues in parse csv and forking
 				break;
 			}
 			switch(charIn){
@@ -231,11 +220,7 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 	
 	mergesort(dataRows, 0, sizeOfArray - 1, isNumeric);
 	char fileToWrite[255];
-<<<<<<< HEAD
 	close(csv);	
-=======
-	fclose(csv);	
->>>>>>> parent of f9344b0... trying to fix issues in parse csv and forking
 	snprintf(fileToWrite, 255, "%s/%s-sorted-%s.csv",destDirectory,filename,columnToSort);
 	csvwrite(dataRows,sizeOfArray, columnNames, fileToWrite);
 	//^^^^^^^^^ Need to reassign later, just commented out for debugging purposes atm
@@ -274,7 +259,7 @@ int isValidCSV(char* filename, char* columnToSort) {
 		return 0;
 	}
 	free(columnNames);	
-	fclose(p_csv);
+	close(p_csv);
 	
 
 	int csv = open(filename, O_RDONLY);
@@ -325,11 +310,7 @@ int isValidCSV(char* filename, char* columnToSort) {
 			}
 		}
 	}
-<<<<<<< HEAD
 	close(csv);
-=======
-	fclose(csv);
->>>>>>> parent of f9344b0... trying to fix issues in parse csv and forking
 		
 	return 1;
 }
@@ -489,11 +470,7 @@ int main(int argc, char** argv){
 				strcpy(filepath, dirToSearch);		//Because i need to create a new string for full file path.
 				strcat(filepath, file);				//Concatting filename to file path for full file path 
 				if(isValidCSV(filepath, columnToSort)){
-<<<<<<< HEAD
 					parseCSV(filepath, columnToSort, dirDest);
-=======
-					//parseCSV(filepath, columnToSort, dirDest);
->>>>>>> parent of f9344b0... trying to fix issues in parse csv and forking
 				}
 				free(filepath);
 				exit(1);
@@ -522,117 +499,13 @@ int main(int argc, char** argv){
 		}
 	}
 	int rootDirExitStatus;		//For the root directory; helps to sum all the process numbers 
-	int totalProcs = 1;
+	int totalProcs = 0;			//Francisco said don't count main process
 	while(wait(&rootDirExitStatus) > 0){
 		//Waiting for all the child processes to return.
 		totalProcs += WEXITSTATUS(rootDirExitStatus);
 	}
 	printf("\n Total number of Processes: %d\n", totalProcs);
-<<<<<<< HEAD
 
-=======
-	/*while(1337) {
-		if((dirStruct = readdir(currDir)) == NULL){
-			if(getpid() != pid){			
-				
-				FILE *pidFile1;
-				pidFile1 = fopen("donotopen","r+");
-				while(!feof(pidFile1)) {
-					fgetc(pidFile1);
-				}
-				fprintf(pidFile1, "%d\n", getpid());	
-				fclose(pidFile1);
-				exit(noProcesses+1);
-			} else{
-				break;
-			}
-		}
-		// skipping first two file because its current and parent dirs
-		int statusLoc = 0;
-		char * currFile = dirStruct -> d_name;
-		if(strcmp(currFile,".") == 0 || strcmp(currFile, "..") == 0) {
-			continue;	
-		}
-		int cpid = fork();
-		if(cpid == 0) {
-			int fileType = dirStruct -> d_type;		//fileType = 4 for directory, 8 for file
-<<<<<<< HEAD
-			if(fileType == 8) {
-=======
-			struct stat isFileorNot;
-			stat(currFile, &isFileorNot);
-			if(S_ISREG(isFileorNot.st_mode)) {
->>>>>>> e60159e5ac3b0d7cb93c387968b4626bd07b12ac
-				// to do create data rows array from csv file
-				char* sortedFileEnding = strcat("-sorted-", argv[2]);
-				// cheack to make sure we are sorting a csv file and we are not
-				//sorting an already sorted file.
-				if(strstr(currFile,".csv") != NULL && strstr(currFile, sortedFileEnding) == NULL){
-					if(isValidCSV(currFile, argv[2])) {
-						parseCSV(currFile, maxLengthLine(currFile), argv[2], dirDest);
-					}
-				}
-				FILE *pidFile1;
-				pidFile1 = fopen("donotopen","r+");
-				while(!feof(pidFile1)) {
-					fgetc(pidFile1);
-				}
-				fprintf(pidFile1, "%d\n", getpid());	
-				fclose(pidFile1);
-		
-				exit(1);
-			} else {	//Implies that next "file" is actually a directory, so we fork() to process directory.
-		//		int anotherPID = fork();	//variable name pending?
-				noProcesses = 1;
-		//		if(anotherPID == 0) {
-					//More directory stuff	(placeholder comment while i think some things through)
-					currDir = opendir(currFile);
-					continue;		
-		//		} else{
-					// add noProcesses to wait to count noProcesses
-					// int waitRet = wait();
-					// noProcesses = noProcesses + waitRet;
-		//			waitpid(anotherPID, &statusLoc);		//placeholder wait
-		//			totalProcesses += statusLoc;	//Adds by the number of processes spawned from child
-		//			continue;
-		//		}
-			 	//Might need to add more things here later to account for writing all the child PIDs to STDOUT.
-			}
-		} else{
-<<<<<<< HEAD
-			wait(&statusLoc); //placeholder wait
-			printf("RAWR%d\n", &statusLoc);
-=======
-			waitpid(cpid, &statusLoc); //placeholder wait
->>>>>>> e60159e5ac3b0d7cb93c387968b4626bd07b12ac
-			totalProcesses = totalProcesses + statusLoc;
-			fflush(stdout);
-			printf("\n%d\n",totalProcesses);
-			if(totalProcesses <= 2){
-	//			printf("\n%d\n", cpid);
-			} else {
-	//			printf(" %d ", cpid);
-			}
-		}
-	}
-	
-	printf("\nTotal Number of Processes: %d\n", totalProcesses);
-	
-	//closedir(dir);
-	FILE *pidFile1;
-				int count = 0;
-				pidFile1 = fopen("donotopen","r+");
-				while(!feof(pidFile1)) {
-					char c = fgetc(pidFile1);
-					printf("%c",c);
-					if(c == '\n') {
-						count++;
-					}
-				}
-				fclose(pidFile1);
-				printf("\nAMount of processes: %d\n",count);
-	*/
->>>>>>> parent of f9344b0... trying to fix issues in parse csv and forking
 	return 0;
 }
 
