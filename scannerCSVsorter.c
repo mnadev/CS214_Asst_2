@@ -73,7 +73,7 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 	int columnNamesIndex = 0;		//For use in the below do-while loop
 	
 	int csv = open(filename,O_RDONLY);
-	printf("\nCOLUMN LINE:");
+	//printf("\nCOLUMN LINE:");
 	//Reading in from STDIN char by char until a '\n' is reached to get a string containing all column names
 	do{
 		read(csv, &charIn, 1);
@@ -86,7 +86,7 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 
 	//Determining if the column to be sorted parameter is in the list of columns using strstr()
 	char* locOfColumn = strstr(columnNames, columnToSort);
-	if(locOfColumn == NULL){
+	if(!(*locOfColumn)){
 		//write(STDERR, "Error: The column to be sorted that was input as the 2nd parameter is not contained within the CSV.\n", 100);
 		return;
 	}
@@ -223,7 +223,7 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 	char fileToWrite[255];
 	close(csv);	
 	snprintf(fileToWrite, 255, "%s/%s-sorted-%s.csv\0",destDirectory,filename,columnToSort);
-	printf("\n OUTPUT FILE: %s \n",fileToWrite);
+	//printf("\n OUTPUT FILE: %s \n",fileToWrite);
 	csvwrite(dataRows,sizeOfArray, columnNames, fileToWrite);
 	//^^^^^^^^^ Need to reassign later, just commented out for debugging purposes atm
 
@@ -243,7 +243,7 @@ int isValidCSV(char* filename, char* columnToSort) {
 	}*/
 	int p_csv;		//file descriptor for file to be opened.
 	p_csv = open(filename, O_RDONLY);
-	
+	int returnVal = 1;
 	char charIn = '\0';				//Buffer to put each char that's being read in from STDIN
 	char* columnNames = (char*)malloc(sizeof(char)*500);		//Buffer where we're going to put the first line containing all titles
 	int columnNamesIndex = 0;		//For use in the below do-while loop
@@ -251,23 +251,24 @@ int isValidCSV(char* filename, char* columnToSort) {
 	//Reading in from STDIN char by char until a '\n' is reached to get a string containing all column names
 	do{
 		read(p_csv, &charIn, 1);
-		columnNames[columnNamesIndex] = charIn;
-		columnNamesIndex++;
-		printf("%c",charIn);
+		if(charIn != '\n') {
+			columnNames[columnNamesIndex] = charIn;
+			columnNamesIndex++;
+		}
+		//printf("%c",charIn);
 	}while(charIn != '\n');
 	columnNames[columnNamesIndex] = '\0';
 	columnNames = realloc(columnNames, columnNamesIndex+1);
-	printf("\n");
+	//printf("\n");
 	//Determining if the column to be sorted parameter is in the list of columns using strstr()
 	char* locOfColumn = strstr(columnNames, columnToSort);
-	printf("COLUMN CHECKING:\n COLUMN LINE: %s COLUMN SORTING: %s RESULT:%s \n",columnNames, columnToSort, locOfColumn);
-	
+	//printf("COLUMN CHECKING:\n COLUMN LINE: %s \nCOLUMN SORTING: %s\n RESULT:%s \n",columnNames, columnToSort, locOfColumn);
 	// ERROR ERROR ERROR 
 	// theres is an error here the reaso for which i am currently looking up but it doesn't sort because of this always returns 0
-	if(!(strstr(columnNames, columnToSort) != NULL)){
+	//printf("\n EQUALITY CHECK:%s %c%c%c %d \n", filename, *locOfColumn, *(locOfColumn+1), *(locOfColumn + 2), locOfColumn == NULL);
+	if(!(*locOfColumn == *columnToSort) && locOfColumn == NULL ){
 		write(STDERR, "Error while checking validity: The column to be sorted that was input as the 2nd parameter is not contained within the CSV.\n", 100);
-		close(p_csv);
-		return 0;
+		returnVal = 0;
 	}
 	free(columnNames);	
 	close(p_csv);
@@ -323,7 +324,7 @@ int isValidCSV(char* filename, char* columnToSort) {
 	}
 	close(csv);
 		
-	return 1;
+	return returnVal;
 }
 
 // will write output to csv file
