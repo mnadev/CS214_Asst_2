@@ -24,13 +24,6 @@ int isInt(movieInfo** dataRows, int sizeOfArray) {
 	//so we should check all of them to be sure
 	movieInfo** tempPtrCheckInt = dataRows;
 	int i = 0;
-
-
-
-	// THIS IS WHERE THE PROBLEM LIES
-	// LOOK INTO YOUR EYES
-	// AND YOU WILL FIND
-	// SOME PORK RIND
 		
 	while(i < sizeOfArray) {
 		//iterate through each char, checking if it is int
@@ -74,13 +67,16 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 	
 	int csv = open(filename,O_RDONLY);
 	//printf("\nCOLUMN LINE:");
+	
 	//Reading in from STDIN char by char until a '\n' is reached to get a string containing all column names
+	
 	do{
 		read(csv, &charIn, 1);
 		columnNames[columnNamesIndex] = charIn;
 		columnNamesIndex++;
 		printf("%c", charIn);
 	}while(charIn != '\n');
+	
 	columnNames[columnNamesIndex] = '\0';
 	columnNames = realloc(columnNames, columnNamesIndex+1);
 
@@ -90,12 +86,14 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 		//write(STDERR, "Error: The column to be sorted that was input as the 2nd parameter is not contained within the CSV.\n", 100);
 		return;
 	}
+	
 	/**************************************************************************************
 	Probably need to move ^^^^ to isValidCSV
 	**************************************************************************************/	
 
 	//Searching for number of commas before column to be sorted
 	//(Assumes that column names don't have commas in them, which they shouldn't for this assignment.
+	
 	int i;
 	for(i = 0; i <= (locOfColumn - columnNames); i++){
 
@@ -232,10 +230,11 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 // checks if the csv is valid. will return 1 if so, 0 if not valid. 
 int isValidCSV(char* filename, char* columnToSort) {
 	int pathLen = strlen(filename);
+	/*
 	printf("\n NAME: %s LENGTH OF FILE NAME: %d \n", filename, pathLen);
 	printf("COLUMN SORTING: %s\n", columnToSort);
 	printf("%c%c%c%c\nHEADER",filename[pathLen -4], filename[pathLen -3], filename[pathLen-2],filename[pathLen - 1]);
-	/*
+	
 	if(filename[pathLen-1] == 'v' && filename[pathLen-2] == 's' && filename[pathLen-3] == 'c' && filename[pathLen-4] == '.'){
 		//Yay it's a CSV
 	} else{
@@ -257,15 +256,20 @@ int isValidCSV(char* filename, char* columnToSort) {
 		}
 		//printf("%c",charIn);
 	}while(charIn != '\n');
+	
 	columnNames[columnNamesIndex] = '\0';
 	columnNames = realloc(columnNames, columnNamesIndex+1);
+	
 	//printf("\n");
 	//Determining if the column to be sorted parameter is in the list of columns using strstr()
+	
 	char* locOfColumn = strstr(columnNames, columnToSort);
+	
 	//printf("COLUMN CHECKING:\n COLUMN LINE: %s \nCOLUMN SORTING: %s\n RESULT:%s \n",columnNames, columnToSort, locOfColumn);
 	// ERROR ERROR ERROR 
 	// theres is an error here the reaso for which i am currently looking up but it doesn't sort because of this always returns 0
 	//printf("\n EQUALITY CHECK:%s %c%c%c %d \n", filename, *locOfColumn, *(locOfColumn+1), *(locOfColumn + 2), locOfColumn == NULL);
+	
 	if(!(*locOfColumn == *columnToSort) && locOfColumn == NULL ){
 		write(STDERR, "Error while checking validity: The column to be sorted that was input as the 2nd parameter is not contained within the CSV.\n", 100);
 		returnVal = 0;
@@ -482,15 +486,15 @@ int main(int argc, char** argv){
 				strcpy(filepath, dirToSearch);		//Because i need to create a new string for full file path.
 				strcat(filepath, file);	//Concatting filename to file path for full file path 
 				int pathLen = strlen(filepath);
-		if(filepath[pathLen-1]=='v' && filepath[pathLen-2] == 's' && filepath[pathLen-3] == 'c' && filepath[pathLen-4] == '.'){
-				//Yay it's a CSV
+				int validity = 1;
+				validity = isValidCSV(filepath, columnToSort);
 
-				int validity = isValidCSV(filepath, columnToSort);
 				printf("\nisValidCSV: %s %d \n", filepath, validity);
-				if(isValidCSV(filepath, columnToSort)){
+
+				if(validity){
 					parseCSV(filepath, columnToSort, dirDest);
 				}
-		}
+				
 				free(filepath);
 				exit(1);
 			} else{
