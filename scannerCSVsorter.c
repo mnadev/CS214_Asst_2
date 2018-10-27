@@ -60,7 +60,7 @@ int isInt(movieInfo** dataRows, int sizeOfArray) {
 //function to parse through csv file
 void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 	int pathLen = strlen(filename);
-	
+	//printf("parsing %s\n",filename);
 	// return 0 if no .csv file extension
 	if(!(filename[pathLen-1] == 'v' && filename[pathLen-2] == 's' && filename[pathLen-3] == 'c' && filename[pathLen-4] == '.')){
 		return;
@@ -81,7 +81,7 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 		read(csv, &charIn, 1);
 		columnNames[columnNamesIndex] = charIn;
 		columnNamesIndex++;
-		printf("%c", charIn);
+		//printf("%c", charIn);
 	}while(charIn != '\n');
 	
 	columnNames[columnNamesIndex] = '\0';
@@ -168,14 +168,14 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 					sortColumn[sizeOfSortColumn] = '\0';
 					row.toBeSorted = sortColumn;
 					row.sizeOfSort = sizeOfSortColumn;
-					//printf("%s\n", row.toBeSorted); (Debug code)
+					//printf("%s\n", row.toBeSorted); //(Debug code)
 					//printf("%d, %d, %d\n", sizeOfPreSortColumn, sizeOfSortColumn, sizeOfPostSortColumn);
 
 					preSortColumn = realloc(preSortColumn, sizeOfPreSortColumn+1);
 					preSortColumn[sizeOfPreSortColumn] = '\0';
 					row.beforeSortedCol = preSortColumn;
 					row.sizeBefore = sizeOfPreSortColumn;
-					//printf("%s\n", row.beforeSortedCol); (Debug code)
+					//printf("%s\n", row.beforeSortedCol); //(Debug code)
 
 
 					postSortColumn = realloc(postSortColumn, sizeOfPostSortColumn+1);
@@ -240,8 +240,29 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 	mergesort(dataRows, 0, sizeOfArray - 1, isNumeric);
 	close(csv);	
 	
-	char fileToWrite[255];
-	snprintf(fileToWrite, 255, "%s/%s-sorted-%s.csv\0",destDirectory,filename,columnToSort);
+	//truncate file extension off filename
+	if(filename[pathLen-1] == 'v' && filename[pathLen-2] == 's' && filename[pathLen-3] == 'c' && filename[pathLen-4] == '.'){
+		filename[pathLen - 1] = '\0';
+		filename[pathLen - 2] = '\0';
+		filename[pathLen - 3] = '\0';
+		filename[pathLen - 4] = '\0';
+	}
+	
+	//filename has a ./ in front of it so we want to remove that
+	if(*(filename) == '.') { 
+		filename = filename + 1;
+	}	
+	if(*(filename) == '/') {
+		filename = filename + 1;
+	}
+	char* fileToWrite = (char*) malloc(sizeof(char) * 255);
+	//printf("destDirectory: %s\n",destDirectory);
+	if(destDirectory != NULL) {
+		snprintf(fileToWrite, 255, "%s%s-sorted-%s.csv\0",destDirectory,filename,columnToSort);
+	} else {
+		snprintf(fileToWrite, 255, "%s-sorted-%s.csv\0",filename,columnToSort);
+	}
+	//printf("destination file: %s \n", fileToWrite);
 	csvwrite(dataRows,sizeOfArray, columnNames, fileToWrite);
 }
 
@@ -369,6 +390,7 @@ int isValidCSV(char* filename, char* columnToSort) {
 
 // will write output to csv file
 void csvwrite(movieInfo** movieArr, int size ,char* categories, char* filename){
+	//printf("writing to file %s \n",filename);
 	FILE *csvFile; 
 	csvFile = fopen(filename, "w+");
 	
@@ -521,7 +543,7 @@ int main(int argc, char** argv){
 				int validity = 1;
 				validity = isValidCSV(filepath, columnToSort);
 
-				printf("\nisValidCSV: %s %d \n", filepath, validity);
+				//printf("\nisValidCSV: %s %d \n", filepath, validity);
 
 				if(validity){
 					parseCSV(filepath, columnToSort, dirDest);
