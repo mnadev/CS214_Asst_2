@@ -270,6 +270,89 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 	csvwrite(dataRows,sizeOfArray, columnNames, fileToWrite);
 }
 
+
+//Function to check if all column headers belong to the set of movie_data headers (Assign1 Requirement)
+//Returns 1 if true, 0 if false;
+int hasHeaders(char* columnNames){
+	char headerName[50];
+	int headerIndex = 0;
+
+	int i = 0;	
+	while(columnNames[i] != '\0'){
+		switch(columnNames[i]){
+			case ",":
+				headerName[headerIndex] = '\0';
+				if(strcmp(headerName, "color") != 0){
+					return 0;
+				} else if(strcmp(headerName, "director_name") != 0){
+					return 0;
+				} else if(strcmp(headerName, "num_critic_for_reviews") != 0){
+					return 0;
+				} else if(strcmp(headerName, "duration") != 0){
+					return 0;
+				} else if(strcmp(headerName, "director_facebook_likes") != 0){
+					return 0;
+				} else if(strcmp(headerName, "actor_3_facebook_likes") != 0){
+					return 0;
+				} else if(strcmp(headerName, "actor_2_name") != 0){
+					return 0;
+				} else if(strcmp(headerName, "actor_1_facebook_likes") != 0){
+					return 0;
+				} else if(strcmp(headerName, "gross") != 0){
+					return 0;
+				} else if(strcmp(headerName, "genres") != 0){
+					return 0;
+				} else if(strcmp(headerName, "actor_1_name") != 0){
+					return 0;
+				} else if(strcmp(headerName, "movie_title") != 0){
+					return 0;
+				} else if(strcmp(headerName, "num_voted_users") != 0){
+					return 0;
+				} else if(strcmp(headerName, "cast_total_facebook_likes") != 0){
+					return 0;
+				} else if(strcmp(headerName, "actor_3_name") != 0){
+					return 0;
+				} else if(strcmp(headerName, "facenumber_in_poster") != 0){
+					return 0;
+				} else if(strcmp(headerName, "plot_keywords") != 0){
+					return 0;
+				} else if(strcmp(headerName, "movie_imdb_link") != 0){
+					return 0;
+				} else if(strcmp(headerName, "num_user_for_reviews") != 0){
+					return 0;
+				} else if(strcmp(headerName, "language") != 0){
+					return 0;
+				} else if(strcmp(headerName, "country") != 0){
+					return 0;
+				} else if(strcmp(headerName, "content_rating") != 0){
+					return 0;
+				} else if(strcmp(headerName, "budget") != 0){
+					return 0;
+				} else if(strcmp(headerName, "title_year") != 0){
+					return 0;
+				} else if(strcmp(headerName, "actor_2_facebook_likes") != 0){
+					return 0;
+				} else if(strcmp(headerName, "imdb_score") != 0){
+					return 0;
+				} else if(strcmp(headerName, "aspect_ratio") != 0){
+					return 0;
+				} else if(strcmp(headerName, "movie_faceook_likes") != 0){
+					return 0;
+				} else{
+					headerIndex = 0;
+					i++;
+				}
+				break;
+			default:
+				headerName[headerIndex] = columnNames[i];
+				headerIndex++;
+				i++;
+				break;
+		}
+	}
+	return 1;
+}
+
 /** function to check if the csv is valid. will return 1 if so, 0 if not valid. 
 ** Checks the file extension, if the column to be sorted exists in file
 ** and also check number of commas in each line. 
@@ -281,6 +364,11 @@ int isValidCSV(char* filename, char* columnToSort) {
 	if(!(filename[pathLen-1] == 'v' && filename[pathLen-2] == 's' && filename[pathLen-3] == 'c' && filename[pathLen-4] == '.')){
 		return 0;
 	} 
+	
+	//Checking if the CSV file already has a sorted version.
+	if(strstr(filename, "-sorted-") != NULL){
+		return 0;
+	}
 	
 	
 	int p_csv;		//file descriptor for file to be opened.
@@ -313,6 +401,11 @@ int isValidCSV(char* filename, char* columnToSort) {
 		write(STDERR, "Error while checking validity: The column to be sorted that was input as the 2nd parameter is not contained within the CSV.\n", 124);
 		return 0;
 	}
+	if(hasHeaders(columnNames) == 0){
+		write(STDERR, "Error while checking validity: The CSV contained an unknown column header.\n", 75);
+		return 0;
+	}
+
 	free(columnNames);	
 	close(p_csv);
 	
@@ -428,7 +521,7 @@ int main(int argc, char** argv){
 
 	//Write to STDERR if there are fewer than the required number of args
 	if(argc < 3){
-		write(STDERR, "Insufficient arguments.\n", 25);
+		write(STDERR, "Fatal Error: Insufficient arguments.\n", 38);
 		return -1;
 	}
 	//Flag Handling:
@@ -437,7 +530,7 @@ int main(int argc, char** argv){
 		switch(flag){		
 			case 'c':
 				if(flagsPresent[0] == 1){
-					write(STDERR, "Error: Repeated argument -c.\n", 30); 
+					write(STDERR, "Fatal Error: Repeated argument -c.\n", 36); 
 					return -1;
 				} else{
 					flagsPresent[0] = 1;				//The -c parameter is present
@@ -447,7 +540,7 @@ int main(int argc, char** argv){
 				}
 			case 'd':
 				if(flagsPresent[1] == 1){
-					write(STDERR, "Error: Repeated argument -d.\n", 30); 
+					write(STDERR, "Fatal Error: Repeated argument -d.\n", 36); 
 					return -1;
 				} else{
 					flagsPresent[1] = 1;
@@ -457,7 +550,7 @@ int main(int argc, char** argv){
 				}
 			case 'o':
 				if(flagsPresent[2] == 1){
-					write(STDERR, "Error: Repeated argument -o.\n", 30); 
+					write(STDERR, "Fatal Error: Repeated argument -o.\n", 36); 
 					return -1;
 				} else{
 					flagsPresent[2] = 1;
@@ -466,14 +559,14 @@ int main(int argc, char** argv){
 					break;
 				}				
 			case '?':
-				write(STDERR, "Error: Unknown arguments.\n", 27);
+				write(STDERR, "Fatal Error: Unknown arguments.\n", 33);
 				return -1;
 		}
 
 	}
 	//Write to STDERR if -c flag is not present
 	if(flagsPresent[0] != 1){
-		write(STDERR, "Error: The first argument of the program must be '-c to sort by column.\n", 75);
+		write(STDERR, "Fatal Error: The first argument of the program must be '-c to sort by column.\n", 81);
 		return -1;
 	}
 	if(flagsPresent[2] == 1){
@@ -561,9 +654,7 @@ int main(int argc, char** argv){
 			}
 			int dirFork = fork();
 			if(dirFork == 0){
-				int dirToSearchLen = strlen(dirToSearch);
-				int fileLen = strlen(file);
-				dirToSearch = realloc(dirToSearch, sizeof(char)*(strlen(dirToSearch)+strlen(file)+5));
+				dirToSearch = realloc(dirToSearch, sizeof(char)*(strlen(dirToSearch)+strlen(file)+2));
 				strcat(dirToSearch, file);		//Appending new directory to current directory path;
 				strcat(dirToSearch, "/");		//Forcing the current directory path to always end in / for reasons.
 				currDir = opendir(dirToSearch);
