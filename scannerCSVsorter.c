@@ -90,14 +90,6 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 	//Determining if the column to be sorted parameter is in the list of columns using strstr()
 	
 	char* locOfColumn = strstr(columnNames, columnToSort);
-	if(!(*locOfColumn)){
-		//write(STDERR, "Error: The column to be sorted that was input as the 2nd parameter is not contained within the CSV.\n", 100);
-		return;
-	}
-	
-	/**************************************************************************************
-	Probably need to move ^^^^ to isValidCSV
-	**************************************************************************************/	
 
 	//Searching for number of commas before column to be sorted
 	//(Assumes that column names don't have commas in them, which they shouldn't for this assignment.
@@ -248,13 +240,13 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 		filename[pathLen - 4] = '\0';
 	}
 	
-	//filename has a ./ in front of it so we want to remove that
+	/*//filename has a ./ in front of it so we want to remove that
 	if(*(filename) == '.') { 
 		filename = filename + 1;
 	}	
 	if(*(filename) == '/') {
 		filename = filename + 1;
-	}
+	}*/
 	char* fileToWrite = (char*) malloc(sizeof(char) * 255);
 	//printf("destDirectory: %s\n",destDirectory);
 	if(destDirectory != NULL) {
@@ -536,7 +528,6 @@ int main(int argc, char** argv){
 			if(fileFork == 0){
 				printf(", %d ",getpid());
 				
-				//Don't need the above. We can check for that in isValidCSV
 				char* filepath = (char*)malloc(sizeof(char)*10000);
 				strcpy(filepath, dirToSearch);		//Because i need to create a new string for full file path.
 				strcat(filepath, file);	//Concatting filename to file path for full file path 
