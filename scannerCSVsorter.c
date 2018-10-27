@@ -240,17 +240,29 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 		filename[pathLen - 4] = '\0';
 	}
 	
-	/*//filename has a ./ in front of it so we want to remove that
+
+	int isAbsolutePath = 0;
+	if(destDirectory != NULL) {
+		if(*(destDirectory) == '/') {
+			isAbsolutePath = 0;
+		}
+	}	
+	//filename has a ./ in front of it so we want to remove that
+
 	if(*(filename) == '.') { 
 		filename = filename + 1;
 	}	
 	if(*(filename) == '/') {
 		filename = filename + 1;
-	}*/
+	}
 	char* fileToWrite = (char*) malloc(sizeof(char) * 255);
 	//printf("destDirectory: %s\n",destDirectory);
 	if(destDirectory != NULL) {
-		snprintf(fileToWrite, 255, "%s%s-sorted-%s.csv\0",destDirectory,filename,columnToSort);
+		if(isAbsolutePath == 1) {
+			 snprintf(fileToWrite, 255, "%s/%s-sorted-%s.csv\0",destDirectory,filename,columnToSort);
+		} else {
+			snprintf(fileToWrite, 255, "./%s/%s-sorted%s.csv\0",destDirectory, filename, columnToSort);
+		}
 	} else {
 		snprintf(fileToWrite, 255, "%s-sorted-%s.csv\0",filename,columnToSort);
 	}
@@ -298,7 +310,7 @@ int isValidCSV(char* filename, char* columnToSort) {
 	// printf("\n EQUALITY CHECK:%s %c%c%c %d \n", filename, *locOfColumn, *(locOfColumn+1), *(locOfColumn + 2), locOfColumn == NULL);
 	
 	if(locOfColumn == NULL ){
-		write(STDERR, "Error while checking validity: The column to be sorted that was input as the 2nd parameter is not contained within the CSV.\n", 100);
+		write(STDERR, "Error while checking validity: The column to be sorted that was input as the 2nd parameter is not contained within the CSV.\n", 124);
 		return 0;
 	}
 	free(columnNames);	
@@ -410,7 +422,8 @@ int main(int argc, char** argv){
 	//Input flags of the program and whether they are present: Index 0 = -c, Index 1 = -d, Index 2 = -o
 	int flagsPresent[] = {0,0,0};		
 	char* columnToSort;
-	char* dirToSearch = "./";	//dirToSearch defaults to current directory if not changed by flag later.
+	char* dirToSearch = (char*)malloc(sizeof(char)*3);
+		strcpy(dirToSearch, "./");	//dirToSearch defaults to current directory if not changed by flag later.
 	char* dirDest = NULL;
 
 	//Write to STDERR if there are fewer than the required number of args
@@ -463,27 +476,24 @@ int main(int argc, char** argv){
 		write(STDERR, "Error: The first argument of the program must be '-c to sort by column.\n", 75);
 		return -1;
 	}
+	if(flagsPresent[2] == 1){
+		DIR* testOpen;
+		testOpen = opendir(dirDest);
+		if(errno == ENOENT){
+			write(STDERR, "Fatal Error: Output directory not found.\n", 41);
+			return -1;
+		}
+	]
 
 	printf("\nInitial PID: ");
 	int pid = getpid();
 	printf("%d\n",pid);
 	
-	// check for directory to search
-	// using command line argument if inputted
-	if(argc > 3){
-		if(strcmp("-d",argv[3]) != 0){
-			//set it to what they give
-			if(argc > 4) {
-				dirToSearch = argv[4];
-			}
-		}
-	}
-	
 	DIR *currDir;
 	currDir = opendir(dirToSearch);
 	if(errno == ENOENT){
-		dirToSearch = "./";
-		currDir = opendir(dirToSearch);	
+		write(STDERR, "Fatal Error: Directory to search not found.\n", 44);
+		return -1;
 	}
 	struct dirent* dirStruct;
 	
@@ -516,14 +526,13 @@ int main(int argc, char** argv){
 		strcat(sortedEnd, columnToSort);
 		//isValidCSV(file, columnToSort);		//debug temp
 		file = dirStruct -> d_name;
-		struct stat stat_file;
-		stat(file, &stat_file);
+		int fileMode = (int)(dirStruct -> d_type);
 		if(!strcmp(file, ".git") || strcmp(file, ".") == 0 || strcmp(file, "..") == 0 || strstr(file,sortedEnd) != NULL) {
 			continue;
 		}
 
 		int status = 0;
- 		if(S_ISREG(stat_file.st_mode)){
+ 		if(fileMode == 8){
 			int fileFork = fork();
 			if(fileFork == 0){
 				printf(", %d ",getpid());
@@ -545,14 +554,16 @@ int main(int argc, char** argv){
 			} else{
 				continue;
 			}	
-		} else if(S_ISDIR(stat_file.st_mode)){
-			if(!strcmp(file, ".git") || strcmp(file, ".") == 0 || strcmp(file, "..") == 0) {
+		} else if(fileMode == 4){
+			printf("Entered Dir \n");
+			if(strcmp(file, ".git") == 0 || strcmp(file, ".") == 0 || strcmp(file, "..") == 0) {
 				continue;
 			}
 			int dirFork = fork();
 			if(dirFork == 0){
-				printf(" ,%d ",getpid());
-				dirToSearch = realloc(dirToSearch, sizeof(char)*(strlen(dirToSearch)+strlen(file)+2));
+				int dirToSearchLen = strlen(dirToSearch);
+				int fileLen = strlen(file);
+				dirToSearch = realloc(dirToSearch, sizeof(char)*(strlen(dirToSearch)+strlen(file)+5));
 				strcat(dirToSearch, file);		//Appending new directory to current directory path;
 				strcat(dirToSearch, "/");		//Forcing the current directory path to always end in / for reasons.
 				currDir = opendir(dirToSearch);
