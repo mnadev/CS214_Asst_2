@@ -1,38 +1,81 @@
-SIMPLECSVSORTER.C
-simpleCSVsorter is a program that given a csv and a category sorts the csv file by that specific category.
+SCANNERCSVSORTER.C
+scannerCSVsorter is a program that given a column to sort by, an optional directory to search, and an optional directory to output file, looks through all files and subdirectories of the directory to search and sorts all valid CSV files and outputs them to the directory. 
 SYNOPSIS
-  simpleCSVsorter.out -c <ColumnToSortBy>
+  scannerCSVsorter.out -c <ColumnToSortBy> -d <directoryToSearch> -o <outputDirectory>
 DESCRIPTION
-  simpleCSVsorter reads in a CSV file by filename. Then, the CSV file is sorted by the given parameter and the output is printed to stdout.  
+  scannerCSVsorter looks through the entire directory that is to be searched and looks at all files and subdirectories. Then, the CSV file is sorted by the given parameter and the output is written to a file of the form filename-sorted-columnSortedBy.csv to the output directory. 
+  
+  CSVWRITE:
+  void csvwrite(movieInfo** movieArr, int size ,char* categories, char* filename);
+  
+  csvwrite is a function that takes in a (sorted) array of movieInfo structs, the size of the array, the column headers of the csv file, and the output filename. Using these parameters, the csvwrite function writes the column headers and the movieInfo array to the file with the given filename.
+  
+  ISINT:
+  int isInt(movieInfo** dataRows, int sizeOfArray);
+  
+  isInt is a function that takes in an array of movieInfo structs and the size of the array. The function iterates through the array and output a 1 if the data values that we want to sort are numeric in nature and a 0 otherwise.
+  
+  PARSECSV:
+  void parseCSV(char* filename, char* columnToSort, char* destDirectory);
+  
+  parseCSV is a function that takes a filename corresponding to a csv file, a column to sort the file by and the destination directory. parseCSV then parses the CSV and creates a movieInfo struct. Then, parseCSV uses mergesort to sort the file by the given column. Then, the sorted array is written into an output file in the destination directory by calling csvwrite();
+  
+  ISVALIDCSV:
+  int isValidCSV(char* filename, char* columnToSort);
+  
+  isValidCSV is a function that validates a csv file. Given a filename and a column to sort by, isValidCSV checks if the file has the ".csv" extension and checks if the file has the given column. isValidCSV also checks if the file is actually a valid csv by validating that each line has the same number of commmas. isValidCSV returns a 1 if the csv is valid and a 0 otherwise. 
+  
 OPTIONS
   "-c" indicates that the sorting of data entries is to be done based on columns
   <ColumnToSortBy> is the name of the column that the program is to sort by.
+  -d indicates the directory that is to be searched
+  <directoryToSearch> is the directory to be searched.
+  -o indicates the output directory.
+  <outputDirectory> is the output directory.
 EXAMPLES
-	cat movie_metadata.csv | ./simpleCSVsorter.out -c title > sorted_movie_metadata.csv
-	Will sort the movie_metadata.csv by titles and place the newly sorted csv into sorted_movie_metadata.csv
+	./scannerCSVSorter.out -c title -d files -o sortedFiles
+	Will sort all valid csv files in files/ with the specific column(titles) and write the newly sorted csv files into sortedFiles directory.
 EXIT STATUS
-The code will return 0 if terminated successfully. The code will return -1 if the command line arguments are not correct or if there are insufficient arguments. The program will also return -1 if the row that was to be sorted doesn't exist inside the CSV file.
+The code will return 0 if terminated successfully. The code will return -1 if the command line arguments are not correct or if there are insufficient arguments. 
 SEE ALSO
-simplecsvsorter.h
+scannerCSVsorter.h
 mergesort.c
 BUGS
 None currently known.
 AUTHOR(s)
 Eric Lin and Mohammad Nadeem
 
+
 The design of the program is as follows:
-	Before the CSV is actually parsed, the program will check the arguments to ensure that the arguments were properly inputted, outputting to STDERR and returning -1 if the arguments did not match the required format.
-	In the first part of the program, the program allocates 500 bytes to be used as a buffer to store the row containing the names of the columns. Characters are then read in one by one from the STDIN file descriptor to the buffer until a newline character '\n' is found, counting the number of characters that are being read in. The assumption is made that the row containing column names will contain less than 500 bytes, as the given test CSV only has around 410 characters in the first row. Once '\n' is found, the program reduces the size of the buffer to the exact space needed to hold all the characters, and searches for the input <ColumnToSortBy>. If not found, the program returns -1. If found, the program counts the number of commas before the <ColumnToSortBy> substring. Each following row then counts the number of commas parsed. When the number of commas parsed is lower than the number of commas before the sorted column, the characters are placed into the beforeSortedCol field of the movieInfo struct. When the number of commas parsed is equal to the number of commas before the sorted column, the characters are placed into the toBeSorted field, and when the number of commas parsed is greater than the number of commas before the sorted column, the characters are placed in the afterSortedCol field. The pointer referring to the movieInfo struct is put into an array of movieInfo pointers, and this is passed into mergesort to be sorted.
+	Before the directory is searched, the program will check the arguments to ensure that the arguments were properly inputted, outputting to STDERR and returning -1 if the arguments did not match the required format. Specifically, the only argument that is necessary is "-c <ColumnToSortBy>". If that argument is not given, the program will return -1. Otherwise, it will run and use the current directory as the one to search and output files to. 
+	The program then prints the current, parent process's PID. Then, we iterate through all the files and subdirectories. For each file and subdirectory, the program forks itself and print the child's pid. For a subdirectory, we iterate through all files and subdirectories and fork.  For a file, we check if the file is a valid CSV. If so, we parse and output. Then, the program outputs the number of all processes and exits.
 
-
-SIMPLECSVSORTER.H
+SCANNERCSVSORTER.H
 SYNOPSIS
-simpleCSVsorter.h is a header file that defines necessary structs and functions required for the CSV sorter to operate.
+scannerCSVsorter.h is a header file that defines necessary structs and functions required for the CSV sorter to operate.
+DESCRIPTION
+
+STRUCT _MOVIEINFO
+typedef struct _movieInfo movieInfo
+This struct holds information for a given movie. The struct has the following parameters:
+ 	char* beforeSortedCol;			
+	char* toBeSorted;				
+	char* afterSortedCol;		
+	int sizeBefore;
+	int sizeOfSort;
+	int sizeAfter;
+        int sortHasQuotes;
+beforeSortedCol holds all of the character that occur before the column that is to be sorted in a given line. toBeSorted holds the data that is part of the column that is to be sorted. afterSortedCol holds the data that is after the column that is to be sorted. sizeBefore is the amount of characters that occur before the sorted column. sizeOfSort is the amount of characters of the column that is to be sorted. sizeAfter is the amount of character after the column that is to be sorted. sortHasQuotes is an int that is 1 if the column to be sorted is surrounded by quotes and a 0 otherwise. 
+
+MERGESORT
+void mergesort(movieInfo** arr, int leftInd, int rightInd, int isInt); 
+See MERGESORT.C
+
 
 EXIT STATUS
 Since this is a header file, exit status is not defined and not necessary for function of the code.
 SEE ALSO
-simpleCSVsorter.c
+scannerCSVsorter.c
 mergesort.c
 BUGS
 None currently known.
@@ -46,10 +89,26 @@ MERGESORT.C
 SYNOPSIS
 mergesort.c takes in a an array of movieInfo and then performs mergesort on the array in question given a certain parameter.
 DESCRIPTION
+MERGESORT
 void mergesort(movieInfo** arr, int left, int right, int isInt)
+
+mergesort takes in a movieInfo array, a left pointer, a right pointer and an int that states if the value to be sorted is numeric. It then sorts the array using the mergesort algorithm using the toBeSorted parameter of movieInfo.
+
+SWAP
 void swap(movieInfo* A, movieInfo* B)
+
+swap takes two pointers to a movieInfo struct in memory and swaps the two values at the given addresses.
+
+INTCOMPARISON
 float intComparison(float intA, float intB)
+
+intComparison is a comparator for floats. It takes two parameters, float intA and float intB. It will return 0 if the two are equal, a negative value if intA is less than intB and a positive value if intA is greater than intB.
+
+MERGE
 void merge(movieInfo** arr, int left, int half, int right, int isInt)
+
+merge takes an array of which both halfs are sorted already, a pointer to the leftmost index, a pointer to the rightmost index, a pointer to the middle index and an int that states if the data is numeric or not. Merge then merges these two arrays in place into a sorted array. 
+
 EXIT STATUS
 Mergesort does not return a value. It sorts the array using pointers. 
 SEE ALSO
@@ -63,13 +122,10 @@ Eric Lin and Mohammad Nadeem
 For mergesort, there are 4 parameters needed to run mergesort. The first is, trivially, the array in question that must be sorted. Mergesort also requires the left index and the right index of the (sub)array being sorted. The last parameter that mergesort takes is call isInt. isInt lets the program know if the data is numeric or alphabetic. If isInt is of value 0, then the data is alphabetic and must be sorted as such. If isInt is of value 1, then the data is numeric and must be sorted as such. For mergesort, the array is halved continously until the base case of an array of one element is reached. Then, each subarray is merged. To merge, the merge function is called. In merge, the two subarrays are written to temporary arrays. Two pointers point to the leftmost indices of both subarrays and whichever value is less is written to the actual array in which we will add our sorted values. The base case for merge is when both subarrays are the same array or when there is only one element in each subarray. In the case where there is only one element in each subarray, the values are swapped if they are out of order.  
 	In mergesort.c, there exists a comparator function that is useful for comparing numeric values. The necessity for this was because strcmp does not correctly compare strings that represent numeric values. 
 
-EXTRA CREDIT
-Regarding sorting the CSV, the struct that we created has been designed such as to allow any CSV to be sorted given a category. The struct only holds three pieces of data, the characters before the sorted column, the string in the sorted column and the characters after the sorted column. As a result, this program has been generally designed to allow for any CSV input and a given column name, and the CSV will be sorted by the given column. If anything, the initial size of the buffers used to parse in the CSV can be enlarged to accomodate CSVs with more columns.
-
 ISSUES
-In creating this program, a number of issues arose. First and foremost, there were a lot of issues with segmentation faults. The primary reason for most of the segmentation faults was the fact that a pointer was left pointing to an arbitrary value when iterated because the iteration was uncontrolled. There were a lot of issues with creating merge sort. The initial algorithm took some time to program. However, afterwards, a number of issues arose. First, there was no base case in the merge function resulting in the arrays not being sorted
-correctly. There was also an issue in the swap function which led to swap acting as a copy function because it copied data from one pointer to another rather than swapping. There was also an issue with isInt which was a result of faulty logic in the conditional statements. 
-	There was an issue we came across when writing to stdout. The issue was that the size of the char arrays was unknown so we assumed it to be 500 and wrote 500 bytes to stdout. However, mostof the strings were less than 500 bytes, and thus when we wrote 500 bytes to stdout, alot of random bits of memory were also written to stdout. To remedy this, we just calculate the length of each string as we read it and stored it in a variable. Thus, when we wrote back to stdout, we would know how many bytes to write. 
+In creating this program, a number of issues arose. First and foremost, there were a lot of issues with forking. It was difficult to print the PIDs of each process to STDOUT in the correct format until we realized we had to flush the buffer since we used printf(). 
+We also had some issues with having an excessive amount of projects until we realized that the program was also searching our .git directory and we then prevented that from occuring. 
+We had some issues with parsing the CSV which was just due to some minor bugs that were fixed. 
 
 TESTING METHODOLOGY
 In order to determine the causes of the segmentation faults, portions of the code were commented out to see if the program would run without a segmentation fault. If the program ran without errors, lines of code were uncommented small segments at a time until the segmentation fault appeared again, allowing us to identify the specific portions of the program that were written incorrectly.
