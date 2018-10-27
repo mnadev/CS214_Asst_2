@@ -334,7 +334,7 @@ int isValidCSV(char* filename, char* columnToSort) {
 	while(eofDetect > 0) {
 		eofDetect = read(csv, &currentChar, 1); 
 		if(currentChar == '\n' &&   (isalpha(previousChar) || isdigit(previousChar) || ispunct(previousChar) )) {
-			printf("\n%s: %d vs. %d", filename, noCommas, prevNoCommas);
+			//printf("\n%s: %d vs. %d", filename, noCommas, prevNoCommas);
 			if(noCommas != prevNoCommas && numberOfLines > 1) {
 				return 0;
 			} else {
@@ -343,14 +343,22 @@ int isValidCSV(char* filename, char* columnToSort) {
 			}
 			numberOfLines++;
 		} else {
-			//if(currentChar == ',' && isInQuotes == 0) {
-			if(currentChar == ',') {
+			if(currentChar == ',' && isInQuotes == 0) {
+			//if(currentChar == ',') {
 				noCommas = noCommas + 1;
 			}
 		
-			//if(currentChar = '"') {
-			//	isInQuotes = !isInQuotes;
-			//} 
+			if(currentChar == '\"') {
+				//printf("\n%s %c%c\n", filename, previousChar, currentChar);
+				//printf("Val before: % d",isInQuotes);
+				if(isInQuotes == 0) {
+					isInQuotes = 1;
+				} else {
+					isInQuotes = 0;
+				}
+				//printf("valAfter: %d \n",isInQuotes);
+				//isInQuotes = !isInQuotes;
+			} 
 		}
 		
 		previousChar = currentChar;
