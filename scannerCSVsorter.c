@@ -63,7 +63,7 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 	
 	// return 0 if no .csv file extension
 	if(!(filename[pathLen-1] == 'v' && filename[pathLen-2] == 's' && filename[pathLen-3] == 'c' && filename[pathLen-4] == '.')){
-		return 0;
+		return;
 	} 
 	
 	int numCommasB4Sort = 0;		//The number of commas before the column to be sorted is reached.
@@ -332,27 +332,25 @@ int isValidCSV(char* filename, char* columnToSort) {
 	
 	//iterate through entire file reading 
 	while(eofDetect > 0) {
-		eofDetect = read(csv, &currentChar, 1);
-		
+		eofDetect = read(csv, &currentChar, 1); 
 		if(currentChar == '\n' &&   (isalpha(previousChar) || isdigit(previousChar) || ispunct(previousChar) )) {
+			printf("\n%s: %d vs. %d", filename, noCommas, prevNoCommas);
 			if(noCommas != prevNoCommas && numberOfLines > 1) {
 				return 0;
 			} else {
-				if(numberOfLines == 1) {
-					prevNoCommas = noCommas;
-				}
+				prevNoCommas = noCommas;
 				noCommas = 0;
 			}
 			numberOfLines++;
 		} else {
-			
-			if(currentChar == ',' && !isInQuotes) {
-				noCommas++;
+			//if(currentChar == ',' && isInQuotes == 0) {
+			if(currentChar == ',') {
+				noCommas = noCommas + 1;
 			}
 		
-			if(currentChar = '\"') {
-				isInQuotes = !isInQuotes;
-			}
+			//if(currentChar = '"') {
+			//	isInQuotes = !isInQuotes;
+			//} 
 		}
 		
 		previousChar = currentChar;
@@ -508,12 +506,7 @@ int main(int argc, char** argv){
 			int fileFork = fork();
 			if(fileFork == 0){
 				printf(", %d ",getpid());
-				/*char* sortedFileEnding = strcat("-sorted-", columnToSort);
-				if(strstr(file,".csv") != NULL && strstr(file, sortedFileEnding) == NULL){
-					if(isValidCSV(file, columnToSort)) {
-						parseCSV(file, columnToSort, dirDest);
-					}
-				}*/
+				
 				//Don't need the above. We can check for that in isValidCSV
 				char* filepath = (char*)malloc(sizeof(char)*10000);
 				strcpy(filepath, dirToSearch);		//Because i need to create a new string for full file path.
