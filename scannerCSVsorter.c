@@ -76,10 +76,9 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 		columnNamesIndex++;
 		printf("%c", charIn);
 	}while(charIn != '\n');
-	
+	printf("leak in parse same as other");
 	columnNames[columnNamesIndex] = '\0';
 	columnNames = realloc(columnNames, columnNamesIndex+1);
-
 	//Determining if the column to be sorted parameter is in the list of columns using strstr()
 	char* locOfColumn = strstr(columnNames, columnToSort);
 	if(!(*locOfColumn)){
@@ -118,7 +117,7 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 		int sizeOfSortColumn = 0;
 		int sizeOfPostSortColumn = 0;
 		int sortHasQuotes = 0;
-
+		printf("leak when readinf file");
 		//Because allocating a large chunk of memory then shrinking it is probably more efficient than
 		//constantly realloc-ing the memory, I'm declaring an initial buffer size for the strings here
 		char* preSortColumn = malloc(sizeof(char)*500);
@@ -230,36 +229,38 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 // checks if the csv is valid. will return 1 if so, 0 if not valid. 
 int isValidCSV(char* filename, char* columnToSort) {
 	int pathLen = strlen(filename);
-	/*
-	printf("\n NAME: %s LENGTH OF FILE NAME: %d \n", filename, pathLen);
-	printf("COLUMN SORTING: %s\n", columnToSort);
-	printf("%c%c%c%c\nHEADER",filename[pathLen -4], filename[pathLen -3], filename[pathLen-2],filename[pathLen - 1]);
+	int returnVal = 1;
+	
+//	printf("\n NAME: %s LENGTH OF FILE NAME: %d \n", filename, pathLen);
+	//printf("COLUMN SORTING: %s\n", columnToSort);
+	//printf("%c%c%c%c\nHEADER",filename[pathLen -4], filename[pathLen -3], filename[pathLen-2],filename[pathLen - 1]);
 	
 	if(filename[pathLen-1] == 'v' && filename[pathLen-2] == 's' && filename[pathLen-3] == 'c' && filename[pathLen-4] == '.'){
 		//Yay it's a CSV
 	} else{
 		return 0;
-	}*/
+	}
+	/*
 	int p_csv;		//file descriptor for file to be opened.
 	p_csv = open(filename, O_RDONLY);
 	int returnVal = 1;
 	char charIn = '\0';				//Buffer to put each char that's being read in from STDIN
 	char* columnNames = (char*)malloc(sizeof(char)*500);		//Buffer where we're going to put the first line containing all titles
 	int columnNamesIndex = 0;		//For use in the below do-while loop
-	
+
 	//Reading in from STDIN char by char until a '\n' is reached to get a string containing all column names
 	do{
 		read(p_csv, &charIn, 1);
-		if(charIn != '\n') {
+		//if(charIn != '\n'){
 			columnNames[columnNamesIndex] = charIn;
 			columnNamesIndex++;
-		}
+		//}
 		//printf("%c",charIn);
 	}while(charIn != '\n');
-	
+	printf("leka in isValid?");	
 	columnNames[columnNamesIndex] = '\0';
 	columnNames = realloc(columnNames, columnNamesIndex+1);
-	
+        	
 	//printf("\n");
 	//Determining if the column to be sorted parameter is in the list of columns using strstr()
 	
@@ -276,9 +277,9 @@ int isValidCSV(char* filename, char* columnToSort) {
 	}
 	free(columnNames);	
 	close(p_csv);
-	
-
-	int csv = open(filename, O_RDONLY);
+	*/
+	FILE * csv;
+	csv = fopen(filename, "r");
 	
 	// count number of commas in current line and number of commas in 
 	int noCommas = 0;
@@ -290,6 +291,7 @@ int isValidCSV(char* filename, char* columnToSort) {
 	
 	// get number of commas in first lne. this will be the base number of commas that should be in each 
 	// line
+	/*
 	while(currentChar != '\n') {
 		read(csv, &currentChar, 1);
 		if(currentChar == '\n'){
@@ -302,21 +304,33 @@ int isValidCSV(char* filename, char* columnToSort) {
 		if(currentChar = '\"') {
 			isInQuotes = !isInQuotes;
 		}
-	}
-	
+	}*/
+	char previousChar = '\0';	
 	prevNoCommas = noCommas;
 	noCommas = 0;
+	int numberOfLines = 0;
 	int eofDetect = 1;
-	while(eofDetect > 0) {
-		eofDetect = read(csv, &currentChar, 1);
-		if(currentChar == '\n') {
+	while(!feof(csv)) {
+		currentChar = fgetc(csv);
+/*
+		if(currentChar == ',') {
+			//printf("\n%s currentChar: %c, Line No: %d",filename, currentChar, numberOfLines);
+			noCommas++;
+		}	
+		else if(currentChar == '\n' && (isalpha(previousChar) || isdigit(previousChar) || ispunct(previousChar) )) {
+			numberOfLines++;
+		}
+*/
+		if(currentChar == '\n' &&   (isalpha(previousChar) || isdigit(previousChar) || ispunct(previousChar) )) {
+			printf("\n%s no commas: %d prev: %d\n", filename, noCommas, prevNoCommas);
 			if(noCommas != prevNoCommas) {
-				return 0;
+				//return 0;
 			} else {
-				prevNoCommas = noCommas;
-				prevNoCommas = 0;
+				//prevNoCommas = noCommas;
+				noCommas = 0;
 			}
 		} else {
+			
 			if(currentChar == ',' && !isInQuotes) {
 				noCommas++;
 			}
@@ -325,10 +339,13 @@ int isValidCSV(char* filename, char* columnToSort) {
 				isInQuotes = !isInQuotes;
 			}
 		}
+		previousChar = currentChar;
 	}
-	close(csv);
-		
-	return returnVal;
+	printf("%s %d %d",filename,numberOfLines,noCommas);
+	printf("\n");
+	fclose(csv);
+	return 1;
+//	return noCommas == 0 || noCommas%numberOfLines == 0;
 }
 
 // will write output to csv file
@@ -462,11 +479,13 @@ int main(int argc, char** argv){
 			}
 		}
 		
+		char sortedEnd[] = {'-','s','o','r','t','e','d','-','\0'};
+		strcat(sortedEnd, columnToSort);
 		//isValidCSV(file, columnToSort);		//debug temp
 		file = dirStruct -> d_name;
 		struct stat stat_file;
 		stat(file, &stat_file);
-		if(!strcmp(file, ".git") || strcmp(file, ".") == 0 || strcmp(file, "..") == 0) {
+		if(!strcmp(file, ".git") || strcmp(file, ".") == 0 || strcmp(file, "..") == 0 || strstr(file,sortedEnd) != NULL) {
 			continue;
 		}
 
@@ -485,7 +504,6 @@ int main(int argc, char** argv){
 				char* filepath = (char*)malloc(sizeof(char)*10000);
 				strcpy(filepath, dirToSearch);		//Because i need to create a new string for full file path.
 				strcat(filepath, file);	//Concatting filename to file path for full file path 
-				int pathLen = strlen(filepath);
 				int validity = 1;
 				validity = isValidCSV(filepath, columnToSort);
 
