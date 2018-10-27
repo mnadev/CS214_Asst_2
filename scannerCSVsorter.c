@@ -248,6 +248,12 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 		filename[pathLen - 4] = '\0';
 	}
 	
+	int isAbsolutePath = 0;
+	if(destDirectory != NULL) {
+		if(*(destDirectory) == '/') {
+			isAbsolutePath = 0;
+		}
+	}	
 	//filename has a ./ in front of it so we want to remove that
 	if(*(filename) == '.') { 
 		filename = filename + 1;
@@ -258,7 +264,11 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 	char* fileToWrite = (char*) malloc(sizeof(char) * 255);
 	//printf("destDirectory: %s\n",destDirectory);
 	if(destDirectory != NULL) {
-		snprintf(fileToWrite, 255, "%s%s-sorted-%s.csv\0",destDirectory,filename,columnToSort);
+		if(isAbsolutePath == 1) {
+			 snprintf(fileToWrite, 255, "%s/%s-sorted-%s.csv\0",destDirectory,filename,columnToSort);
+		} else {
+			snprintf(fileToWrite, 255, "./%s/%s-sorted%s.csv\0",destDirectory, filename, columnToSort);
+		}
 	} else {
 		snprintf(fileToWrite, 255, "%s-sorted-%s.csv\0",filename,columnToSort);
 	}
