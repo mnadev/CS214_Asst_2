@@ -251,14 +251,13 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 */
 int isValidCSV(char* filename, char* columnToSort) {
 	int pathLen = strlen(filename);
-	int returnVal = 1;
 	
 	// return 0 if no .csv file extension
 	if(!(filename[pathLen-1] == 'v' && filename[pathLen-2] == 's' && filename[pathLen-3] == 'c' && filename[pathLen-4] == '.')){
 		return 0;
 	} 
 	
-	/*
+	
 	int p_csv;		//file descriptor for file to be opened.
 	p_csv = open(filename, O_RDONLY);
 	char charIn = '\0';				//Buffer to put each char that's being read in from STDIN
@@ -285,13 +284,13 @@ int isValidCSV(char* filename, char* columnToSort) {
 	// theres is an error here the reaso for which i am currently looking up but it doesn't sort because of this always returns 0
 	// printf("\n EQUALITY CHECK:%s %c%c%c %d \n", filename, *locOfColumn, *(locOfColumn+1), *(locOfColumn + 2), locOfColumn == NULL);
 	
-	if(!(*locOfColumn == *columnToSort) && locOfColumn == NULL ){
+	if(locOfColumn == NULL ){
 		write(STDERR, "Error while checking validity: The column to be sorted that was input as the 2nd parameter is not contained within the CSV.\n", 100);
-		returnVal = 0;
+		return 0;
 	}
 	free(columnNames);	
 	close(p_csv);
-	*/
+	
 	
 	int csv = open(filename, O_RDONLY);
 	
