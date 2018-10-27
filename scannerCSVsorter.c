@@ -59,6 +59,13 @@ int isInt(movieInfo** dataRows, int sizeOfArray) {
 
 //function to parse through csv file
 void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
+	int pathLen = strlen(filename);
+	
+	// return 0 if no .csv file extension
+	if(!(filename[pathLen-1] == 'v' && filename[pathLen-2] == 's' && filename[pathLen-3] == 'c' && filename[pathLen-4] == '.')){
+		return 0;
+	} 
+	
 	int numCommasB4Sort = 0;		//The number of commas before the column to be sorted is reached.
 	
 	char charIn = '\0';				//Buffer to put each char that's being read in from STDIN
@@ -76,10 +83,12 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 		columnNamesIndex++;
 		printf("%c", charIn);
 	}while(charIn != '\n');
-	printf("leak in parse same as other");
+	
 	columnNames[columnNamesIndex] = '\0';
 	columnNames = realloc(columnNames, columnNamesIndex+1);
+	
 	//Determining if the column to be sorted parameter is in the list of columns using strstr()
+	
 	char* locOfColumn = strstr(columnNames, columnToSort);
 	if(!(*locOfColumn)){
 		//write(STDERR, "Error: The column to be sorted that was input as the 2nd parameter is not contained within the CSV.\n", 100);
@@ -109,32 +118,41 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 
 	int eofDetect = 1;	//Checking return value of read() for eof. At eof, read() returns 0.
 	rowIterator: while(eofDetect > 0){
+		
 		movieInfo* rowPtr = malloc(sizeof(movieInfo));
 		movieInfo row;
 		int parsedCommas = 0;		
+		
 		//The following 3 variables will be used to determine size of the strings to be put into the movieInfo struct.
 		int sizeOfPreSortColumn = 0;
 		int sizeOfSortColumn = 0;
 		int sizeOfPostSortColumn = 0;
 		int sortHasQuotes = 0;
-		printf("leak when readinf file");
+		
+		
 		//Because allocating a large chunk of memory then shrinking it is probably more efficient than
 		//constantly realloc-ing the memory, I'm declaring an initial buffer size for the strings here
 		char* preSortColumn = malloc(sizeof(char)*500);
 		char* sortColumn = malloc(sizeof(char)*200);
 		char* postSortColumn = malloc(sizeof(char)*500);
+		
 		//Variables indicating size of malloc'd space for reallocing when buffer is full
 		int preArraySize = 500;
 		int sortArraySize = 200;
 		int postArraySize = 500;
 
 		int firstCommaOfSort = 0; 		//Boolean to detect if the first char parsed into sortColumn is a comma.
+		
 		while(1){
+			
 			eofDetect = read(csv, &charIn, 1);
+			
 			if(eofDetect < 1){
 				break;
 			}
+			
 			switch(charIn){
+				
 				case '"':
 					quoteMode = !quoteMode;	//Switches quoteMode on or off
 					if(parsedCommas == numCommasB4Sort){
@@ -142,6 +160,7 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 						break;
 					}
 					goto fromQuoteMode;		//Gonna do a bad thing here with goto for the sake of not breaking things.
+				
 				case '\n':
 					//Shrinking char buffer sizes, making them strings, and assigning to movieInfo
 
@@ -170,11 +189,13 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 					memcpy(rowPtr, &row, sizeof(movieInfo));
 					dataRows[sizeOfArray-1] = rowPtr;
 					goto rowIterator;
+				
 				case ',':
 					if(!quoteMode){			//If not in quote mode, increment parsed commas
 						parsedCommas++;	
 					}
 					//No break on comma detection so it goes into pre/post col strings.
+				
 				default:
 				fromQuoteMode:	if(parsedCommas < numCommasB4Sort){
 						sizeOfPreSortColumn++;
@@ -214,62 +235,55 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 			}	
 		}
 	} 
-	int isNumeric = isInt(dataRows, sizeOfArray);
 	
+	int isNumeric = isInt(dataRows, sizeOfArray);
 	mergesort(dataRows, 0, sizeOfArray - 1, isNumeric);
-	char fileToWrite[255];
 	close(csv);	
+	
+	char fileToWrite[255];
 	snprintf(fileToWrite, 255, "%s/%s-sorted-%s.csv\0",destDirectory,filename,columnToSort);
-	//printf("\n OUTPUT FILE: %s \n",fileToWrite);
 	csvwrite(dataRows,sizeOfArray, columnNames, fileToWrite);
-	//^^^^^^^^^ Need to reassign later, just commented out for debugging purposes atm
-
 }
 
-// checks if the csv is valid. will return 1 if so, 0 if not valid. 
+/** function to check if the csv is valid. will return 1 if so, 0 if not valid. 
+** Checks the file extension, if the column to be sorted exists in file
+** and also check number of commas in each line. 
+*/
 int isValidCSV(char* filename, char* columnToSort) {
 	int pathLen = strlen(filename);
 	int returnVal = 1;
 	
-//	printf("\n NAME: %s LENGTH OF FILE NAME: %d \n", filename, pathLen);
-	//printf("COLUMN SORTING: %s\n", columnToSort);
-	//printf("%c%c%c%c\nHEADER",filename[pathLen -4], filename[pathLen -3], filename[pathLen-2],filename[pathLen - 1]);
-	
-	if(filename[pathLen-1] == 'v' && filename[pathLen-2] == 's' && filename[pathLen-3] == 'c' && filename[pathLen-4] == '.'){
-		//Yay it's a CSV
-	} else{
+	// return 0 if no .csv file extension
+	if(!(filename[pathLen-1] == 'v' && filename[pathLen-2] == 's' && filename[pathLen-3] == 'c' && filename[pathLen-4] == '.')){
 		return 0;
-	}
+	} 
+	
 	/*
 	int p_csv;		//file descriptor for file to be opened.
 	p_csv = open(filename, O_RDONLY);
-	int returnVal = 1;
 	char charIn = '\0';				//Buffer to put each char that's being read in from STDIN
 	char* columnNames = (char*)malloc(sizeof(char)*500);		//Buffer where we're going to put the first line containing all titles
+	
 	int columnNamesIndex = 0;		//For use in the below do-while loop
 
 	//Reading in from STDIN char by char until a '\n' is reached to get a string containing all column names
+	
 	do{
 		read(p_csv, &charIn, 1);
-		//if(charIn != '\n'){
-			columnNames[columnNamesIndex] = charIn;
-			columnNamesIndex++;
-		//}
-		//printf("%c",charIn);
+		columnNames[columnNamesIndex] = charIn;
+		columnNamesIndex++;
 	}while(charIn != '\n');
-	printf("leka in isValid?");	
+
+	// realloc to save space
 	columnNames[columnNamesIndex] = '\0';
 	columnNames = realloc(columnNames, columnNamesIndex+1);
         	
-	//printf("\n");
 	//Determining if the column to be sorted parameter is in the list of columns using strstr()
-	
 	char* locOfColumn = strstr(columnNames, columnToSort);
 	
-	//printf("COLUMN CHECKING:\n COLUMN LINE: %s \nCOLUMN SORTING: %s\n RESULT:%s \n",columnNames, columnToSort, locOfColumn);
-	// ERROR ERROR ERROR 
+	// printf("COLUMN CHECKING:\n COLUMN LINE: %s \nCOLUMN SORTING: %s\n RESULT:%s \n",columnNames, columnToSort, locOfColumn);
 	// theres is an error here the reaso for which i am currently looking up but it doesn't sort because of this always returns 0
-	//printf("\n EQUALITY CHECK:%s %c%c%c %d \n", filename, *locOfColumn, *(locOfColumn+1), *(locOfColumn + 2), locOfColumn == NULL);
+	// printf("\n EQUALITY CHECK:%s %c%c%c %d \n", filename, *locOfColumn, *(locOfColumn+1), *(locOfColumn + 2), locOfColumn == NULL);
 	
 	if(!(*locOfColumn == *columnToSort) && locOfColumn == NULL ){
 		write(STDERR, "Error while checking validity: The column to be sorted that was input as the 2nd parameter is not contained within the CSV.\n", 100);
@@ -278,8 +292,8 @@ int isValidCSV(char* filename, char* columnToSort) {
 	free(columnNames);	
 	close(p_csv);
 	*/
-	FILE * csv;
-	csv = fopen(filename, "r");
+	
+	int csv = open(filename, O_RDONLY);
 	
 	// count number of commas in current line and number of commas in 
 	int noCommas = 0;
@@ -289,8 +303,7 @@ int isValidCSV(char* filename, char* columnToSort) {
 	
 	int isInQuotes = 0;
 	
-	// get number of commas in first lne. this will be the base number of commas that should be in each 
-	// line
+	// get number of commas in first line. this will be the base number of commas that should be in each line
 	/*
 	while(currentChar != '\n') {
 		read(csv, &currentChar, 1);
@@ -305,30 +318,32 @@ int isValidCSV(char* filename, char* columnToSort) {
 			isInQuotes = !isInQuotes;
 		}
 	}*/
+	
+	//previousChar in the file, setting equal to 
 	char previousChar = '\0';	
+	
+	//find number of commas in first line as touchstone
 	prevNoCommas = noCommas;
 	noCommas = 0;
-	int numberOfLines = 0;
+	
+	// checking # of lines
+	int numberOfLines = 1;
 	int eofDetect = 1;
-	while(!feof(csv)) {
-		currentChar = fgetc(csv);
-/*
-		if(currentChar == ',') {
-			//printf("\n%s currentChar: %c, Line No: %d",filename, currentChar, numberOfLines);
-			noCommas++;
-		}	
-		else if(currentChar == '\n' && (isalpha(previousChar) || isdigit(previousChar) || ispunct(previousChar) )) {
-			numberOfLines++;
-		}
-*/
+	
+	//iterate through entire file reading 
+	while(eofDetect > 0) {
+		eofDetect = read(csv, &currentChar, 1);
+		
 		if(currentChar == '\n' &&   (isalpha(previousChar) || isdigit(previousChar) || ispunct(previousChar) )) {
-			printf("\n%s no commas: %d prev: %d\n", filename, noCommas, prevNoCommas);
-			if(noCommas != prevNoCommas) {
-				//return 0;
+			if(noCommas != prevNoCommas && numberOfLines > 1) {
+				return 0;
 			} else {
-				//prevNoCommas = noCommas;
+				if(numberOfLines == 1) {
+					prevNoCommas = noCommas;
+				}
 				noCommas = 0;
 			}
+			numberOfLines++;
 		} else {
 			
 			if(currentChar == ',' && !isInQuotes) {
@@ -339,11 +354,10 @@ int isValidCSV(char* filename, char* columnToSort) {
 				isInQuotes = !isInQuotes;
 			}
 		}
+		
 		previousChar = currentChar;
 	}
-	printf("%s %d %d",filename,numberOfLines,noCommas);
-	printf("\n");
-	fclose(csv);
+	close(csv);
 	return 1;
 //	return noCommas == 0 || noCommas%numberOfLines == 0;
 }
