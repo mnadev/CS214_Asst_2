@@ -552,7 +552,9 @@ int isValidCSV(char* filename, char* columnToSort) {
 				if(noCommas != numCommas && doubleNewLines != 0) {
 					waiter = 1;
 				}
-				noLinesParsed++;
+				if(doubleNewLines == 0 ) {
+					noLinesParsed++;
+				}
 				noCommas = 0;
 				firstLineParsed = 1;
 				break;
