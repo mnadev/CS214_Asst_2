@@ -510,7 +510,7 @@ int isValidCSV(char* filename, char* columnToSort) {
 	//waiter waits and sees for when we come across a malformed csv.
 	//if there are two new lines and such then it will wait and see the next char before throwing error
 	int waiter = 0;
-
+	int noLinesParsed = 0;
 	while(eofDetect > 0){
 		eofDetect = read(csv, &currentChar, 1);
 		//if double new lines just occured and we are not at the end of the file.
@@ -552,6 +552,7 @@ int isValidCSV(char* filename, char* columnToSort) {
 				if(noCommas != numCommas && doubleNewLines != 0) {
 					waiter = 1;
 				}
+				noLinesParsed++;
 				noCommas = 0;
 				firstLineParsed = 1;
 				break;
@@ -560,6 +561,12 @@ int isValidCSV(char* filename, char* columnToSort) {
 		}
 		
 		previousChar = currentChar;
+	}
+
+	if(noLinesParsed < 1) {
+		write(STDERR, "Error while checking validity: Malformed CSV\n", 45);
+		return 0;
+
 	}
 	if(firstLineParsed == 0){
 		write(STDERR, "Error while checking validity: Malformed CSV\n", 45);
