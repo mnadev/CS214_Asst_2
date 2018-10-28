@@ -563,7 +563,7 @@ int isValidCSV(char* filename, char* columnToSort) {
 		previousChar = currentChar;
 	}
 
-	if(noLinesParsed < 1) {
+	if(noLinesParsed <= 1) {
 		write(STDERR, "Error while checking validity: Malformed CSV\n", 45);
 		return 0;
 
