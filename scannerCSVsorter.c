@@ -345,7 +345,7 @@ int hasHeaders(char* columnNames){
 					i++;
 					break;
 				} else if(strcmp(headerName, "facenumber_in_poster") != 0){
-					return 0;					headerIndex = 0;
+					headerIndex = 0;
 					i++;
 					break;} else if(strcmp(headerName, "plot_keywords") != 0){
 					return 0;
