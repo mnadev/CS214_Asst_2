@@ -255,19 +255,20 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 	if(*(filename) == '/') {
 		filename = filename + 1;
 	}
-	char* fileToWrite = (char*) malloc(sizeof(char) * 255);
+	char* fileToWrite = (char*) malloc(sizeof(char) * 256);
 	//printf("destDirectory: %s\n",destDirectory);
 	if(destDirectory != NULL) {
 		if(isAbsolutePath == 1) {
-			 snprintf(fileToWrite, 255, "%s/%s-sorted-%s.csv\0",destDirectory,filename,columnToSort);
+			 snprintf(fileToWrite, 256, "%s/%s-sorted-%s.csv\0",destDirectory,filename,columnToSort);
 		} else {
-			snprintf(fileToWrite, 255, "./%s/%s-sorted%s.csv\0",destDirectory, filename, columnToSort);
+			snprintf(fileToWrite, 256, "./%s/%s-sorted%s.csv\0",destDirectory, filename, columnToSort);
 		}
 	} else {
-		snprintf(fileToWrite, 255, "%s-sorted-%s.csv\0",filename,columnToSort);
+		snprintf(fileToWrite, 256, "%s-sorted-%s.csv\0",filename,columnToSort);
 	}
 	//printf("destination file: %s \n", fileToWrite);
 	csvwrite(dataRows,sizeOfArray, columnNames, fileToWrite);
+	free(fileToWrite);
 }
 
 
@@ -280,7 +281,7 @@ int hasHeaders(char* columnNames){
 	int i = 0;	
 	while(columnNames[i] != '\0'){
 		switch(columnNames[i]){
-			case ",":
+			case ',':
 				headerName[headerIndex] = '\0';
 				if(strcmp(headerName, "color") != 0){
 					return 0;
@@ -576,7 +577,7 @@ int main(int argc, char** argv){
 			write(STDERR, "Fatal Error: Output directory not found.\n", 41);
 			return -1;
 		}
-	]
+	}
 
 	printf("\nInitial PID: ");
 	int pid = getpid();
