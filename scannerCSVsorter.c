@@ -484,15 +484,34 @@ int isValidCSV(char* filename, char* columnToSort) {
 	int noCommas = 0;
 	int prevNoCommas = 0;
 	
-	char currentChar = '\0';	//establishing a default value. If the first char is a null terminator, we have bigger problems
+	char currentChar = '\0';//establishing a default value. If the first char is a null terminator, we have bigger problems
 	
+	//checking previous char, will help us keep track of if the previous char is a new line if current is new line
+	char previousChar = '\0';
 	int isInQuotes = 0;
 
+	//double new lines will keep track of if two new lines occur in a row
+	int doubleNewLines = 0;
+	
 	//Rewriting the checker for malformed CSVs because it's glitching and i can't follow it:
 	int eofDetect = 1;
 	int firstLineParsed = 0;
+	
 	while(eofDetect > 0){
 		eofDetect = read(csv, &currentChar, 1);
+		
+		//if double new lines just occured and we are not at the end of the file.
+		if(doubleNewLines > 0 && eofDetect > 0) {
+			write(STDERR, "Error while checking validity: Malformed CSV\n", 45);
+			return 0;
+		}
+		
+		doubleNewLines = 0;
+		
+		if(previousChar == '\n' && currentChar == '\n') {
+			doubleNewLines += 1;
+		}
+		
 		switch(currentChar){
 			case '"':
 				isInQuotes = !isInQuotes;
@@ -515,6 +534,8 @@ int isValidCSV(char* filename, char* columnToSort) {
 			default:
 				break;
 		}
+		
+		previousChar = currentChar;
 	}
 	if(firstLineParsed == 0){
 		write(STDERR, "Error while checking validity: Malformed CSV\n", 45);
