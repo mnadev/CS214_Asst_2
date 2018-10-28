@@ -128,12 +128,14 @@ For mergesort, there are 4 parameters needed to run mergesort. The first is, tri
 
 ISSUES
 In creating this program, a number of issues arose. First and foremost, there were a lot of issues with forking. It was difficult to print the PIDs of each process to STDOUT in the correct format until we realized we had to flush the buffer since we used printf(). 
-We also had some issues with having an excessive amount of projects until we realized that the program was also searching our .git directory and we then prevented that from occuring. 
+We also had some issues with having an excessive amount of processes until we realized that the program was also searching our .git directory and we then prevented that from occuring. 
 We had some issues with parsing the CSV which was just due to some minor bugs that were fixed. 
 
 TESTING METHODOLOGY
 In order to determine the causes of the segmentation faults, portions of the code were commented out to see if the program would run without a segmentation fault. If the program ran without errors, lines of code were uncommented small segments at a time until the segmentation fault appeared again, allowing us to identify the specific portions of the program that were written incorrectly.
+Use of the GDB debugger was also used to trace the behavior of the program in cases where the program was behaving in unexpected ways, such as not properly reading the final column header in the first line.
 In order to test the functionality of the program, a few test CSVs were made that were specifically tailored to test specific portions of the program, such as having lines with whitespace, null entries, quoted entries, and columns with ony numbers.
 
 TESTING
-See the attached csv files for test cases. 
+Various CSVs were created to test the program. These includes a CSV with more headers than columns, a CSV with more columns than headers, a CSV with a single column, a CSV with only a header line, a CSV with an invalid column name, CSVs with subsets of the given column names, a CSV with blank lines, and more.
+These CSVs were placed in nested directories, and the output was tested with no "-o" parameter and a "-o parameter". Directory searching with the "-d" flag was also tested.
