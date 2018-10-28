@@ -497,15 +497,27 @@ int isValidCSV(char* filename, char* columnToSort) {
 	int eofDetect = 1;
 	int firstLineParsed = 0;
 	
+	//waiter waits and sees for when we come across a malformed csv.
+	//if there are two new lines and such then it will wait and see the next char before throwing error
+	int waiter = 0;
+
 	while(eofDetect > 0){
 		eofDetect = read(csv, &currentChar, 1);
-		
 		//if double new lines just occured and we are not at the end of the file.
 		if(doubleNewLines > 0 && eofDetect > 0) {
+			printf("end of file?");
 			write(STDERR, "Error while checking validity: Malformed CSV\n", 45);
 			return 0;
 		}
 		
+		// if we have a disparate amount of commas in each line, we will check if we have
+		// the weird two lines error by checking if it is the end of the file
+		if(waiter == 1 && eofDetect > 0) {
+			write(STDERR, "Error while checking validity: Malformed CSV\n", 45);
+			return 0;
+		}
+
+		waiter = 0;
 		doubleNewLines = 0;
 		
 		if(previousChar == '\n' && currentChar == '\n') {
@@ -524,9 +536,12 @@ int isValidCSV(char* filename, char* columnToSort) {
 					break;
 				}
 			case '\n':
-				if(noCommas != numCommas){
+				if(noCommas != numCommas && doubleNewLines == 0){
 					write(STDERR, "Error while checking validity: Malformed CSV\n", 45);
 					return 0;
+				}
+				if(noCommas != numCommas && doubleNewLines != 0) {
+					waiter = 1;
 				}
 				noCommas = 0;
 				firstLineParsed = 1;
