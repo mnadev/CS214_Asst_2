@@ -255,13 +255,17 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 	if(*(filename) == '/') {
 		filename = filename + 1;
 	}
+	char* realFileName = filename;
+	while(strstr(realFileName, "/") != NULL){
+		realFileName = strstr(realFileName, "/")+1;
+	}
 	char* fileToWrite = (char*) malloc(sizeof(char) * 256);
 	//printf("destDirectory: %s\n",destDirectory);
 	if(destDirectory != NULL) {
 		if(isAbsolutePath == 1) {
-			 snprintf(fileToWrite, 256, "%s/%s-sorted-%s.csv\0",destDirectory,filename,columnToSort);
+			 snprintf(fileToWrite, 256, "%s/%s-sorted-%s.csv\0",destDirectory,realFileName,columnToSort);
 		} else {
-			snprintf(fileToWrite, 256, "./%s/%s-sorted-%s.csv\0",destDirectory, filename, columnToSort);
+			snprintf(fileToWrite, 256, "./%s/%s-sorted-%s.csv\0",destDirectory, realFileName, columnToSort);
 		}
 	} else {
 		snprintf(fileToWrite, 256, "%s-sorted-%s.csv\0",filename,columnToSort);
@@ -283,7 +287,7 @@ int hasHeaders(char* columnNames){
 	while(columnNames[i] != '\0'){
 		switch(columnNames[i]){
 			case ',':
-				headerName[headerIndex] = '\0';
+				CheckHeader: headerName[headerIndex] = '\0';
 				if(strcmp(headerName, "color") == 0){
 					headerIndex = 0;
 					i++;
@@ -347,8 +351,11 @@ int hasHeaders(char* columnNames){
 				} else if(strcmp(headerName, "facenumber_in_poster") != 0){
 					headerIndex = 0;
 					i++;
-					break;} else if(strcmp(headerName, "plot_keywords") != 0){
-					return 0;
+					break;
+				} else if(strcmp(headerName, "plot_keywords") != 0){
+					headerIndex = 0;
+					i++;
+					break;
 				} else if(strcmp(headerName, "movie_imdb_link") != 0){
 					headerIndex = 0;
 					i++;
@@ -398,6 +405,9 @@ int hasHeaders(char* columnNames){
 				}
 				break;
 			default:
+				if(columnNames[i+1] == '\0'){
+					goto CheckHeader;
+				}
 				headerName[headerIndex] = columnNames[i];
 				headerIndex++;
 				i++;
@@ -424,18 +434,22 @@ int isValidCSV(char* filename, char* columnToSort) {
 		return 0;
 	}
 	
-	
+ 	int numCommas = 0;		//for later	
+
 	int p_csv;		//file descriptor for file to be opened.
 	p_csv = open(filename, O_RDONLY);
 	char charIn = '\0';				//Buffer to put each char that's being read in from STDIN
 	char* columnNames = (char*)malloc(sizeof(char)*500);		//Buffer where we're going to put the first line containing all titles
 	
 	int columnNamesIndex = 0;		//For use in the below do-while loop
-
+	
 	//Reading in from STDIN char by char until a '\n' is reached to get a string containing all column names
 	
 	do{
 		read(p_csv, &charIn, 1);
+		if(charIn == ','){
+			numCommas++;
+		}
 		columnNames[columnNamesIndex] = charIn;
 		columnNamesIndex++;
 	}while(charIn != '\n');
@@ -473,6 +487,39 @@ int isValidCSV(char* filename, char* columnToSort) {
 	char currentChar = '\0';	//establishing a default value. If the first char is a null terminator, we have bigger problems
 	
 	int isInQuotes = 0;
+
+	//Rewriting the checker for malformed CSVs because it's glitching and i can't follow it:
+	int eofDetect = 1;
+	int firstLineParsed = 0;
+	while(eofDetect > 0){
+		eofDetect = read(csv, &currentChar, 1);
+		switch(currentChar){
+			case '"':
+				isInQuotes = !isInQuotes;
+				break;
+			case ',':
+				if(isInQuotes == 1){
+					break;
+				} else{
+					noCommas++;
+					break;
+				}
+			case '\n':
+				if(noCommas != numCommas){
+					write(STDERR, "Error while checking validity: Malformed CSV\n", 45);
+					return 0;
+				}
+				noCommas = 0;
+				firstLineParsed = 1;
+				break;
+			default:
+				break;
+		}
+	}
+	if(firstLineParsed == 0){
+		write(STDERR, "Error while checking validity: Malformed CSV\n", 45);
+		return 0;
+	}
 	
 	// get number of commas in first line. this will be the base number of commas that should be in each line
 	/*
@@ -491,7 +538,7 @@ int isValidCSV(char* filename, char* columnToSort) {
 	}*/
 	
 	//previousChar in the file, setting equal to 
-	char previousChar = '\0';	
+	/*char previousChar = '\0';	
 	
 	//find number of commas in first line as touchstone
 	prevNoCommas = noCommas;
@@ -507,9 +554,10 @@ int isValidCSV(char* filename, char* columnToSort) {
 		if(currentChar == '\n' &&   (isalpha(previousChar) || isdigit(previousChar) || ispunct(previousChar) )) {
 			//printf("\n%s: %d vs. %d", filename, noCommas, prevNoCommas);
 			if(noCommas != prevNoCommas && numberOfLines > 1) {
+				write(STDERR, "Error while checking validity: Malformed CSV\n", 45);
 				return 0;
 			} else {
-				prevNoCommas = noCommas;
+				//prevNoCommas = noCommas;
 				noCommas = 0;
 			}
 			numberOfLines++;
@@ -534,6 +582,7 @@ int isValidCSV(char* filename, char* columnToSort) {
 		
 		previousChar = currentChar;
 	}
+	*/
 	close(csv);
 	return 1;
 //	return noCommas == 0 || noCommas%numberOfLines == 0;
@@ -598,8 +647,13 @@ int main(int argc, char** argv){
 					return -1;
 				} else{
 					flagsPresent[1] = 1;
-					dirToSearch = (char*)malloc(sizeof(char)*(strlen(optarg)+1));
-					strcpy(dirToSearch, optarg);
+					dirToSearch = (char*)malloc(sizeof(char)*(strlen(optarg)+2));
+					if(optarg[strlen(optarg)-1] == '/'){
+						strcpy(dirToSearch, optarg);
+					} else{
+						strcpy(dirToSearch, optarg);
+						strcat(dirToSearch, "/");
+					}
 					break;
 				}
 			case 'o':
@@ -662,6 +716,7 @@ int main(int argc, char** argv){
 			} else {
 				int subdirProcs = 1;
 				int subdirExitStatus = 0;
+				printf(", %d ", getpid());
 				while(wait(&subdirExitStatus) > 0){
 					subdirProcs += WEXITSTATUS(subdirExitStatus);
 				}
@@ -669,12 +724,12 @@ int main(int argc, char** argv){
 			}
 		}
 		
-		char sortedEnd[] = {'-','s','o','r','t','e','d','-','\0'};
-		strcat(sortedEnd, columnToSort);
+		//char sortedEnd[] = {'-','s','o','r','t','e','d','-','\0'};				<---- We still need to fork on every file.
+		//strcat(sortedEnd, columnToSort);
 		//isValidCSV(file, columnToSort);		//debug temp
 		file = dirStruct -> d_name;
 		int fileMode = (int)(dirStruct -> d_type);
-		if(!strcmp(file, ".git") || strcmp(file, ".") == 0 || strcmp(file, "..") == 0 || strstr(file,sortedEnd) != NULL) {
+		if(!strcmp(file, ".git") || strcmp(file, ".") == 0 || strcmp(file, "..") == 0) {
 			continue;
 		}
 
