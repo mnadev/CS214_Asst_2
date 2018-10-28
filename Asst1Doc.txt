@@ -9,6 +9,10 @@ DESCRIPTION
   void csvwrite(movieInfo** movieArr, int size ,char* categories, char* filename);
   
   csvwrite is a function that takes in a (sorted) array of movieInfo structs, the size of the array, the column headers of the csv file, and the output filename. Using these parameters, the csvwrite function writes the column headers and the movieInfo array to the file with the given filename.
+  HAS HEADERS:
+  int hasHeaders(char* columnNames)
+  
+  hasHeaders verifies that all of the column headers in the csv are part of movie database. It will return 0 if there is a column header that is not part of movie database and a 1 otherwise.
   
   ISINT:
   int isInt(movieInfo** dataRows, int sizeOfArray);
