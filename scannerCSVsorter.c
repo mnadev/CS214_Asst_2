@@ -276,71 +276,124 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 int hasHeaders(char* columnNames){
 	char headerName[50];
 	int headerIndex = 0;
-
+	
+	int hasTitle = 0;
 	int i = 0;	
 	while(columnNames[i] != '\0'){
 		switch(columnNames[i]){
-			case ",":
+			case ',':
 				headerName[headerIndex] = '\0';
-				if(strcmp(headerName, "color") != 0){
-					return 0;
-				} else if(strcmp(headerName, "director_name") != 0){
-					return 0;
-				} else if(strcmp(headerName, "num_critic_for_reviews") != 0){
-					return 0;
-				} else if(strcmp(headerName, "duration") != 0){
-					return 0;
-				} else if(strcmp(headerName, "director_facebook_likes") != 0){
-					return 0;
-				} else if(strcmp(headerName, "actor_3_facebook_likes") != 0){
-					return 0;
-				} else if(strcmp(headerName, "actor_2_name") != 0){
-					return 0;
-				} else if(strcmp(headerName, "actor_1_facebook_likes") != 0){
-					return 0;
-				} else if(strcmp(headerName, "gross") != 0){
-					return 0;
-				} else if(strcmp(headerName, "genres") != 0){
-					return 0;
-				} else if(strcmp(headerName, "actor_1_name") != 0){
-					return 0;
-				} else if(strcmp(headerName, "movie_title") != 0){
-					return 0;
-				} else if(strcmp(headerName, "num_voted_users") != 0){
-					return 0;
-				} else if(strcmp(headerName, "cast_total_facebook_likes") != 0){
-					return 0;
-				} else if(strcmp(headerName, "actor_3_name") != 0){
-					return 0;
-				} else if(strcmp(headerName, "facenumber_in_poster") != 0){
-					return 0;
-				} else if(strcmp(headerName, "plot_keywords") != 0){
-					return 0;
-				} else if(strcmp(headerName, "movie_imdb_link") != 0){
-					return 0;
-				} else if(strcmp(headerName, "num_user_for_reviews") != 0){
-					return 0;
-				} else if(strcmp(headerName, "language") != 0){
-					return 0;
-				} else if(strcmp(headerName, "country") != 0){
-					return 0;
-				} else if(strcmp(headerName, "content_rating") != 0){
-					return 0;
-				} else if(strcmp(headerName, "budget") != 0){
-					return 0;
-				} else if(strcmp(headerName, "title_year") != 0){
-					return 0;
-				} else if(strcmp(headerName, "actor_2_facebook_likes") != 0){
-					return 0;
-				} else if(strcmp(headerName, "imdb_score") != 0){
-					return 0;
-				} else if(strcmp(headerName, "aspect_ratio") != 0){
-					return 0;
-				} else if(strcmp(headerName, "movie_faceook_likes") != 0){
-					return 0;
-				} else{
+				if(strcmp(headerName, "color") == 0){
 					headerIndex = 0;
 					i++;
+					break;
+				} else if(strcmp(headerName, "director_name") != 0){
+					headerIndex = 0;
+					i++;
+					break;
+				} else if(strcmp(headerName, "num_critic_for_reviews") != 0){
+					headerIndex = 0;
+					i++;
+					break;
+				} else if(strcmp(headerName, "duration") != 0){
+					headerIndex = 0;
+					i++;
+					break;
+				} else if(strcmp(headerName, "director_facebook_likes") != 0){
+					headerIndex = 0;
+					i++;
+					break;
+				} else if(strcmp(headerName, "actor_3_facebook_likes") != 0){
+					headerIndex = 0;
+					i++;
+					break;
+				} else if(strcmp(headerName, "actor_2_name") != 0){
+					headerIndex = 0;
+					i++;
+					break;
+				} else if(strcmp(headerName, "actor_1_facebook_likes") != 0){
+					headerIndex = 0;
+					i++;
+					break;
+				} else if(strcmp(headerName, "gross") != 0){
+					headerIndex = 0;
+					i++;
+					break;
+				} else if(strcmp(headerName, "genres") != 0){
+					headerIndex = 0;
+					i++;
+					break;
+				} else if(strcmp(headerName, "actor_1_name") != 0){
+					headerIndex = 0;
+					i++;
+					break;
+				} else if(strcmp(headerName, "movie_title") != 0){
+					headerIndex = 0;
+					i++;
+					break;
+				} else if(strcmp(headerName, "num_voted_users") != 0){
+					headerIndex = 0;
+					i++;
+					break;
+				} else if(strcmp(headerName, "cast_total_facebook_likes") != 0){
+					headerIndex = 0;
+					i++;
+					break;
+				} else if(strcmp(headerName, "actor_3_name") != 0){
+					headerIndex = 0;
+					i++;
+					break;
+				} else if(strcmp(headerName, "facenumber_in_poster") != 0){
+					return 0;					headerIndex = 0;
+					i++;
+					break;} else if(strcmp(headerName, "plot_keywords") != 0){
+					return 0;
+				} else if(strcmp(headerName, "movie_imdb_link") != 0){
+					headerIndex = 0;
+					i++;
+					break;
+				} else if(strcmp(headerName, "num_user_for_reviews") != 0){
+					headerIndex = 0;
+					i++;
+					break;
+				} else if(strcmp(headerName, "language") != 0){
+					headerIndex = 0;
+					i++;
+					break;
+				} else if(strcmp(headerName, "country") != 0){
+					headerIndex = 0;
+					i++;
+					break;
+				} else if(strcmp(headerName, "content_rating") != 0){
+					headerIndex = 0;
+					i++;
+					break;
+				} else if(strcmp(headerName, "budget") != 0){
+					headerIndex = 0;
+					i++;
+					break;
+				} else if(strcmp(headerName, "title_year") != 0){
+					headerIndex = 0;
+					i++;
+					break;
+				} else if(strcmp(headerName, "actor_2_facebook_likes") != 0){
+					headerIndex = 0;
+					i++;
+					break;
+				} else if(strcmp(headerName, "imdb_score") != 0){
+					headerIndex = 0;
+					i++;
+					break;
+				} else if(strcmp(headerName, "aspect_ratio") != 0){
+					headerIndex = 0;
+					i++;
+					break;
+				} else if(strcmp(headerName, "movie_faceook_likes") != 0){
+					headerIndex = 0;
+					i++;
+					break;
+				} else{
+					return 0;
 				}
 				break;
 			default:
@@ -576,7 +629,7 @@ int main(int argc, char** argv){
 			write(STDERR, "Fatal Error: Output directory not found.\n", 41);
 			return -1;
 		}
-	]
+	}
 
 	printf("\nInitial PID: ");
 	int pid = getpid();
@@ -648,7 +701,6 @@ int main(int argc, char** argv){
 				continue;
 			}	
 		} else if(fileMode == 4){
-			printf("Entered Dir \n");
 			if(strcmp(file, ".git") == 0 || strcmp(file, ".") == 0 || strcmp(file, "..") == 0) {
 				continue;
 			}
