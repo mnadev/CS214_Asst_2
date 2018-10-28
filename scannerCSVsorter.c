@@ -261,7 +261,7 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 		if(isAbsolutePath == 1) {
 			 snprintf(fileToWrite, 256, "%s/%s-sorted-%s.csv\0",destDirectory,filename,columnToSort);
 		} else {
-			snprintf(fileToWrite, 256, "./%s/%s-sorted%s.csv\0",destDirectory, filename, columnToSort);
+			snprintf(fileToWrite, 256, "./%s/%s-sorted-%s.csv\0",destDirectory, filename, columnToSort);
 		}
 	} else {
 		snprintf(fileToWrite, 256, "%s-sorted-%s.csv\0",filename,columnToSort);
