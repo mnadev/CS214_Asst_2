@@ -255,19 +255,20 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 	if(*(filename) == '/') {
 		filename = filename + 1;
 	}
-	char* fileToWrite = (char*) malloc(sizeof(char) * 255);
+	char* fileToWrite = (char*) malloc(sizeof(char) * 256);
 	//printf("destDirectory: %s\n",destDirectory);
 	if(destDirectory != NULL) {
 		if(isAbsolutePath == 1) {
-			 snprintf(fileToWrite, 255, "%s/%s-sorted-%s.csv\0",destDirectory,filename,columnToSort);
+			 snprintf(fileToWrite, 256, "%s/%s-sorted-%s.csv\0",destDirectory,filename,columnToSort);
 		} else {
-			snprintf(fileToWrite, 255, "./%s/%s-sorted%s.csv\0",destDirectory, filename, columnToSort);
+			snprintf(fileToWrite, 256, "./%s/%s-sorted%s.csv\0",destDirectory, filename, columnToSort);
 		}
 	} else {
-		snprintf(fileToWrite, 255, "%s-sorted-%s.csv\0",filename,columnToSort);
+		snprintf(fileToWrite, 256, "%s-sorted-%s.csv\0",filename,columnToSort);
 	}
 	//printf("destination file: %s \n", fileToWrite);
 	csvwrite(dataRows,sizeOfArray, columnNames, fileToWrite);
+	free(fileToWrite);
 }
 
 
