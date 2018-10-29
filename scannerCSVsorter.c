@@ -610,6 +610,12 @@ int main(int argc, char** argv){
 	//Write to STDERR if there are fewer than the required number of args
 	if(argc < 3){
 		write(STDERR, "Fatal Error: Insufficient arguments.\n", 38);
+		write(STDOUT, "Fatal Error: Insufficient arguments.\n", 38);
+		return -1;
+	}
+	if(argc > 7){
+		write(STDERR, "Fatal Error: Excess arguments.\n", 31);
+		write(STDOUT, "Fatal Error: Excess arguments.\n", 31);
 		return -1;
 	}
 	//Flag Handling:
@@ -619,6 +625,7 @@ int main(int argc, char** argv){
 			case 'c':
 				if(flagsPresent[0] == 1){
 					write(STDERR, "Fatal Error: Repeated argument -c.\n", 36); 
+					write(STDOUT, "Fatal Error: Repeated argument -c.\n", 36); 
 					return -1;
 				} else{
 					flagsPresent[0] = 1;				//The -c parameter is present
@@ -629,6 +636,7 @@ int main(int argc, char** argv){
 			case 'd':
 				if(flagsPresent[1] == 1){
 					write(STDERR, "Fatal Error: Repeated argument -d.\n", 36); 
+					write(STDOUT, "Fatal Error: Repeated argument -d.\n", 36); 
 					return -1;
 				} else{
 					flagsPresent[1] = 1;
@@ -644,6 +652,7 @@ int main(int argc, char** argv){
 			case 'o':
 				if(flagsPresent[2] == 1){
 					write(STDERR, "Fatal Error: Repeated argument -o.\n", 36); 
+					write(STDOUT, "Fatal Error: Repeated argument -o.\n", 36); 
 					return -1;
 				} else{
 					flagsPresent[2] = 1;
@@ -653,13 +662,21 @@ int main(int argc, char** argv){
 				}				
 			case '?':
 				write(STDERR, "Fatal Error: Unknown arguments.\n", 33);
+				write(STDOUT, "Fatal Error: Unknown arguments.\n", 33);
 				return -1;
 		}
 
 	}
+	//Handles excess arguments
+	if(optind < argc){
+		write(STDERR, "Fatal Error: Unknown arguments.\n", 33);
+		write(STDOUT, "Fatal Error: Unknown arguments.\n", 33);
+		return -1;
+	}
 	//Write to STDERR if -c flag is not present
 	if(flagsPresent[0] != 1){
 		write(STDERR, "Fatal Error: The first argument of the program must be '-c to sort by column.\n", 81);
+		write(STDOUT, "Fatal Error: The first argument of the program must be '-c to sort by column.\n", 81);
 		return -1;
 	}
 	if(flagsPresent[2] == 1){
@@ -667,20 +684,25 @@ int main(int argc, char** argv){
 		testOpen = opendir(dirDest);
 		if(errno == ENOENT){
 			write(STDERR, "Fatal Error: Output directory not found.\n", 41);
+			write(STDOUT, "Fatal Error: Output directory not found.\n", 41);
 			return -1;
 		}
 	}
 
-	printf("\nInitial PID: ");
-	int pid = getpid();
-	printf("%d\n",pid);
 	
 	DIR *currDir;
 	currDir = opendir(dirToSearch);
 	if(errno == ENOENT){
 		write(STDERR, "Fatal Error: Directory to search not found.\n", 44);
+		write(STDOUT, "Fatal Error: Directory to search not found.\n", 44);
 		return -1;
 	}
+
+	printf("\nInitial PID: ");
+	int pid = getpid();
+	printf("%d\n",pid);
+
+
 	struct dirent* dirStruct;
 	
 	if(currDir == NULL) {
