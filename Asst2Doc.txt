@@ -1,9 +1,9 @@
-SCANNERCSVSORTER.C
-scannerCSVsorter is a program that given a column to sort by, an optional directory to search, and an optional directory to output file, looks through all files and subdirectories of the directory to search and sorts all valid CSV files and outputs them to the directory. 
+MULTITHREADSORTER.C
+multiThreadSorter is a program that given a column to sort by, an optional directory to search, and an optional directory to output file, looks through all files and subdirectories of the directory to search and sorts all valid CSV files and outputs them to the directory. 
 SYNOPSIS
-  scannerCSVsorter.out -c <ColumnToSortBy> -d <directoryToSearch> -o <outputDirectory>
+  multiThreadSorter.out -c <ColumnToSortBy> -d <directoryToSearch> -o <outputDirectory>
 DESCRIPTION
-  scannerCSVsorter looks through the entire directory that is to be searched and looks at all files and subdirectories. Then, the CSV file is sorted by the given parameter and the output is written to a file of the form filename-sorted-columnSortedBy.csv to the output directory. 
+  multiThreadSorter looks through the entire directory that is to be searched and looks at all files and subdirectories. Then, the CSV file is sorted by the given parameter and the output is written to a file of the form filename-sorted-columnSortedBy.csv to the output directory. 
   
   CSVWRITE:
   void csvwrite(movieInfo** movieArr, int size ,char* categories, char* filename);
@@ -37,12 +37,12 @@ OPTIONS
   -o indicates the output directory.
   <outputDirectory> is the output directory.
 EXAMPLES
-	./scannerCSVSorter.out -c title -d files -o sortedFiles
+	./multiThreadSorter.out -c title -d files -o sortedFiles
 	Will sort all valid csv files in files/ with the specific column(titles) and write the newly sorted csv files into sortedFiles directory.
 EXIT STATUS
 The code will return 0 if terminated successfully. The code will return -1 if the command line arguments are not correct or if there are insufficient arguments. 
 SEE ALSO
-scannerCSVsorter.h
+multiThreadSorter.h
 mergesort.c
 BUGS
 None currently known.
@@ -54,9 +54,9 @@ The design of the program is as follows:
 	Before the directory is searched, the program will check the arguments to ensure that the arguments were properly inputted, outputting to STDERR and returning -1 if the arguments did not match the required format. Specifically, the only argument that is necessary is "-c <ColumnToSortBy>". If that argument is not given, the program will return -1. Otherwise, it will run and use the current directory as the one to search and output files to. 
 	The program then prints the current, parent process's PID. Then, we iterate through all the files and subdirectories. For each file and subdirectory, the program forks itself and print the child's pid. For a subdirectory, we iterate through all files and subdirectories and fork.  For a file, we check if the file is a valid CSV. If so, we parse and output. Then, the program outputs the number of all processes and exits.
 
-SCANNERCSVSORTER.H
+MULTITHREADSORTER.H
 SYNOPSIS
-scannerCSVsorter.h is a header file that defines necessary structs and functions required for the CSV sorter to operate.
+multiThreadSorter.h is a header file that defines necessary structs and functions required for the CSV sorter to operate.
 DESCRIPTION
 
 STRUCT _MOVIEINFO
@@ -79,7 +79,7 @@ See MERGESORT.C
 EXIT STATUS
 Since this is a header file, exit status is not defined and not necessary for function of the code.
 SEE ALSO
-scannerCSVsorter.c
+multiThreadSorter.c
 mergesort.c
 BUGS
 None currently known.
