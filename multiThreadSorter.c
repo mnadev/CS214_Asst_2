@@ -7,7 +7,7 @@
 #include<sys/stat.h>
 #include<errno.h>
 #include<fcntl.h>
-#include "scannerCSVsorter.h"
+#include "multiThreadSorter.h"
 
 void csvwrite(movieInfo** movieArr, int size ,char* categories, char* filename);
 int isInt(movieInfo** dataRows, int sizeOfArray);
