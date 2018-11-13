@@ -15,14 +15,36 @@
 
 typedef
 struct _movieInfo{
-	char* beforeSortedCol;			//All the information before the column that needs to be sorted (might be null if sorted column is first in the list of columns)
-	char* toBeSorted;				//The string containing the information that we're sorting on
-	char* afterSortedCol;			//The information after the column that needs to be sorted on (might be null if sorted column is last in the list of columns)
-	int sizeBefore;
-	int sizeOfSort;
-	int sizeAfter;
-	int sortHasQuotes;
+		char* color;
+		char* director_name;
+		float num_critic_for_reviews;
+		float duration;
+		float director_facebook_likes;
+		float actor_3_facebook_likes;
+		char* actor_2_name;
+		float actor_1_facebook_likes;
+		float gross;
+		char* genres;
+		char* actor_1_name;
+		char* movie_title;
+		float num_voted_users;
+		float cast_total_facebook_likes;
+		char* actor_3_name;
+		float facenumber_in_poster;
+		char* plot_keywords;
+		char* movie_imdb_link;
+		float num_user_for_reviews;
+		char* language;
+		char* country;
+		char* content_rating;
+		float budget;
+		float title_year;
+		float actor_2_facebook_likes;
+		float imdb_score;
+		float aspect_ratio;
+		float movie_facebook_likes;
 } movieInfo;
+
 
 //Suggestion: prototype a mergesort function
 void mergesort(movieInfo** arr, int leftInd, int rightInd, int isInt);                                                                                    
