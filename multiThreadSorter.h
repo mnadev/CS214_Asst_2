@@ -45,6 +45,14 @@ struct _movieInfo{
 		float movie_facebook_likes;
 } movieInfo;
 
+//Struct to be used to pass arguments into the thread functions.
+typedef
+struct _threadArgs{
+	char* pathName;
+	char* columnToSort;
+	char* dirDest;
+} threadArgs;
+
 
 //Suggestion: prototype a mergesort function
 void mergesort(movieInfo** arr, int leftInd, int rightInd, int isInt);                                                                                    

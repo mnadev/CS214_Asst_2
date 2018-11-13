@@ -13,6 +13,9 @@ void csvwrite(movieInfo** movieArr, int size ,char* categories, char* filename);
 int isInt(movieInfo** dataRows, int sizeOfArray);
 void parseCSV(char* filename, char* columnToSort, char* destDirectory);
 int isValidCSV(char* filename, char* columnToSort);
+void* dirSearch(void* args);
+void* fileThread(void* args);
+
 
 int isInt(movieInfo** dataRows, int sizeOfArray) {
 	// this integer acts as a boolean
@@ -598,25 +601,17 @@ void csvwrite(movieInfo** movieArr, int size ,char* categories, char* filename){
 	fclose(csvFile);
 }
 
-void dirSearch(char* pathName){
+void* dirSearch(void* args){
+	//Quick note that args is going to be a struct containing pathname, columnToSort, and dirDest;
+	char* pathName = args->pathName;
 	struct dirent* dirStruct;
+	char* dirToSearch;
 	DIR* currDir = opendir(pathName);
 	while(31337) {
 		if((dirStruct = readdir(currDir)) == NULL) {
-			if(getpid() == pid) {
-				break;
-			} else {
-				int subdirProcs = 1;
-				int subdirExitStatus = 0;
-				printf(", %d ", getpid());
-				while(wait(&subdirExitStatus) > 0){
-					subdirProcs += WEXITSTATUS(subdirExitStatus);
-				}
-				exit(subdirProcs);
-			}
+			break;
 		}
-		
-		file = dirStruct -> d_name;
+		char* file = dirStruct -> d_name;
 		int fileMode = (int)(dirStruct -> d_type);
 		if(!strcmp(file, ".git") || strcmp(file, ".") == 0 || strcmp(file, "..") == 0) {
 			continue;
@@ -624,42 +619,31 @@ void dirSearch(char* pathName){
 
 		int status = 0;
  		if(fileMode == 8){
-			int fileFork = fork();
-			if(fileFork == 0){
-				printf(", %d ",getpid());
-				
-				char* filepath = (char*)malloc(sizeof(char)*10000);
-				strcpy(filepath, dirToSearch);		//Because i need to create a new string for full file path.
-				strcat(filepath, file);	//Concatting filename to file path for full file path 
-				int validity = 1;
-				validity = isValidCSV(filepath, columnToSort);
+			char* filepath = (char*)malloc(sizeof(char)*10000);
+			strcpy(filepath, dirToSearch);		//Because i need to create a new string for full file path.
+			strcat(filepath, file);	//Concatting filename to file path for full file path 
+			threadArgs args = {filepath, args->columnToSort, args->dirDest};
+			
+			pthread_t* newFileThreadHandle = (pthread_t*)malloc(sizeof(pthread_t));
+			pthread_attr_t threadAttrStruct;
+			pthread_attr_init(&threadAttrStruct);
+			pthread_create(newFileThreadHandle, &threadAttrStruct, fileThread, (void*)args);
+	
+			free(filepath);
+			continue;
 
-				//printf("\nisValidCSV: %s %d \n", filepath, validity);
-
-				if(validity){
-					parseCSV(filepath, columnToSort, dirDest);
-				}
-				
-				free(filepath);
-				exit(1);
-			} else{
-				continue;
-			}	
 		} else if(fileMode == 4){
-			if(strcmp(file, ".git") == 0 || strcmp(file, ".") == 0 || strcmp(file, "..") == 0) {
-				continue;
-			}
-			int dirFork = fork();
-			if(dirFork == 0){
-				dirToSearch = realloc(dirToSearch, sizeof(char)*(strlen(dirToSearch)+strlen(file)+2));
-				strcat(dirToSearch, file);		//Appending new directory to current directory path;
-				strcat(dirToSearch, "/");		//Forcing the current directory path to always end in / for reasons.
-				currDir = opendir(dirToSearch);
-				continue;
-			}
-			else{
-				continue;
-			}
+			dirToSearch = realloc(dirToSearch, sizeof(char)*(strlen(dirToSearch)+strlen(file)+2));
+			strcat(dirToSearch, file);		//Appending new directory to current directory path;
+			strcat(dirToSearch, "/");		//Forcing the current directory path to always end in / for reasons.
+			
+			threadArgs args = {dirToSearch, args->columnToSort, args->dirDest};
+			pthread_t* newDirThreadHandle = (pthread_t*)malloc(sizeof(pthread_t));
+			pthread_attr_t threadAttrStruct;
+			pthread_attr_init(&threadAttrStruct);
+			pthread_create(newDirThreadHandle, &threadAttrStruct, dirSearch, (void*)args);
+
+			continue;
 		} else{
 			//If for some reason there's a thing that's not a file or directory. Gotta handle all the errors dawg.	
 			continue;
@@ -774,30 +758,17 @@ int main(int argc, char** argv){
 
 	struct dirent* dirStruct;
 	
-	if(currDir == NULL) {
-		return -2;
-	}
 	//dirStruct = 
 	//printf("\nPIDS of all child processes: ");
 	int noProcesses = 1;
 	int totalProcesses = 1;
-	printf("PIDS of all child processes: ");
+	printf("TIDS of all child processes: ");
 	fflush(stdout);
 
 	char * file;		//used to determine i-node type: directory, file, or some other thing
 	while(31337) {
 		if((dirStruct = readdir(currDir)) == NULL) {
-			if(getpid() == pid) {
-				break;
-			} else {
-				int subdirProcs = 1;
-				int subdirExitStatus = 0;
-				printf(", %d ", getpid());
-				while(wait(&subdirExitStatus) > 0){
-					subdirProcs += WEXITSTATUS(subdirExitStatus);
-				}
-				exit(subdirProcs);
-			}
+			break;
 		}
 		
 		file = dirStruct -> d_name;
@@ -806,44 +777,30 @@ int main(int argc, char** argv){
 			continue;
 		}
 
-		int status = 0;
  		if(fileMode == 8){
-			int fileFork = fork();
-			if(fileFork == 0){
-				printf(", %d ",getpid());
-				
-				char* filepath = (char*)malloc(sizeof(char)*10000);
-				strcpy(filepath, dirToSearch);		//Because i need to create a new string for full file path.
-				strcat(filepath, file);	//Concatting filename to file path for full file path 
-				int validity = 1;
-				validity = isValidCSV(filepath, columnToSort);
+			char* filepath = (char*)malloc(sizeof(char)*10000);
+			strcpy(filepath, dirToSearch);		//Because i need to create a new string for full file path.
+			strcat(filepath, file);	//Concatting filename to file path for full file path 
+			threadArgs args = {filepath, columnToSort, dirDest};
+			
+			pthread_t* newFileThreadHandle = (pthread_t*)malloc(sizeof(pthread_t));
+			pthread_attr_t threadAttrStruct;
+			pthread_attr_init(&threadAttrStruct);
+			pthread_create(newFileThreadHandle, &threadAttrStruct, fileThread, (void*)args);
+	
+			free(filepath);
+			continue;
 
-				//printf("\nisValidCSV: %s %d \n", filepath, validity);
-
-				if(validity){
-					parseCSV(filepath, columnToSort, dirDest);
-				}
-				
-				free(filepath);
-				exit(1);
-			} else{
-				continue;
-			}	
 		} else if(fileMode == 4){
-			if(strcmp(file, ".git") == 0 || strcmp(file, ".") == 0 || strcmp(file, "..") == 0) {
-				continue;
-			}
-			int dirFork = fork();
-			if(dirFork == 0){
-				dirToSearch = realloc(dirToSearch, sizeof(char)*(strlen(dirToSearch)+strlen(file)+2));
-				strcat(dirToSearch, file);		//Appending new directory to current directory path;
-				strcat(dirToSearch, "/");		//Forcing the current directory path to always end in / for reasons.
-				currDir = opendir(dirToSearch);
-				continue;
-			}
-			else{
-				continue;
-			}
+			dirToSearch = realloc(dirToSearch, sizeof(char)*(strlen(dirToSearch)+strlen(file)+2));
+			strcat(dirToSearch, file);		//Appending new directory to current directory path;
+			strcat(dirToSearch, "/");		//Forcing the current directory path to always end in / for reasons.
+			
+			threadArgs args = {dirToSearch, columnToSort, dirDest};
+			pthread_t* newDirThreadHandle = (pthread_t*)malloc(sizeof(pthread_t));
+			pthread_attr_t threadAttrStruct;
+			pthread_attr_init(&threadAttrStruct);
+			pthread_create(newDirThreadHandle, &threadAttrStruct, dirSearch, (void*)args);
 		} else{
 			//If for some reason there's a thing that's not a file or directory. Gotta handle all the errors dawg.	
 			continue;
