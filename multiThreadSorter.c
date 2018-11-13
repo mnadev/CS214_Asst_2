@@ -598,6 +598,75 @@ void csvwrite(movieInfo** movieArr, int size ,char* categories, char* filename){
 	fclose(csvFile);
 }
 
+void dirSearch(char* pathName){
+	struct dirent* dirStruct;
+	DIR* currDir = opendir(pathName);
+	while(31337) {
+		if((dirStruct = readdir(currDir)) == NULL) {
+			if(getpid() == pid) {
+				break;
+			} else {
+				int subdirProcs = 1;
+				int subdirExitStatus = 0;
+				printf(", %d ", getpid());
+				while(wait(&subdirExitStatus) > 0){
+					subdirProcs += WEXITSTATUS(subdirExitStatus);
+				}
+				exit(subdirProcs);
+			}
+		}
+		
+		file = dirStruct -> d_name;
+		int fileMode = (int)(dirStruct -> d_type);
+		if(!strcmp(file, ".git") || strcmp(file, ".") == 0 || strcmp(file, "..") == 0) {
+			continue;
+		}
+
+		int status = 0;
+ 		if(fileMode == 8){
+			int fileFork = fork();
+			if(fileFork == 0){
+				printf(", %d ",getpid());
+				
+				char* filepath = (char*)malloc(sizeof(char)*10000);
+				strcpy(filepath, dirToSearch);		//Because i need to create a new string for full file path.
+				strcat(filepath, file);	//Concatting filename to file path for full file path 
+				int validity = 1;
+				validity = isValidCSV(filepath, columnToSort);
+
+				//printf("\nisValidCSV: %s %d \n", filepath, validity);
+
+				if(validity){
+					parseCSV(filepath, columnToSort, dirDest);
+				}
+				
+				free(filepath);
+				exit(1);
+			} else{
+				continue;
+			}	
+		} else if(fileMode == 4){
+			if(strcmp(file, ".git") == 0 || strcmp(file, ".") == 0 || strcmp(file, "..") == 0) {
+				continue;
+			}
+			int dirFork = fork();
+			if(dirFork == 0){
+				dirToSearch = realloc(dirToSearch, sizeof(char)*(strlen(dirToSearch)+strlen(file)+2));
+				strcat(dirToSearch, file);		//Appending new directory to current directory path;
+				strcat(dirToSearch, "/");		//Forcing the current directory path to always end in / for reasons.
+				currDir = opendir(dirToSearch);
+				continue;
+			}
+			else{
+				continue;
+			}
+		} else{
+			//If for some reason there's a thing that's not a file or directory. Gotta handle all the errors dawg.	
+			continue;
+		}
+	}
+}
+
 int main(int argc, char** argv){
 	
 	//Input flags of the program and whether they are present: Index 0 = -c, Index 1 = -d, Index 2 = -o
@@ -731,9 +800,6 @@ int main(int argc, char** argv){
 			}
 		}
 		
-		//char sortedEnd[] = {'-','s','o','r','t','e','d','-','\0'};				<---- We still need to fork on every file.
-		//strcat(sortedEnd, columnToSort);
-		//isValidCSV(file, columnToSort);		//debug temp
 		file = dirStruct -> d_name;
 		int fileMode = (int)(dirStruct -> d_type);
 		if(!strcmp(file, ".git") || strcmp(file, ".") == 0 || strcmp(file, "..") == 0) {
