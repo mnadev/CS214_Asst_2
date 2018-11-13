@@ -601,6 +601,14 @@ void csvwrite(movieInfo** movieArr, int size ,char* categories, char* filename){
 	fclose(csvFile);
 }
 
+void* fileThread(void* args){
+	
+	parseCSV(args->fileName, args->columnToSort, args->dirDest);
+	pthread_exit(0);
+
+}
+
+
 void* dirSearch(void* args){
 	//Quick note that args is going to be a struct containing pathname, columnToSort, and dirDest;
 	char* pathName = args->pathName;
@@ -649,6 +657,7 @@ void* dirSearch(void* args){
 			continue;
 		}
 	}
+	pthread_exit(0);
 }
 
 int main(int argc, char** argv){
