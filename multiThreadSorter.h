@@ -47,5 +47,5 @@ struct _movieInfo{
 
 
 //Suggestion: prototype a mergesort function
-void mergesort(movieInfo** arr, int leftInd, int rightInd, int isInt);                                                                                    
+void mergesort(movieInfo** arr, char * columnToBeSorted, int left, int right);                                                                                    
 
