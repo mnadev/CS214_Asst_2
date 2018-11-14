@@ -16,6 +16,32 @@ int isValidCSV(char* filename, char* columnToSort);
 void* dirSearch(void* args);
 void* fileThread(void* args);
 
+movieNode* head = NULL;
+
+
+void addToFront(movieInfo data) {
+	movieNode* newHead =(movieNode) malloc(sizeof(movieNode));
+	newHead -> data = data;
+	newHead-> next = head;
+	head = newHead;
+}
+
+void mergeSortNodes(){
+	if(head == NULL || head -> next == NULL) {
+		return;
+	}
+
+	movieNode* next = head -> next ->next;
+	movieInfo** mergedData = mergesort(head -> data, head -> next -> data);
+	movieNode* newHead = malloc(sizeof(movieNode));
+	newHead->data = mergedData;
+	newHead-> next = next;
+	free(head -> next);
+	movieNode* oldHead = head;
+	head = newHead;
+	free(oldHead);
+	
+}
 
 int isInt(movieInfo** dataRows, int sizeOfArray) {
 	// this integer acts as a boolean

@@ -53,6 +53,11 @@ struct _threadArgs{
 	char* dirDest;
 } threadArgs;
 
+typedef struct _movieNode {
+	movieInfo** data;
+	movieNode* next;
+} movieNode;
+
 
 //Suggestion: prototype a mergesort function
 void mergesort(movieInfo** arr, char * columnToBeSorted, int left, int right);                                                                                    
