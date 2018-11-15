@@ -527,10 +527,10 @@ movieInfo** merge(movieInfo** arr, char* columnToBeSorted,int left, int half, in
 
 
 
-movieInfo** mergeNodeData(movieInfo** arrA, movieInfo** arrB, int arrLenA, int arrLenB, char * category) {
+movieInfo** mergeNodeData(movieInfo** arrA, movieInfo** arrB, int arrLenA, int arrLenB, char * columnToBeSorted) {
 	movieInfo** mergedArr = malloc(sizeof(movieInfo) * (arrLenA + arrLenB));
 	
- 	int ptrA = 0, ptrB = 0, ptrMerge = 0;	
+ 	int ptrA = 0, ptrB = 0, ptrMerged = 0;	
 	
 	while(ptrA < (arrLenA - 1) && ptrB < (arrLenB - 1)){
 		movieInfo* A = arrA[ptrA];
