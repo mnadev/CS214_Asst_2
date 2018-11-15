@@ -62,4 +62,4 @@ typedef struct _movieNode {
 
 //Suggestion: prototype a mergesort function
 void mergesort(movieInfo** arr, char * columnToBeSorted, int left, int right);                                                                                    
-
+movieInfo** mergeNodeData(movieInfo** arrA, movieInfo** arrB, int arrLenA, int arrLenB, char * columnToBeSorted)
