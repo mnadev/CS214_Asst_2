@@ -55,6 +55,7 @@ struct _threadArgs{
 
 typedef struct _movieNode {
 	movieInfo** data;
+	int arrLen;
 	movieNode* next;
 } movieNode;
 

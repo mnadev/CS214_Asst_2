@@ -562,3 +562,27 @@ movieInfo** merge(movieInfo** arr, char* columnToBeSorted,int left, int half, in
         free(tempB);
         
     }
+
+
+
+movieInfo** mergeNodeData(movieInfo** arrA, movieInfo** arrB, int arrLenA, int arrLenB, char * category) {
+	movieInfo** mergedArr = malloc(sizeof(movieInfo) * (arrLenA + arrLenB));
+	
+ 	int ptrA = 0, ptrB = 0;	
+	
+	while(ptrA < (arrLenA - 1) && ptrB < (arrLenB - 1)) {
+		
+	}
+
+	while(ptrA < (arrLenA - 1)) {
+
+	}
+	
+	while(ptrB < (arrLenB - 1)) {
+
+	}
+	
+	//free(arrA);
+	//free(arrB);
+	return mergedArr;
+}

@@ -19,23 +19,39 @@ void* fileThread(void* args);
 movieNode* head = NULL;
 
 
-void addToFront(movieInfo data) {
+void addToFront(movieInfo** data, int arrLen) {
+	// create new head node and set data 
 	movieNode* newHead =(movieNode) malloc(sizeof(movieNode));
 	newHead -> data = data;
-	newHead-> next = head;
+	newHead -> arrLen = arrLen;
+	//set next node to current head
+	newHead -> next = head;
+
+	//set head to new head
 	head = newHead;
 }
 
 void mergeSortNodes(){
+	//return if head is null or there is only one node in list
 	if(head == NULL || head -> next == NULL) {
 		return;
 	}
 
-	movieNode* next = head -> next ->next;
-	movieInfo** mergedData = mergesort(head -> data, head -> next -> data);
+	// get third node in list, could be NULL, don't matter
+	movieNode* next = head -> next -> next;
+
+	// mergesort the data
+	movieInfo** mergedData = mergeNodeData(head -> data, head -> next -> data);
+	
+	// create new head node and set data
 	movieNode* newHead = malloc(sizeof(movieNode));
-	newHead->data = mergedData;
-	newHead-> next = next;
+	newHead -> data = mergedData;
+	newHead -> arrLen = (head -> next -> arrLen) + (head -> arrLen);
+
+	//set next node equal to third node, could be NULL
+	newHead -> next = next;
+	
+	// free first and second nodes, also, set head equal to new head
 	free(head -> next);
 	movieNode* oldHead = head;
 	head = newHead;
