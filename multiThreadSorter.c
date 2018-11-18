@@ -21,7 +21,7 @@ movieNode* head = NULL;
 
 void addToFront(movieInfo** data, int arrLen) {
 	// create new head node and set data 
-	movieNode* newHead =(movieNode) malloc(sizeof(movieNode));
+	movieNode* newHead =(movieNode*) malloc(sizeof(movieNode));
 	newHead -> data = data;
 	newHead -> arrLen = arrLen;
 	//set next node to current head
@@ -31,7 +31,7 @@ void addToFront(movieInfo** data, int arrLen) {
 	head = newHead;
 }
 
-void mergeSortNodes(){
+void mergeSortNodes(char* category){
 	//return if head is null or there is only one node in list
 	if(head == NULL || head -> next == NULL) {
 		return;
@@ -41,10 +41,10 @@ void mergeSortNodes(){
 	movieNode* next = head -> next -> next;
 
 	// mergesort the data
-	movieInfo** mergedData = mergeNodeData(head -> data, head -> next -> data);
+	movieInfo** mergedData = mergeNodeData(head -> data, head -> next -> data, head -> arrLen, head -> next -> arrLen, category);
 	
 	// create new head node and set data
-	movieNode* newHead = malloc(sizeof(movieNode));
+	movieNode* newHead = (movieNode *) malloc(sizeof(movieNode));
 	newHead -> data = mergedData;
 	newHead -> arrLen = (head -> next -> arrLen) + (head -> arrLen);
 
@@ -59,6 +59,8 @@ void mergeSortNodes(){
 	
 }
 
+// currently commenting out, will delete later
+/*
 int isInt(movieInfo** dataRows, int sizeOfArray) {
 	// this integer acts as a boolean
 	// is 0 if the data is not an int, now is 1 if the data is an int
@@ -101,9 +103,62 @@ int isInt(movieInfo** dataRows, int sizeOfArray) {
 	
 	return isInt;
 }
+*/
 
 //function to parse through csv file
 void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
+	
+	int isInt = 0;
+	
+	//checking if column tobe sorted is one of the specified things and also setting isInt equal to specified value.
+	if(strcmp(columnToBeSorted, "color") == 0){
+		isInt = 0;
+	} else if(strcmp(columnToBeSorted, "director_name") == 0){
+		isInt = 0;
+	} else if(strcmp(columnToBeSorted, "num_critic_for_reviews") == 0){
+	} else if(strcmp(columnToBeSorted, "duration") == 0){
+	} else if(strcmp(columnToBeSorted, "director_facebook_likes") == 0){
+	} else if(strcmp(columnToBeSorted, "actor_3_facebook_likes") == 0){
+	} else if(strcmp(columnToBeSorted, "actor_2_name") == 0){
+		isInt = 0;
+	} else if(strcmp(columnToBeSorted, "actor_1_facebook_likes") == 0){
+	} else if(strcmp(columnToBeSorted, "gross") == 0){
+	} else if(strcmp(columnToBeSorted, "genres") == 0){
+		isInt = 0;
+	} else if(strcmp(columnToBeSorted, "actor_1_name") == 0){
+	isInt = 0;
+	} else if(strcmp(columnToBeSorted, "movie_title") == 0){
+	isInt = 0;
+	} else if(strcmp(columnToBeSorted, "num_voted_users") == 0){
+	} else if(strcmp(columnToBeSorted, "cast_total_facebook_likes") == 0){
+	} else if(strcmp(columnToBeSorted, "actor_3_name") == 0){
+		isInt = 0;
+	} else if(strcmp(columnToBeSorted, "facenumber_in_poster") == 0){
+	} else if(strcmp(columnToBeSorted, "plot_keywords") == 0){
+		isInt = 0;
+	} else if(strcmp(columnToBeSorted, "movie_imdb_link") == 0){
+		isInt = 0;
+	} else if(strcmp(columnToBeSorted, "num_user_for_reviews") == 0){
+	} else if(strcmp(columnToBeSorted, "language") == 0){
+		isInt = 0;
+	} else if(strcmp(columnToBeSorted, "country") == 0){
+		isInt = 0;
+	} else if(strcmp(columnToBeSorted, "content_rating") == 0){
+		isInt = 0;
+	} else if(strcmp(columnToBeSorted, "budget") == 0){
+	} else if(strcmp(columnToBeSorted, "title_year") == 0){
+	} else if(strcmp(columnToBeSorted, "actor_2_facebook_likes") == 0){
+	} else if(strcmp(columnToBeSorted, "imdb_score") == 0){
+	} else if(strcmp(columnToBeSorted, "aspect_ratio") == 0){
+	} else if(strcmp(columnToBeSorted, "movie_facebook_likes") == 0){
+	} else{
+		//if(columnToBeSorted == '\0'){
+		//    return -1;
+		//}
+		return -1;
+	}
+	
+	
 	int pathLen = strlen(filename);
 	
 	// return 0 if no .csv file extension
@@ -307,12 +362,12 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 	
 	if(destDirectory != NULL) {
 		if(isAbsolutePath == 1) {
-			 snprintf(fileToWrite, 256, "%s/%s-sorted-%s.csv\0",destDirectory,realFileName,columnToSort);
+			 snprintf(fileToWrite, 256, "%s/AllFiles-sorted-%s.csv\0",destDirectory,columnToSort);
 		} else {
-			snprintf(fileToWrite, 256, "./%s/%s-sorted-%s.csv\0",destDirectory, realFileName, columnToSort);
+			snprintf(fileToWrite, 256, "./%s/AllFiles-sorted-%s.csv\0",destDirectory, columnToSort);
 		}
 	} else {
-		snprintf(fileToWrite, 256, "%s-sorted-%s.csv\0",filename,columnToSort);
+		snprintf(fileToWrite, 256, "AllFiles-sorted-%s.csv\0",columnToSort);
 	}
 	
 	csvwrite(dataRows,sizeOfArray, columnNames, fileToWrite);
@@ -618,25 +673,126 @@ int isValidCSV(char* filename, char* columnToSort) {
 	return 1;
 }
 
+// function to conver float to string
+char* ftos(float number){
+	if(number == 0) {
+		return "0.0";
+	}
+	
+	// find out how many digits in float value
+	int lenInt = (int) (floor(log(number)) + 1);
+	
+	// extract decimal and integer values
+	int integer = (int) number;
+	
+	float decimal = number - (float) integer;
+	
+	// integer to hold the value of the decimal so it's easier to print
+	int decimalToInteger = 0;
+	
+	// convert the decimal to an int
+	while(decimal >= 0) { 
+		decimal = decimal * 10;
+		
+		int intPart = (int) decimal;
+		decimal = decimal - (float) intPart;
+		
+		decimalToInteger = decimalToInteger * 10 +  intPart;
+	}
+	
+	int lenDec = 1;
+	// can't take log of 0 so making sure it's not 0;
+	if(decimalToInteger > 0) { 
+		lenDec = (int) (floor(log(number)) + 1);
+	} 
+	
+	// create buffer and write to it.
+	char numBuffer[lenInt + lenDec + 1];
+	snprintf(numBuffer, lenInt, "%d.%d", integer, decimalToInteger);
+	
+	
+	return numBuffer;
+}
+
 // will write output to csv file
 void csvwrite(movieInfo** movieArr, int size ,char* categories, char* filename){
 	//printf("writing to file %s \n",filename);
+	// though about using file descriptors but we'd have to keep track of size
+	// although we could use strlen?
+	//int p_csv = open(filename, O_WRONLY);
 	FILE *csvFile; 
 	csvFile = fopen(filename, "w+");
 	
        	fprintf(csvFile, categories);
         int i = 0;
+	
+	// TODO: ACCOUNT FOR DECIMALS WHEN WRITING
         while(i < size){
                 movieInfo* A = movieArr[i];
-                fprintf(csvFile, A->beforeSortedCol);
-		if(A->sortHasQuotes == 1){
+                fprintf(csvFile, A->color);
+		fprintf(csvFile, ",");
+		fprintf(csvFile, A->director_name);
+		fprintf(csvFile, ",");
+		fprintf(csvFile, ftos(A->num_critic_for_reviews));
+		fprintf(csvFile, ",");
+		fprintf(csvFile, ftos(A->duration));
+		fprintf(csvFile, ",");
+		fprintf(csvFile, ftos(A->director_facebook_likes));
+		fprintf(csvFile, ",");
+		fprintf(csvFile, ftos(A->actor_3_facebook_likes));
+		fprintf(csvFile, ",");
+		fprintf(csvFile, A->actor_2_name);
+		fprintf(csvFile, ",");
+		fprintf(csvFile, A->ftos(actor_1_facebook_likes));
+		fprintf(csvFile, ",");
+		fprintf(csvFile, A->ftos(gross));
+		fprintf(csvFile, ",");
+		fprintf(csvFile, A->genres);
+		fprintf(csvFile, ",");
+		fprintf(csvFile, A->actor_1_name);
+		fprintf(csvFile, ",");
+		fprintf(csvFile, A->movie_title);
+		fprintf(csvFile, ",");
+		fprintf(csvFile, A->ftos(num_voted_users));
+		fprintf(csvFile, ",");
+		fprintf(csvFile, A->ftos(cast_total_facebook_likes));
+		fprintf(csvFile, ",");
+		fprintf(csvFile, A->actor_3_name);
+		fprintf(csvFile, ",");
+		fprintf(csvFile, A->ftos(facenumber_in_poster));
+		fprintf(csvFile, ",");
+		fprintf(csvFile, A->plot_keywords);
+		fprintf(csvFile, ",");
+		fprintf(csvFile, A->movie_imdb_link);
+		fprintf(csvFile, ",");
+		fprintf(csvFile, A->ftos(num_user_for_reviews));
+		fprintf(csvFile, ",");
+		fprintf(csvFile, A->language);
+		fprintf(csvFile, ",");
+		fprintf(csvFile, A->country);
+		fprintf(csvFile, ",");
+		fprintf(csvFile, A->content_rating);
+		fprintf(csvFile, ",");
+		fprintf(csvFile, A->ftos(budget));
+		fprintf(csvFile, ",");
+		fprintf(csvFile, A->ftos(title_year));
+		fprintf(csvFile, ",");
+		fprintf(csvFile, A->ftos(actor_2_facebook_likes));
+		fprintf(csvFile, ",");
+		fprintf(csvFile, A->ftos(imdb_score));
+		fprintf(csvFile, ",");
+		fprintf(csvFile, A->ftos(aspect_ratio));
+		fprintf(csvFile, ",");
+		fprintf(csvFile, A->ftos(movie_facebook_likes));
+		
+		/*if(A->sortHasQuotes == 1){
 			fprintf(csvFile,"\"");
 			fprintf(csvFile, A->toBeSorted);
 			fprintf(csvFile, "\"");
 		} else{
 			fprintf(csvFile, A->toBeSorted);
-		}
-		fprintf(csvFile, A->afterSortedCol);	
+		}*/
+		
 		fprintf(csvFile, "\n");
 		i++;
         }
@@ -814,7 +970,8 @@ int main(int argc, char** argv){
 	int noProcesses = 1;
 	int totalProcesses = 1;
 	printf("TIDS of all child processes: ");
-	fflush(stdout);
+	//threads share memspace so shouldn't need to flush?
+	//fflush(stdout);
 
 	char * file;		//used to determine i-node type: directory, file, or some other thing
 	while(31337) {
