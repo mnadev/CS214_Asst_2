@@ -105,69 +105,83 @@ int isInt(movieInfo** dataRows, int sizeOfArray) {
 }
 */
 
+void setData(movieInfo* A, void data, char* column) {
+	// TODO: VERIFY floats casted to floats, char* casted to char*
+	if(strcmp(columnToBeSorted, "color") == 0){
+		A -> color = (char*) data;
+	} else if(strcmp(columnToBeSorted, "director_name") == 0){
+		A -> director_name = (char*) data;
+	} else if(strcmp(columnToBeSorted, "num_critic_for_reviews") == 0){
+		A -> num_critic_for_reviews = (float) data;
+	} else if(strcmp(columnToBeSorted, "duration") == 0){
+		A -> duration = (float) data;
+	} else if(strcmp(columnToBeSorted, "director_facebook_likes") == 0){
+		A -> director_facebook_likes = (float) data;
+	} else if(strcmp(columnToBeSorted, "actor_3_facebook_likes") == 0){
+		A -> actor_3_facebook_likes = (float) data;
+	} else if(strcmp(columnToBeSorted, "actor_2_name") == 0){
+		A -> actor_2_name = (char*) data;
+	} else if(strcmp(columnToBeSorted, "actor_1_facebook_likes") == 0){
+		A -> actor_1_facebook_likes = (float) data;
+	} else if(strcmp(columnToBeSorted, "gross") == 0){
+		A -> gross = (float) data;
+	} else if(strcmp(columnToBeSorted, "genres") == 0){
+		A -> genres = (char*) data;
+	} else if(strcmp(columnToBeSorted, "actor_1_name") == 0){
+		A -> actor_1_name = (char*) data;
+	} else if(strcmp(columnToBeSorted, "movie_title") == 0){
+		A -> movie_title = (char*) data;
+	} else if(strcmp(columnToBeSorted, "num_voted_users") == 0){
+		A -> num_voted_users = (float) data;
+	} else if(strcmp(columnToBeSorted, "cast_total_facebook_likes") == 0){
+		A -> cast_total_facebook_likes = (float) data;
+	} else if(strcmp(columnToBeSorted, "actor_3_name") == 0){
+		A -> actor_3_name = (char*) data;
+	} else if(strcmp(columnToBeSorted, "facenumber_in_poster") == 0){
+		A -> facenumber_in_poster = (float) data;
+	} else if(strcmp(columnToBeSorted, "plot_keywords") == 0){
+		A -> plot_keywords = (char*) data;
+	} else if(strcmp(columnToBeSorted, "movie_imdb_link") == 0){
+		A -> movie_imdb_link = (char*) data;
+	} else if(strcmp(columnToBeSorted, "num_user_for_reviews") == 0){
+		A -> num_user_for_reviews = (float) data;
+	} else if(strcmp(columnToBeSorted, "language") == 0){
+		A -> language = (char*) data;
+	} else if(strcmp(columnToBeSorted, "country") == 0){
+		A -> country = (char*) data;
+	} else if(strcmp(columnToBeSorted, "content_rating") == 0){
+		A -> content_rating = (char*) data;
+	} else if(strcmp(columnToBeSorted, "budget") == 0){
+		A -> budget = (float) data;
+	} else if(strcmp(columnToBeSorted, "title_year") == 0){
+		A -> title_year = (float) data;
+	} else if(strcmp(columnToBeSorted, "actor_2_facebook_likes") == 0){
+		A -> actor_2_facebook_likes = (float) data;
+	} else if(strcmp(columnToBeSorted, "imdb_score") == 0){
+		A -> imdb_score = (float) data;
+	} else if(strcmp(columnToBeSorted, "aspect_ratio") == 0){
+		A -> aspect_ratio = (float) data;
+	} else if(strcmp(columnToBeSorted, "movie_facebook_likes") == 0){
+		A -> movie_facebook_likes = (float) data;
+	} else{
+		return;
+	}
+}
+
 //function to parse through csv file
 void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
-	// functionality for isInt built into merge sort, will delete later
-	/*
-	int isInt = 0;
-	
-	//checking if column tobe sorted is one of the specified things and also setting isInt equal to specified value.
-	if(strcmp(columnToBeSorted, "color") == 0){
-		isInt = 0;
-	} else if(strcmp(columnToBeSorted, "director_name") == 0){
-		isInt = 0;
-	} else if(strcmp(columnToBeSorted, "num_critic_for_reviews") == 0){
-	} else if(strcmp(columnToBeSorted, "duration") == 0){
-	} else if(strcmp(columnToBeSorted, "director_facebook_likes") == 0){
-	} else if(strcmp(columnToBeSorted, "actor_3_facebook_likes") == 0){
-	} else if(strcmp(columnToBeSorted, "actor_2_name") == 0){
-		isInt = 0;
-	} else if(strcmp(columnToBeSorted, "actor_1_facebook_likes") == 0){
-	} else if(strcmp(columnToBeSorted, "gross") == 0){
-	} else if(strcmp(columnToBeSorted, "genres") == 0){
-		isInt = 0;
-	} else if(strcmp(columnToBeSorted, "actor_1_name") == 0){
-	isInt = 0;
-	} else if(strcmp(columnToBeSorted, "movie_title") == 0){
-	isInt = 0;
-	} else if(strcmp(columnToBeSorted, "num_voted_users") == 0){
-	} else if(strcmp(columnToBeSorted, "cast_total_facebook_likes") == 0){
-	} else if(strcmp(columnToBeSorted, "actor_3_name") == 0){
-		isInt = 0;
-	} else if(strcmp(columnToBeSorted, "facenumber_in_poster") == 0){
-	} else if(strcmp(columnToBeSorted, "plot_keywords") == 0){
-		isInt = 0;
-	} else if(strcmp(columnToBeSorted, "movie_imdb_link") == 0){
-		isInt = 0;
-	} else if(strcmp(columnToBeSorted, "num_user_for_reviews") == 0){
-	} else if(strcmp(columnToBeSorted, "language") == 0){
-		isInt = 0;
-	} else if(strcmp(columnToBeSorted, "country") == 0){
-		isInt = 0;
-	} else if(strcmp(columnToBeSorted, "content_rating") == 0){
-		isInt = 0;
-	} else if(strcmp(columnToBeSorted, "budget") == 0){
-	} else if(strcmp(columnToBeSorted, "title_year") == 0){
-	} else if(strcmp(columnToBeSorted, "actor_2_facebook_likes") == 0){
-	} else if(strcmp(columnToBeSorted, "imdb_score") == 0){
-	} else if(strcmp(columnToBeSorted, "aspect_ratio") == 0){
-	} else if(strcmp(columnToBeSorted, "movie_facebook_likes") == 0){
-	} else{
-		//if(columnToBeSorted == '\0'){
-		//    return -1;
-		//}
-		return -1;
-	} */
-	
-	
+	// functionality for isInt built into merge sort, not necessary to implement
 	int pathLen = strlen(filename);
 	
-	// return 0 if no .csv file extension
+	// return if no .csv file extension
 	if(!(filename[pathLen-1] == 'v' && filename[pathLen-2] == 's' && filename[pathLen-3] == 'c' && filename[pathLen-4] == '.')){
 		return;
 	} 
 	
 	int numCommasB4Sort = 0;		//The number of commas before the column to be sorted is reached.
+	
+	// create array of columns
+	char** columns = (char **)malloc(sizeof(char)*1000);
 	
 	char charIn = '\0';				//Buffer to put each char that's being read in from STDIN
 	char* columnNames = malloc(sizeof(char)*500);			//Buffer where we're going to put the first line containing all titles
@@ -175,13 +189,31 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 	
 	int csv = open(filename,O_RDONLY);
 	
-	
-	//Reading in from STDIN char by char until a '\n' is reached to get a string containing all column names
-	
+	// create var to keep track of the number of commas
+	int numCommasCurr = 0;
+	columnCurr = columns[0];
+	int i = 0;
+	int isInQuotes = 0;
+	//Reading in from STDIN char by char until a '\n' is reached to get a string containing all column names	
 	do{
 		read(csv, &charIn, 1);
 		columnNames[columnNamesIndex] = charIn;
 		columnNamesIndex++;
+		if(charIn == '\"') {
+			if(isInQuotes == 1) {
+				isInQuotes = 0;
+			} else {
+				isInQuotes = 1;
+			}
+		} else if(charIn == ',' && isInQuotes == 0) {
+			columnCurr[i] = '\0';
+			numCommasCurr++;
+			i = 0;
+			columnCurr = columns[numCommasCurr];
+		} else {
+			columnCurr[i] = charIn;
+			i++;
+		}
 		//printf("%c", charIn);
 	}while(charIn != '\n');
 	
@@ -206,7 +238,46 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 	//Reading through the rest of STDIN for data:
 	int sizeOfArray = 0;
 	movieInfo** dataRows = NULL; //Array of pointers to each instance of movieInfo
-
+	movieInfo* A = (movieInfo*)malloc(sizeof(movieInfo));
+	
+	isInQuotes = 0;
+	int numCommas = 0;
+	char charIn = '\0';
+	char* columnData = (char*) malloc(sizeof(char) * 500);
+	int columnDataInd = 0;
+	
+	int movieInd = 0;
+	
+	int eof = 1;
+	while(eof > 0) {
+		eof = read(csv, &charIn, 1);
+		
+		if(charIn == '\n') {
+			dataRows[movieInd] = A;
+			movieInd++;
+			numCommas = 0;
+			A = (movieInfo*)malloc(sizeof(movieInfo));
+		} else if(charIn == '\"') {
+			if(isInQuotes == 1) {
+				isInQuotes = 0;
+			} else {
+				isInQuotes = 1;
+			}
+		} else if(charIn == ',' && isInQuotes == 0) {
+			setData(A,  columnData, columns[numCommas]) 
+			numCommasCurr++;
+			columnData = (char*) malloc(sizeof(char) * 500);
+			i = 0;
+		} else if(charIn == '\0') {
+			break;
+		} else {
+			columnData[columnDataInd] = charIn;
+			columnDataInd++;
+		}
+		
+	}
+	
+	
 	int quoteMode = 0; 	//Variable (bool) to detect whether a quotation is opened and to ignore contents.	
 
 	int eofDetect = 1;	//Checking return value of read() for eof. At eof, read() returns 0.
