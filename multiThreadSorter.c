@@ -107,7 +107,8 @@ int isInt(movieInfo** dataRows, int sizeOfArray) {
 
 //function to parse through csv file
 void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
-	
+	// functionality for isInt built into merge sort, will delete later
+	/*
 	int isInt = 0;
 	
 	//checking if column tobe sorted is one of the specified things and also setting isInt equal to specified value.
@@ -156,7 +157,7 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 		//    return -1;
 		//}
 		return -1;
-	}
+	} */
 	
 	
 	int pathLen = strlen(filename);
@@ -327,8 +328,8 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 		}
 	} 
 	
-	int isNumeric = isInt(dataRows, sizeOfArray);
-	mergesort(dataRows, 0, sizeOfArray - 1, isNumeric);
+	//int isNumeric = isInt(dataRows, sizeOfArray);
+	mergesort(dataRows, columnToBeSorted ,0, sizeOfArray - 1);
 	close(csv);	
 	
 	//truncate file extension off filename
@@ -708,7 +709,7 @@ char* ftos(float number){
 	
 	// create buffer and write to it.
 	char numBuffer[lenInt + lenDec + 1];
-	snprintf(numBuffer, lenInt, "%d.%d", integer, decimalToInteger);
+	snprintf(numBuffer, lenInt + lenDec + 1, "%d", number);
 	
 	
 	return numBuffer;
