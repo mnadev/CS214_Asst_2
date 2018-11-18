@@ -332,6 +332,11 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 	mergesort(dataRows, columnToBeSorted ,0, sizeOfArray - 1);
 	close(csv);	
 	
+	
+	addToFront(dataRows, sizeOfArray);
+	
+	// we have to move this code to some other place.
+	/*
 	//truncate file extension off filename
 	if(filename[pathLen-1] == 'v' && filename[pathLen-2] == 's' && filename[pathLen-3] == 'c' && filename[pathLen-4] == '.'){
 		filename[pathLen - 1] = '\0';
@@ -373,7 +378,7 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 	
 	csvwrite(dataRows,sizeOfArray, columnNames, fileToWrite);
 	
-	free(fileToWrite);
+	free(fileToWrite); */
 }
 
 
