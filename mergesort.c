@@ -14,9 +14,9 @@ void swap(movieInfo* A, movieInfo* B){
 float intComparison(float intA, float intB) {
     return intA - intB;
 }
-movieInfo** merge(movieInfo** arr, char * columnToBeSorted, int left, int half, int right, int isInt);
+void merge(movieInfo** arr, char * columnToBeSorted, int left, int half, int right, int isInt);
 
-movieInfo** mergesort(movieInfo** arr, char * columnToBeSorted, int left, int right) {
+void mergesort(movieInfo** arr, char * columnToBeSorted, int left, int right) {
 	if(left >= right) {
 	    return;
 	}
@@ -80,7 +80,7 @@ movieInfo** mergesort(movieInfo** arr, char * columnToBeSorted, int left, int ri
 	merge(arr, columnToBeSorted, left, half, right, isInt);
 }
 
-movieInfo** merge(movieInfo** arr, char* columnToBeSorted,int left, int half, int right, int isInt) {
+void merge(movieInfo** arr, char* columnToBeSorted,int left, int half, int right, int isInt) {
 	//if right and left point to same thing or if somehow right is to the left of left
 	if(right - left < 1) {
 		return;
@@ -523,7 +523,7 @@ movieInfo** merge(movieInfo** arr, char* columnToBeSorted,int left, int half, in
         free(tempA);
         free(tempB);
         
-    }
+}
 
 
 
