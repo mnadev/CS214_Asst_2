@@ -234,7 +234,17 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 			numCommasB4Sort++;		
 		}
 	}
-
+	
+	if(locOfColumn == NULL ){
+		write(STDERR, "Error while checking validity: The column to be sorted that was input as the 2nd parameter is not contained within the CSV.\n", 124);
+		return 0;
+	}
+	
+	if(hasHeaders(columnNames) == 0){
+		write(STDERR, "Error while checking validity: The CSV contained an unknown column header.\n", 75);
+		return 0;
+	}
+	
 	//Reading through the rest of STDIN for data:
 	int sizeOfArray = 0;
 	movieInfo** dataRows = NULL; //Array of pointers to each instance of movieInfo
@@ -247,12 +257,53 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 	int columnDataInd = 0;
 	
 	int movieInd = 0;
+	// count number of commas in current line and number of commas in 
 	
+	//checking previous char, will help us keep track of if the previous char is a new line if current is new line
+	char previousChar = '\0';
+	int isInQuotes = 0;
+
+	//double new lines will keep track of if two new lines occur in a row
+	int doubleNewLines = 0;
+	
+	//Rewriting the checker for malformed CSVs because it's glitching and i can't follow it:
+	int eofDetect = 1;
+	
+	//waiter waits and sees for when we come across a malformed csv.
+	//if there are two new lines and such then it will wait and see the next char before throwing error
+	int waiter = 0;
 	int eof = 1;
 	while(eof > 0) {
 		eof = read(csv, &charIn, 1);
 		
+		if(doubleNewLines > 0 && eof > 0) {
+			write(STDERR, "Error while checking validity: Malformed CSV\n", 45);
+			return 0;
+		}
+		
+		// if we have a disparate amount of commas in each line, we will check if we have
+		// the weird two lines error by checking if it is the end of the file
+		if(waiter == 1 && eof > 0) {
+			write(STDERR, "Error while checking validity: Malformed CSV\n", 45);
+			return 0;
+		}
+
+		waiter = 0;
+		doubleNewLines = 0;
+		
+		if(previousChar == '\n' && charIn == '\n') {
+			doubleNewLines += 1;
+		}
+		
 		if(charIn == '\n') {
+			if(numCommasCurr != numCommas && doubleNewLines == 0){
+					write(STDERR, "Error while checking validity: Malformed CSV\n", 45);
+					return 0;
+			}
+			if(numCommasCurr != numCommas && doubleNewLines != 0) {
+				waiter = 1;
+			}
+			dataRows = realloc(dataRows, sizeof(movieInfo*)*(movieInd + 1));
 			dataRows[movieInd] = A;
 			movieInd++;
 			numCommas = 0;
@@ -274,7 +325,7 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 			columnData[columnDataInd] = charIn;
 			columnDataInd++;
 		}
-		
+		previousChar = charIn;
 	}
 	
 	
