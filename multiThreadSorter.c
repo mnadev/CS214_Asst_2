@@ -1171,6 +1171,8 @@ int main(int argc, char** argv){
 	//TODO: Insert barrier sync here to wait for all threads to exit.
 	printf("\n Total number of Threads: %d\n", *threadCount);
 	
+	//TODO: There should probably be a call to csvwrite here once we have giant mega super linked list of movieInfo.
+
 	pthread_mutex_destroy(threadCountMutex);
 	free(dirDest);
 	free(columnToSort);
