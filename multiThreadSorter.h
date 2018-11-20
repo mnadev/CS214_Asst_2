@@ -47,11 +47,13 @@ struct _movieInfo{
 
 //Struct to be used to pass arguments into the thread functions.
 typedef
-struct _threadArgs{
+struct _threadArgs_DirFile{
 	char* pathName;
 	char* columnToSort;
 	char* dirDest;
-} threadArgs;
+	int* threadCount;
+	pthread_mutex_t* threadCount_mutex;
+} threadArgs_DirFile;
 
 typedef struct _movieNode {
 	movieInfo** data;

@@ -934,6 +934,14 @@ void csvwrite(movieInfo** movieArr, int size ,char* categories, char* filename){
 
 void* fileThread(void* args){
 	
+	//Incr threadCount along with proper syncing
+	int* threadCount = args->threadCount;
+	pthread_mutex_t* countMutex = args->threadCount_mutex;
+
+	pthread_mutex_lock(countMutex);
+	*threadCount++;
+	pthread_mutex_unlock(countMutex);
+
 	parseCSV(args->fileName, args->columnToSort, args->dirDest);
 	pthread_exit(0);
 
@@ -941,7 +949,17 @@ void* fileThread(void* args){
 
 
 void* dirSearch(void* args){
-	//Quick note that args is going to be a struct containing pathname, columnToSort, and dirDest;
+	//Quick note that args is going to be a struct containing pathname, columnToSort, and dirDest and mutex stuff;
+
+	//Incr threadCount along with proper syncing
+	int* threadCount = args->threadCount;
+	pthread_mutex_t* countMutex = args->threadCount_mutex;
+
+	pthread_mutex_lock(countMutex);
+	*threadCount++;
+	pthread_mutex_unlock(countMutex);
+
+	//Initializing variables needed for the while loop that was pasta from before.
 	char* pathName = args->pathName;
 	struct dirent* dirStruct;
 	char* dirToSearch;
@@ -961,7 +979,7 @@ void* dirSearch(void* args){
 			char* filepath = (char*)malloc(sizeof(char)*10000);
 			strcpy(filepath, dirToSearch);		//Because i need to create a new string for full file path.
 			strcat(filepath, file);	//Concatting filename to file path for full file path 
-			threadArgs args = {filepath, args->columnToSort, args->dirDest};
+			threadArgs_DirFile args = {filepath, args->columnToSort, args->dirDest, args->threadCount, args->threadCount_mutex};
 			
 			pthread_t* newFileThreadHandle = (pthread_t*)malloc(sizeof(pthread_t));
 			pthread_attr_t threadAttrStruct;
@@ -976,7 +994,7 @@ void* dirSearch(void* args){
 			strcat(dirToSearch, file);		//Appending new directory to current directory path;
 			strcat(dirToSearch, "/");		//Forcing the current directory path to always end in / for reasons.
 			
-			threadArgs args = {dirToSearch, args->columnToSort, args->dirDest};
+			threadArgs_DirFile args = {filepath, args->columnToSort, args->dirDest, args->threadCount, args->threadCount_mutex};
 			pthread_t* newDirThreadHandle = (pthread_t*)malloc(sizeof(pthread_t));
 			pthread_attr_t threadAttrStruct;
 			pthread_attr_init(&threadAttrStruct);
@@ -1097,11 +1115,13 @@ int main(int argc, char** argv){
 
 
 	struct dirent* dirStruct;
+	//Counting the number of threads. Goes on the heap b/c each thread will increment.
+	int* threadCount = (int*)malloc(sizeof(int));
+	*threadCount = 0;
+	//Initializing mutex for threadCount. Sync mechanisms yo
+	pthread_mutex_t* threadCountMutex = (pthread_mutex_t*)malloc(sizeof(pthread_mutex_t));
+	pthread_mutex_init(threadCountMutex, NULL);
 	
-	//dirStruct = 
-	//printf("\nPIDS of all child processes: ");
-	int noProcesses = 1;
-	int totalProcesses = 1;
 	printf("TIDS of all child processes: ");
 	//threads share memspace so shouldn't need to flush?
 	//fflush(stdout);
@@ -1122,7 +1142,7 @@ int main(int argc, char** argv){
 			char* filepath = (char*)malloc(sizeof(char)*10000);
 			strcpy(filepath, dirToSearch);		//Because i need to create a new string for full file path.
 			strcat(filepath, file);	//Concatting filename to file path for full file path 
-			threadArgs args = {filepath, columnToSort, dirDest};
+			threadArgs_DirFile args = {filepath, columnToSort, dirDest, threadCount, threadCountMutex};
 			
 			pthread_t* newFileThreadHandle = (pthread_t*)malloc(sizeof(pthread_t));
 			pthread_attr_t threadAttrStruct;
@@ -1137,7 +1157,7 @@ int main(int argc, char** argv){
 			strcat(dirToSearch, file);		//Appending new directory to current directory path;
 			strcat(dirToSearch, "/");		//Forcing the current directory path to always end in / for reasons.
 			
-			threadArgs args = {dirToSearch, columnToSort, dirDest};
+			threadArgs_DirFile args = {filepath, columnToSort, dirDest, threadCount, threadCountMutex};
 			pthread_t* newDirThreadHandle = (pthread_t*)malloc(sizeof(pthread_t));
 			pthread_attr_t threadAttrStruct;
 			pthread_attr_init(&threadAttrStruct);
@@ -1147,14 +1167,11 @@ int main(int argc, char** argv){
 			continue;
 		}
 	}
-	int rootDirExitStatus;		//For the root directory; helps to sum all the process numbers 
-	int totalProcs = 0;			//Francisco said don't count main process
-	while(wait(&rootDirExitStatus) > 0){
-		//Waiting for all the child processes to return.
-		totalProcs += WEXITSTATUS(rootDirExitStatus);
-	}
-	printf("\n Total number of Processes: %d\n", totalProcs);
+
+	//TODO: Insert barrier sync here to wait for all threads to exit.
+	printf("\n Total number of Threads: %d\n", *threadCount);
 	
+	pthread_mutex_destroy(threadCountMutex);
 	free(dirDest);
 	free(columnToSort);
 	free(dirToSearch);
