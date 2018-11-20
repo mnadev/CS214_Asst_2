@@ -107,61 +107,61 @@ int isInt(movieInfo** dataRows, int sizeOfArray) {
 
 void setData(movieInfo* A, void data, char* column) {
 	// TODO: VERIFY floats casted to floats, char* casted to char*
-	if(strcmp(columnToBeSorted, "color") == 0){
+	if(strcmp(column, "color") == 0){
 		A -> color = (char*) data;
-	} else if(strcmp(columnToBeSorted, "director_name") == 0){
+	} else if(strcmp(column, "director_name") == 0){
 		A -> director_name = (char*) data;
-	} else if(strcmp(columnToBeSorted, "num_critic_for_reviews") == 0){
+	} else if(strcmp(column, "num_critic_for_reviews") == 0){
 		A -> num_critic_for_reviews = (float) data;
-	} else if(strcmp(columnToBeSorted, "duration") == 0){
+	} else if(strcmp(column, "duration") == 0){
 		A -> duration = (float) data;
-	} else if(strcmp(columnToBeSorted, "director_facebook_likes") == 0){
+	} else if(strcmp(column, "director_facebook_likes") == 0){
 		A -> director_facebook_likes = (float) data;
-	} else if(strcmp(columnToBeSorted, "actor_3_facebook_likes") == 0){
+	} else if(strcmp(column, "actor_3_facebook_likes") == 0){
 		A -> actor_3_facebook_likes = (float) data;
-	} else if(strcmp(columnToBeSorted, "actor_2_name") == 0){
+	} else if(strcmp(column, "actor_2_name") == 0){
 		A -> actor_2_name = (char*) data;
-	} else if(strcmp(columnToBeSorted, "actor_1_facebook_likes") == 0){
+	} else if(strcmp(column, "actor_1_facebook_likes") == 0){
 		A -> actor_1_facebook_likes = (float) data;
-	} else if(strcmp(columnToBeSorted, "gross") == 0){
+	} else if(strcmp(column, "gross") == 0){
 		A -> gross = (float) data;
-	} else if(strcmp(columnToBeSorted, "genres") == 0){
+	} else if(strcmp(column, "genres") == 0){
 		A -> genres = (char*) data;
-	} else if(strcmp(columnToBeSorted, "actor_1_name") == 0){
+	} else if(strcmp(column, "actor_1_name") == 0){
 		A -> actor_1_name = (char*) data;
-	} else if(strcmp(columnToBeSorted, "movie_title") == 0){
+	} else if(strcmp(column, "movie_title") == 0){
 		A -> movie_title = (char*) data;
-	} else if(strcmp(columnToBeSorted, "num_voted_users") == 0){
+	} else if(strcmp(column, "num_voted_users") == 0){
 		A -> num_voted_users = (float) data;
-	} else if(strcmp(columnToBeSorted, "cast_total_facebook_likes") == 0){
+	} else if(strcmp(column, "cast_total_facebook_likes") == 0){
 		A -> cast_total_facebook_likes = (float) data;
-	} else if(strcmp(columnToBeSorted, "actor_3_name") == 0){
+	} else if(strcmp(column, "actor_3_name") == 0){
 		A -> actor_3_name = (char*) data;
-	} else if(strcmp(columnToBeSorted, "facenumber_in_poster") == 0){
+	} else if(strcmp(column, "facenumber_in_poster") == 0){
 		A -> facenumber_in_poster = (float) data;
-	} else if(strcmp(columnToBeSorted, "plot_keywords") == 0){
+	} else if(strcmp(column, "plot_keywords") == 0){
 		A -> plot_keywords = (char*) data;
-	} else if(strcmp(columnToBeSorted, "movie_imdb_link") == 0){
+	} else if(strcmp(column, "movie_imdb_link") == 0){
 		A -> movie_imdb_link = (char*) data;
-	} else if(strcmp(columnToBeSorted, "num_user_for_reviews") == 0){
+	} else if(strcmp(column, "num_user_for_reviews") == 0){
 		A -> num_user_for_reviews = (float) data;
-	} else if(strcmp(columnToBeSorted, "language") == 0){
+	} else if(strcmp(column, "language") == 0){
 		A -> language = (char*) data;
-	} else if(strcmp(columnToBeSorted, "country") == 0){
+	} else if(strcmp(column, "country") == 0){
 		A -> country = (char*) data;
-	} else if(strcmp(columnToBeSorted, "content_rating") == 0){
+	} else if(strcmp(column, "content_rating") == 0){
 		A -> content_rating = (char*) data;
-	} else if(strcmp(columnToBeSorted, "budget") == 0){
+	} else if(strcmp(column, "budget") == 0){
 		A -> budget = (float) data;
-	} else if(strcmp(columnToBeSorted, "title_year") == 0){
+	} else if(strcmp(column, "title_year") == 0){
 		A -> title_year = (float) data;
-	} else if(strcmp(columnToBeSorted, "actor_2_facebook_likes") == 0){
+	} else if(strcmp(column, "actor_2_facebook_likes") == 0){
 		A -> actor_2_facebook_likes = (float) data;
-	} else if(strcmp(columnToBeSorted, "imdb_score") == 0){
+	} else if(strcmp(column, "imdb_score") == 0){
 		A -> imdb_score = (float) data;
-	} else if(strcmp(columnToBeSorted, "aspect_ratio") == 0){
+	} else if(strcmp(column, "aspect_ratio") == 0){
 		A -> aspect_ratio = (float) data;
-	} else if(strcmp(columnToBeSorted, "movie_facebook_likes") == 0){
+	} else if(strcmp(column, "movie_facebook_likes") == 0){
 		A -> movie_facebook_likes = (float) data;
 	} else{
 		return;
@@ -254,6 +254,7 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 	int numCommas = 0;
 	char charIn = '\0';
 	char* columnData = (char*) malloc(sizeof(char) * 500);
+	int columnDataSize = 500;
 	int columnDataInd = 0;
 	
 	int movieInd = 0;
@@ -318,10 +319,14 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 			setData(A,  columnData, columns[numCommas]) 
 			numCommasCurr++;
 			columnData = (char*) malloc(sizeof(char) * 500);
-			i = 0;
+			columnDataInd = 0;
 		} else if(charIn == '\0') {
 			break;
 		} else {
+			if(columnDataInd >= columnDataSize){
+				columnData = (char*)realloc(columnData, sizeof(char)*2*columnDataSize);
+				columnDataSize = columnDataSize*2;
+			}
 			columnData[columnDataInd] = charIn;
 			columnDataInd++;
 		}
