@@ -59,52 +59,6 @@ void mergeSortNodes(char* category){
 	
 }
 
-// currently commenting out, will delete later
-/*
-int isInt(movieInfo** dataRows, int sizeOfArray) {
-	// this integer acts as a boolean
-	// is 0 if the data is not an int, now is 1 if the data is an int
-	int isInt = 1;
-	
-	//create temp pointer to iterate through all of array and check if each item is a number
-	//because it is possible for a movie to be a number, e.g. '300', and that would be a problem
-	//so we should check all of them to be sure
-	movieInfo** tempPtrCheckInt = dataRows;
-	int i = 0;
-		
-	while(i < sizeOfArray) {
-		//iterate through each char, checking if it is int
-		// NOTENOTENOTE: if you can find a better way, lmk cause this is very inefficient
-		movieInfo* temp = tempPtrCheckInt[i];
-		char* currData = temp->toBeSorted;	
-		
-		int j = 0;
-		while(currData[j] != '\0') {
-			char c = currData[j];
-			// current char could be int or decimal point
-			// if it is not a digit and also not a decimal
-			// then we know its not a numeric category
-			if(isdigit(c) == 0 &&  c != '.' && c != ' ') {
-				isInt = 0;
-				break;			
-			}
-			j++;
-		}
-		
-		//break if we found alphabetic char, no need to check anymore
-		if(isInt == 0) {
-			break;
-		}
-
-		//tempPtrCheckInt++;
-		i++;
-	}
-	
-	
-	return isInt;
-}
-*/
-
 void setData(movieInfo* A, void data, char* column) {
 	// TODO: VERIFY floats casted to floats, char* casted to char*
 	if(strcmp(column, "color") == 0){
@@ -224,6 +178,12 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 	
 	char* locOfColumn = strstr(columnNames, columnToSort);
 
+	
+	if(locOfColumn == NULL ){
+		write(STDERR, "Error while checking validity: The column to be sorted that was input as the 2nd parameter is not contained within the CSV.\n", 124);
+		return 0;
+	}
+	
 	//Searching for number of commas before column to be sorted
 	//(Assumes that column names don't have commas in them, which they shouldn't for this assignment.
 	
@@ -234,12 +194,7 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 			numCommasB4Sort++;		
 		}
 	}
-	
-	if(locOfColumn == NULL ){
-		write(STDERR, "Error while checking validity: The column to be sorted that was input as the 2nd parameter is not contained within the CSV.\n", 124);
-		return 0;
-	}
-	
+
 	if(hasHeaders(columnNames) == 0){
 		write(STDERR, "Error while checking validity: The CSV contained an unknown column header.\n", 75);
 		return 0;
@@ -252,7 +207,7 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 	
 	isInQuotes = 0;
 	int numCommas = 0;
-	char charIn = '\0';
+	charIn = '\0';
 	char* columnData = (char*) malloc(sizeof(char) * 500);
 	int columnDataSize = 500;
 	int columnDataInd = 0;
@@ -262,13 +217,9 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 	
 	//checking previous char, will help us keep track of if the previous char is a new line if current is new line
 	char previousChar = '\0';
-	int isInQuotes = 0;
 
 	//double new lines will keep track of if two new lines occur in a row
 	int doubleNewLines = 0;
-	
-	//Rewriting the checker for malformed CSVs because it's glitching and i can't follow it:
-	int eofDetect = 1;
 	
 	//waiter waits and sees for when we come across a malformed csv.
 	//if there are two new lines and such then it will wait and see the next char before throwing error
@@ -301,9 +252,11 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 					write(STDERR, "Error while checking validity: Malformed CSV\n", 45);
 					return 0;
 			}
+			
 			if(numCommasCurr != numCommas && doubleNewLines != 0) {
 				waiter = 1;
 			}
+			
 			dataRows = realloc(dataRows, sizeof(movieInfo*)*(movieInd + 1));
 			dataRows[movieInd] = A;
 			movieInd++;
@@ -334,7 +287,7 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 	}
 	
 	
-	int quoteMode = 0; 	//Variable (bool) to detect whether a quotation is opened and to ignore contents.	
+	/*int quoteMode = 0; 	//Variable (bool) to detect whether a quotation is opened and to ignore contents.	
 
 	int eofDetect = 1;	//Checking return value of read() for eof. At eof, read() returns 0.
 	rowIterator: while(eofDetect > 0){
@@ -453,7 +406,7 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 					}
 			}	
 		}
-	} 
+	} */
 	
 	//int isNumeric = isInt(dataRows, sizeOfArray);
 	mergesort(dataRows, columnToBeSorted ,0, sizeOfArray - 1);
@@ -660,10 +613,12 @@ int hasHeaders(char* columnNames){
 	return 1;
 }
 
+/*
 /** function to check if the csv is valid. will return 1 if so, 0 if not valid. 
 ** Checks the file extension, if the column to be sorted exists in file
 ** and also check number of commas in each line. 
 */
+/*
 int isValidCSV(char* filename, char* columnToSort) {
 	int pathLen = strlen(filename);
 	
@@ -804,7 +759,7 @@ int isValidCSV(char* filename, char* columnToSort) {
 	
 	close(csv);
 	return 1;
-}
+} */
 
 // function to conver float to string
 char* ftos(float number){
