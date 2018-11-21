@@ -51,8 +51,7 @@ struct _threadArgs_DirFile{
 	char* pathName;
 	char* columnToSort;
 	char* dirDest;
-	int* threadCount;
-	pthread_mutex_t* threadCount_mutex;
+	char* prevThreadID;
 } threadArgs_DirFile;
 
 typedef struct _movieNode {

@@ -934,13 +934,8 @@ void csvwrite(movieInfo** movieArr, int size ,char* categories, char* filename){
 
 void* fileThread(void* args){
 	
-	//Incr threadCount along with proper syncing
-	int* threadCount = args->threadCount;
-	pthread_mutex_t* countMutex = args->threadCount_mutex;
+	//fileThread should never spawn another thread, so we should be fine without catting a threadID here.
 
-	pthread_mutex_lock(countMutex);
-	*threadCount++;
-	pthread_mutex_unlock(countMutex);
 
 	parseCSV(args->fileName, args->columnToSort, args->dirDest);
 	pthread_exit(0);
@@ -950,15 +945,8 @@ void* fileThread(void* args){
 
 void* dirSearch(void* args){
 	//Quick note that args is going to be a struct containing pathname, columnToSort, and dirDest and mutex stuff;
-
-	//Incr threadCount along with proper syncing
-	int* threadCount = args->threadCount;
-	pthread_mutex_t* countMutex = args->threadCount_mutex;
-
-	pthread_mutex_lock(countMutex);
-	*threadCount++;
-	pthread_mutex_unlock(countMutex);
-
+	
+	int threadCountID = 0;	//For any threads that this thread spawns.
 	//Initializing variables needed for the while loop that was pasta from before.
 	char* pathName = args->pathName;
 	struct dirent* dirStruct;
@@ -979,7 +967,15 @@ void* dirSearch(void* args){
 			char* filepath = (char*)malloc(sizeof(char)*10000);
 			strcpy(filepath, dirToSearch);		//Because i need to create a new string for full file path.
 			strcat(filepath, file);	//Concatting filename to file path for full file path 
-			threadArgs_DirFile args = {filepath, args->columnToSort, args->dirDest, args->threadCount, args->threadCount_mutex};
+
+			char* newThreadIDString = (char*)malloc(sizeof(char) * (strlen(args->prevThreadID)+20));
+			strcpy(newThreadIDString, args->prevThreadID);
+			char* currentThreadCountID = (char*)malloc(sizeof(char)*20);
+			snprintf(currentThreadCountID, 19, "%d", threadCountID);
+			strcat(newThreadIDString, currentThreadCountID);
+			free(currentThreadCountID);
+
+			threadArgs_DirFile args = {filepath, args->columnToSort, args->dirDest, newThreadIDString};
 			
 			pthread_t* newFileThreadHandle = (pthread_t*)malloc(sizeof(pthread_t));
 			pthread_attr_t threadAttrStruct;
@@ -993,8 +989,15 @@ void* dirSearch(void* args){
 			dirToSearch = realloc(dirToSearch, sizeof(char)*(strlen(dirToSearch)+strlen(file)+2));
 			strcat(dirToSearch, file);		//Appending new directory to current directory path;
 			strcat(dirToSearch, "/");		//Forcing the current directory path to always end in / for reasons.
+
+			char* newThreadIDString = (char*)malloc(sizeof(char) * (strlen(args->prevThreadID)+20));
+			strcpy(newThreadIDString, args->prevThreadID);
+			char* currentThreadCountID = (char*)malloc(sizeof(char)*20);
+			snprintf(currentThreadCountID, 19, "%d", threadCountID);
+			strcat(newThreadIDString, currentThreadCountID);
+			free(currentThreadCountID);
 			
-			threadArgs_DirFile args = {filepath, args->columnToSort, args->dirDest, args->threadCount, args->threadCount_mutex};
+			threadArgs_DirFile args = {filepath, args->columnToSort, args->dirDest, newThreadIDString};
 			pthread_t* newDirThreadHandle = (pthread_t*)malloc(sizeof(pthread_t));
 			pthread_attr_t threadAttrStruct;
 			pthread_attr_init(&threadAttrStruct);
@@ -1115,12 +1118,8 @@ int main(int argc, char** argv){
 
 
 	struct dirent* dirStruct;
-	//Counting the number of threads. Goes on the heap b/c each thread will increment.
-	int* threadCount = (int*)malloc(sizeof(int));
-	*threadCount = 0;
-	//Initializing mutex for threadCount. Sync mechanisms yo
-	pthread_mutex_t* threadCountMutex = (pthread_mutex_t*)malloc(sizeof(pthread_mutex_t));
-	pthread_mutex_init(threadCountMutex, NULL);
+	//For use in giving each thread an ID.
+	int threadIDListing = 0;
 	
 	printf("TIDS of all child processes: ");
 	//threads share memspace so shouldn't need to flush?
@@ -1142,13 +1141,17 @@ int main(int argc, char** argv){
 			char* filepath = (char*)malloc(sizeof(char)*10000);
 			strcpy(filepath, dirToSearch);		//Because i need to create a new string for full file path.
 			strcat(filepath, file);	//Concatting filename to file path for full file path 
-			threadArgs_DirFile args = {filepath, columnToSort, dirDest, threadCount, threadCountMutex};
+
+			char* spawnedThreadID = (char*)malloc(sizeof(char)*20);
+			snprintf(spawnedThreadID, 19, "%d", threadIDListing); 
+			threadArgs_DirFile args = {filepath, columnToSort, dirDest, spawnedthreadID};
 			
 			pthread_t* newFileThreadHandle = (pthread_t*)malloc(sizeof(pthread_t));
 			pthread_attr_t threadAttrStruct;
 			pthread_attr_init(&threadAttrStruct);
 			pthread_create(newFileThreadHandle, &threadAttrStruct, fileThread, (void*)args);
-	
+			threadIDListing++;	
+
 			free(filepath);
 			continue;
 
@@ -1156,24 +1159,28 @@ int main(int argc, char** argv){
 			dirToSearch = realloc(dirToSearch, sizeof(char)*(strlen(dirToSearch)+strlen(file)+2));
 			strcat(dirToSearch, file);		//Appending new directory to current directory path;
 			strcat(dirToSearch, "/");		//Forcing the current directory path to always end in / for reasons.
+
+			char* spawnedThreadID = (char*)malloc(sizeof(char)*20);
+			snprintf(spawnedThreadID,19, "%d", threadIDListing);
 			
-			threadArgs_DirFile args = {filepath, columnToSort, dirDest, threadCount, threadCountMutex};
+			threadArgs_DirFile args = {filepath, columnToSort, dirDest, spawnedThreadID};
 			pthread_t* newDirThreadHandle = (pthread_t*)malloc(sizeof(pthread_t));
 			pthread_attr_t threadAttrStruct;
 			pthread_attr_init(&threadAttrStruct);
 			pthread_create(newDirThreadHandle, &threadAttrStruct, dirSearch, (void*)args);
+			threadIDListing++;
+
 		} else{
 			//If for some reason there's a thing that's not a file or directory. Gotta handle all the errors dawg.	
 			continue;
 		}
 	}
 
-	//TODO: Insert barrier sync here to wait for all threads to exit.
+	//TODO: Insert barrier sync here to wait for all threads to exit or join thing for when they all join.
 	printf("\n Total number of Threads: %d\n", *threadCount);
 	
 	//TODO: There should probably be a call to csvwrite here once we have giant mega super linked list of movieInfo.
 
-	pthread_mutex_destroy(threadCountMutex);
 	free(dirDest);
 	free(columnToSort);
 	free(dirToSearch);
