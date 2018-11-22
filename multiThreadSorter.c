@@ -907,7 +907,6 @@ int main(int argc, char** argv){
 	for(q = 0; q < threadIDListing; q++){
 		threadRetvals** retvals;
 		pthread_join(*childrenThreadHandles[q], (void**)retvals);
-		//TODO: Implement logic for merging retval lists
 		if(*retvals->spawnedThreadList == NULL){
 			continue;
 		} else{
