@@ -54,6 +54,13 @@ struct _threadArgs_DirFile{
 	char* prevThreadID;
 } threadArgs_DirFile;
 
+//Struct to be used to pass information back to calling thread (#threads spawned+threadID lists)
+typedef
+struct _threadRetvals{
+	char** spawnedThreadList;
+	int spawnedThreadNum;
+} threadRetvals;
+
 typedef struct _movieNode {
 	movieInfo** data;
 	int arrLen;

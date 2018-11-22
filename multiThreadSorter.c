@@ -891,9 +891,12 @@ void* fileThread(void* args){
 	
 	//fileThread should never spawn another thread, so we should be fine without catting a threadID here.
 
-
 	parseCSV(args->fileName, args->columnToSort, args->dirDest);
-	pthread_exit(0);
+
+	//Returning stuff
+	threadRetval* returnVals = (threadRetval*)malloc(sizeof(threadRetval*));
+	*returnVals = {NULL, 0}
+	pthread_exit((void*)returnVals);
 
 }
 
@@ -902,6 +905,13 @@ void* dirSearch(void* args){
 	//Quick note that args is going to be a struct containing pathname, columnToSort, and dirDest and mutex stuff;
 	
 	int threadCountID = 0;	//For any threads that this thread spawns.
+	//List of threadHandles to use when joining later.
+	pthread_t** childrenThreadHandles = (pthread_t**)malloc(sizeof(pthread_t*)*256);	//B/c of last assign, max num should only be 255.
+	//Master list of threadIDs:
+	char** threadIDList = (char**)malloc(sizeof(char*)*256);	
+	memset(threadIDList, 0, 256*sizeof(char*))	;	//writing 0 bytes for easy iteration later. (Detect if == 0)
+
+
 	//Initializing variables needed for the while loop that was pasta from before.
 	char* pathName = args->pathName;
 	struct dirent* dirStruct;
@@ -928,7 +938,6 @@ void* dirSearch(void* args){
 			char* currentThreadCountID = (char*)malloc(sizeof(char)*20);
 			snprintf(currentThreadCountID, 19, "%d", threadCountID);
 			strcat(newThreadIDString, currentThreadCountID);
-			free(currentThreadCountID);
 
 			threadArgs_DirFile args = {filepath, args->columnToSort, args->dirDest, newThreadIDString};
 			
@@ -936,6 +945,10 @@ void* dirSearch(void* args){
 			pthread_attr_t threadAttrStruct;
 			pthread_attr_init(&threadAttrStruct);
 			pthread_create(newFileThreadHandle, &threadAttrStruct, fileThread, (void*)args);
+
+			threadIDList[threadCountID] = newThreadIDString;
+			childrenThreadHandles[threadCountID] = newFileThreadHandle;
+			threadCountID++;
 	
 			free(filepath);
 			continue;
@@ -950,7 +963,6 @@ void* dirSearch(void* args){
 			char* currentThreadCountID = (char*)malloc(sizeof(char)*20);
 			snprintf(currentThreadCountID, 19, "%d", threadCountID);
 			strcat(newThreadIDString, currentThreadCountID);
-			free(currentThreadCountID);
 			
 			threadArgs_DirFile args = {filepath, args->columnToSort, args->dirDest, newThreadIDString};
 			pthread_t* newDirThreadHandle = (pthread_t*)malloc(sizeof(pthread_t));
@@ -958,13 +970,37 @@ void* dirSearch(void* args){
 			pthread_attr_init(&threadAttrStruct);
 			pthread_create(newDirThreadHandle, &threadAttrStruct, dirSearch, (void*)args);
 
+			threadIDList[threadCountID] = newThreadIDString;
+			childrenThreadHandles[threadCountID] = newDirThreadHandle;
+			threadCountID++;
+
 			continue;
 		} else{
 			//If for some reason there's a thing that's not a file or directory. Gotta handle all the errors dawg.	
 			continue;
 		}
 	}
-	pthread_exit(0);
+
+	//Joining children threads (only immediate children)
+	int totalSpawned = threadCountID
+	
+	int q; //counter variable lol
+	for(q = 0; q < threadCountID; q++){
+		threadRetvals** retvals;
+		pthread_join(*childrenThreadHandles[q], (void**)retvals);
+		if(*retvals->spawnedThreadList == NULL){
+			continue;
+		} else{
+			memcpy((threadIDList_all + totalSpawned), *retvals->spawnedThreadList, sizeof(char*)*(*retvals->spawnedThreadNum));
+			totalSpawned = totalSpawned+(*retvals->spawnedThreadNum);
+			free(*retvals); //idk why i'm bothering to free this. this program is memoryleakcity.		
+		}
+		
+	}
+	//Returning stuff
+	threadRetval* returnVals = (threadRetval*)malloc(sizeof(threadRetval*));
+	*returnVals = {childrenThreadHandles, threadCountID}
+	pthread_exit((void*)returnVals);
 }
 
 int main(int argc, char** argv){
@@ -1075,7 +1111,12 @@ int main(int argc, char** argv){
 	struct dirent* dirStruct;
 	//For use in giving each thread an ID.
 	int threadIDListing = 0;
-	
+	//List of threadHandles to use when joining later.
+	pthread_t** childrenThreadHandles = (pthread_t**)malloc(sizeof(pthread_t*)*256);	//B/c of last assign, max num should only be 255.
+	//Master list of threadIDs:
+	char** threadIDList_all = (char**)malloc(sizeof(char*)*256);	
+	memset(threadIDList_all, 0, 256*sizeof(char*))	;	//writing 0 bytes for easy iteration later. (Detect if == 0)
+
 	printf("TIDS of all child processes: ");
 	//threads share memspace so shouldn't need to flush?
 	//fflush(stdout);
@@ -1105,6 +1146,9 @@ int main(int argc, char** argv){
 			pthread_attr_t threadAttrStruct;
 			pthread_attr_init(&threadAttrStruct);
 			pthread_create(newFileThreadHandle, &threadAttrStruct, fileThread, (void*)args);
+
+			threadIDList_all[threadIDListing] = spawnedThreadID;
+			childrenThreadHandles[threadIDListing] = newFileThreadHandle;	//Storing address of threadHandle for joining later
 			threadIDListing++;	
 
 			free(filepath);
@@ -1123,6 +1167,9 @@ int main(int argc, char** argv){
 			pthread_attr_t threadAttrStruct;
 			pthread_attr_init(&threadAttrStruct);
 			pthread_create(newDirThreadHandle, &threadAttrStruct, dirSearch, (void*)args);
+
+			threadIDList_all[threadIDListing] = spawnedThreadID;
+			childrenThreadHandles[threadIDListing] = newDirThreadHandle;	//Same as above
 			threadIDListing++;
 
 		} else{
@@ -1131,7 +1178,25 @@ int main(int argc, char** argv){
 		}
 	}
 
-	//TODO: Insert barrier sync here to wait for all threads to exit or join thing for when they all join.
+	//Joining children threads (only immediate children)
+	int totalSpawned = threadIDListing;
+	
+
+	int q; //counter variable lol
+	for(q = 0; q < threadIDListing; q++){
+		threadRetvals** retvals;
+		pthread_join(*childrenThreadHandles[q], (void**)retvals);
+		//TODO: Implement logic for merging retval lists
+		if(*retvals->spawnedThreadList == NULL){
+			continue;
+		} else{
+			memcpy((threadIDList_all + totalSpawned), *retvals->spawnedThreadList, sizeof(char*)*(*retvals->spawnedThreadNum));
+			totalSpawned = totalSpawned+(*retvals->spawnedThreadNum);
+			free(*retvals); //idk why i'm bothering to free this. this program is memoryleakcity.		
+		}
+		
+	}
+	
 	printf("\n Total number of Threads: %d\n", *threadCount);
 	
 	//TODO: There should probably be a call to csvwrite here once we have giant mega super linked list of movieInfo.
