@@ -274,7 +274,7 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 				isInQuotes = 1;
 			}
 		} else if(charIn == ',' && isInQuotes == 0) {
-			setData(A,  columnData, columns[numCommas]) 
+			setData(A,  columnData, columns[numCommas]); 
 			numCommasCurr++;
 			columnData = (char*) malloc(sizeof(char) * 500);
 			columnDataInd = 0;
@@ -608,21 +608,24 @@ void csvwrite(movieInfo** movieArr, int size ,char* categories, char* filename){
 	fclose(csvFile);
 }
 
-void* fileThread(void* args){
+void* fileThread(void* arguments){
 	
+	threadArgs_DirFile* args = (threadArgs_DirFile*)arguments;
 	//fileThread should never spawn another thread, so we should be fine without catting a threadID here.
 
-	parseCSV(args->fileName, args->columnToSort, args->dirDest);
+	parseCSV(args->pathName, args->columnToSort, args->dirDest);
 
 	//Returning stuff
-	threadRetval* returnVals = (threadRetval*)malloc(sizeof(threadRetval*));
-	*returnVals = {NULL, 0}
+	threadRetvals* returnVals = (threadRetvals*)malloc(sizeof(threadRetvals*));
+	returnVals->spawnedThreadList = NULL;
+	returnVals->spawnedThreadNum = 0;
 	pthread_exit((void*)returnVals);
 
 }
 
 
-void* dirSearch(void* args){
+void* dirSearch(void* arguments){
+	threadArgs_DirFile* args = (threadArgs_DirFile*)arguments;
 	//Quick note that args is going to be a struct containing pathname, columnToSort, and dirDest and mutex stuff;
 	
 	int threadCountID = 0;	//For any threads that this thread spawns.
@@ -660,7 +663,11 @@ void* dirSearch(void* args){
 			snprintf(currentThreadCountID, 19, "%d", threadCountID);
 			strcat(newThreadIDString, currentThreadCountID);
 
-			threadArgs_DirFile args = {filepath, args->columnToSort, args->dirDest, newThreadIDString};
+			threadArgs_DirFile* newArgs = (threadArgs_DirFile*)malloc(sizeof(threadArgs_DirFile));
+			newArgs->pathName = filepath;
+			newArgs->columnToSort = args->columnToSort;
+			newArgs->dirDest = args->dirDest;
+			newArgs->prevThreadID = newThreadIDString;
 			
 			pthread_t* newFileThreadHandle = (pthread_t*)malloc(sizeof(pthread_t));
 			pthread_attr_t threadAttrStruct;
@@ -685,7 +692,13 @@ void* dirSearch(void* args){
 			snprintf(currentThreadCountID, 19, "%d", threadCountID);
 			strcat(newThreadIDString, currentThreadCountID);
 			
-			threadArgs_DirFile args = {filepath, args->columnToSort, args->dirDest, newThreadIDString};
+			threadArgs_DirFile* newArgs = (threadArgs_DirFile*)malloc(sizeof(threadArgs_DirFile));
+			//*args = {filepath, args->columnToSort, args->dirDest, newThreadIDString};
+			newArgs->pathName = dirToSearch;
+			newArgs->columnToSort = args->columnToSort;
+			newArgs->dirDest = args->dirDest;
+			newArgs->prevThreadID = newThreadIDString;
+
 			pthread_t* newDirThreadHandle = (pthread_t*)malloc(sizeof(pthread_t));
 			pthread_attr_t threadAttrStruct;
 			pthread_attr_init(&threadAttrStruct);
@@ -703,24 +716,26 @@ void* dirSearch(void* args){
 	}
 
 	//Joining children threads (only immediate children)
-	int totalSpawned = threadCountID
+	int totalSpawned = threadCountID;
 	
 	int q; //counter variable lol
 	for(q = 0; q < threadCountID; q++){
 		threadRetvals** retvals;
 		pthread_join(*childrenThreadHandles[q], (void**)retvals);
-		if(*retvals->spawnedThreadList == NULL){
+		if(retvals[0]->spawnedThreadList == NULL){
 			continue;
 		} else{
-			memcpy((threadIDList_all + totalSpawned), *retvals->spawnedThreadList, sizeof(char*)*(*retvals->spawnedThreadNum));
-			totalSpawned = totalSpawned+(*retvals->spawnedThreadNum);
+			memcpy((threadIDList + totalSpawned), retvals[0]->spawnedThreadList, sizeof(char*)*(retvals[0]->spawnedThreadNum));
+			totalSpawned = totalSpawned+(retvals[0]->spawnedThreadNum);
 			free(*retvals); //idk why i'm bothering to free this. this program is memoryleakcity.		
 		}
 		
 	}
 	//Returning stuff
-	threadRetval* returnVals = (threadRetval*)malloc(sizeof(threadRetval*));
-	*returnVals = {childrenThreadHandles, threadCountID}
+	threadRetvals* returnVals = (threadRetvals*)malloc(sizeof(threadRetvals*));
+	//*returnVals = {childrenThreadHandles, threadCountID}
+	returnVals->spawnedThreadList = threadIDList;
+	returnVals->spawnedThreadNum = threadCountID;
 	pthread_exit((void*)returnVals);
 }
 
@@ -861,7 +876,12 @@ int main(int argc, char** argv){
 
 			char* spawnedThreadID = (char*)malloc(sizeof(char)*20);
 			snprintf(spawnedThreadID, 19, "%d", threadIDListing); 
-			threadArgs_DirFile args = {filepath, columnToSort, dirDest, spawnedthreadID};
+			threadArgs_DirFile* args = (threadArgs_DirFile*)malloc(sizeof(threadArgs_DirFile));
+			//*args = {filepath, columnToSort, dirDest, spawnedthreadID};
+			args->pathName = filepath;
+			args->columnToSort = columnToSort;
+			args->dirDest = dirDest;
+			args->prevThreadID = spawnedThreadID;
 			
 			pthread_t* newFileThreadHandle = (pthread_t*)malloc(sizeof(pthread_t));
 			pthread_attr_t threadAttrStruct;
@@ -883,7 +903,13 @@ int main(int argc, char** argv){
 			char* spawnedThreadID = (char*)malloc(sizeof(char)*20);
 			snprintf(spawnedThreadID,19, "%d", threadIDListing);
 			
-			threadArgs_DirFile args = {filepath, columnToSort, dirDest, spawnedThreadID};
+			threadArgs_DirFile* args = (threadArgs_DirFile*)malloc(sizeof(threadArgs_DirFile));				
+			//*args = {filepath, columnToSort, dirDest, spawnedThreadID};
+			args->pathName = dirToSearch;
+			args->columnToSort = columnToSort;
+			args->dirDest = dirDest;
+			args->prevThreadID = spawnedThreadID;
+
 			pthread_t* newDirThreadHandle = (pthread_t*)malloc(sizeof(pthread_t));
 			pthread_attr_t threadAttrStruct;
 			pthread_attr_init(&threadAttrStruct);
@@ -907,17 +933,17 @@ int main(int argc, char** argv){
 	for(q = 0; q < threadIDListing; q++){
 		threadRetvals** retvals;
 		pthread_join(*childrenThreadHandles[q], (void**)retvals);
-		if(*retvals->spawnedThreadList == NULL){
+		if(retvals[0]->spawnedThreadList == NULL){
 			continue;
 		} else{
-			memcpy((threadIDList_all + totalSpawned), *retvals->spawnedThreadList, sizeof(char*)*(*retvals->spawnedThreadNum));
-			totalSpawned = totalSpawned+(*retvals->spawnedThreadNum);
+			memcpy((threadIDList_all + totalSpawned), retvals[0]->spawnedThreadList, sizeof(char*)*(retvals[0]->spawnedThreadNum));
+			totalSpawned = totalSpawned+(retvals[0]->spawnedThreadNum);
 			free(*retvals); //idk why i'm bothering to free this. this program is memoryleakcity.		
 		}
 		
 	}
 	
-	printf("\n Total number of Threads: %d\n", *threadCount);
+	printf("\n Total number of Threads: %d\n", totalSpawned);
 	
 	while(head -> next != NULL) {
 		mergeSortNodes(columnToSort);
