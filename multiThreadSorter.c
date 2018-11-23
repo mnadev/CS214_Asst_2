@@ -919,8 +919,34 @@ int main(int argc, char** argv){
 	
 	printf("\n Total number of Threads: %d\n", *threadCount);
 	
-	//TODO: There should probably be a call to csvwrite here once we have giant mega super linked list of movieInfo.
+	while(head -> next != NULL) {
+		mergeSortNodes(columnToSort);
+	}
 
+	//TODO: There should probably be a call to csvwrite here once we have giant mega super linked list of movieInfo.
+	int isAbsolutePath = 1;
+	if(destDirectory != NULL) {
+		if(*(destDirectory) == '/') {
+			isAbsolutePath = 0;
+		}
+	}	
+	
+	char* fileToWrite = (char*) malloc(sizeof(char) * 256);
+	
+	if(destDirectory != NULL) {
+		if(isAbsolutePath == 1) {
+			 snprintf(fileToWrite, 256, "%s/AllFiles-sorted-%s.csv\0",destDirectory,columnToSort);
+		} else {
+			snprintf(fileToWrite, 256, "./%s/AllFiles-sorted-%s.csv\0",destDirectory, columnToSort);
+		}
+	} else {
+		snprintf(fileToWrite, 256, "AllFiles-sorted-%s.csv\0",columnToSort);
+	}
+	
+	csvwrite(dataRows,sizeOfArray, columnNames, fileToWrite);
+	
+	free(fileToWrite); 
+	
 	free(dirDest);
 	free(columnToSort);
 	free(dirToSearch);

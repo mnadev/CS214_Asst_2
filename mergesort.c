@@ -2,8 +2,10 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
-#include "scannerCSVsorter.h"
+#include "multiThreadSorter.h"
 
+
+void merge(movieInfo** arr, char * columnToBeSorted, int left, int half, int right, int isInt);
 
 void swap(movieInfo* A, movieInfo* B){
     movieInfo temp = *A;
@@ -14,7 +16,6 @@ void swap(movieInfo* A, movieInfo* B){
 float intComparison(float intA, float intB) {
     return intA - intB;
 }
-void merge(movieInfo** arr, char * columnToBeSorted, int left, int half, int right, int isInt);
 
 void mergesort(movieInfo** arr, char * columnToBeSorted, int left, int right) {
 	if(left >= right) {
@@ -37,9 +38,9 @@ void mergesort(movieInfo** arr, char * columnToBeSorted, int left, int right) {
 	} else if(strcmp(columnToBeSorted, "genres") == 0){
 		isInt = 0;
 	} else if(strcmp(columnToBeSorted, "actor_1_name") == 0){
-	isInt = 0;
+		isInt = 0;
 	} else if(strcmp(columnToBeSorted, "movie_title") == 0){
-	isInt = 0;
+		isInt = 0;
 	} else if(strcmp(columnToBeSorted, "num_voted_users") == 0){
 	} else if(strcmp(columnToBeSorted, "cast_total_facebook_likes") == 0){
 	} else if(strcmp(columnToBeSorted, "actor_3_name") == 0){
@@ -64,9 +65,9 @@ void mergesort(movieInfo** arr, char * columnToBeSorted, int left, int right) {
 	} else if(strcmp(columnToBeSorted, "movie_facebook_likes") == 0){
 	} else{
 		if(columnToBeSorted == '\0'){
-		    return -1;
+		    return;
 		}
-		return -1;
+		return;
 	}
     
 	//find mid point
@@ -94,8 +95,8 @@ void merge(movieInfo** arr, char* columnToBeSorted,int left, int half, int right
         
         	float comparison = 0;
         	if(isInt == 0) {
-           		 char* trimmedA;    //trimmed whitespace version of A
-           		 char* trimmedB;    //trimmed whitespace version of B
+           		char* trimmedA;    //trimmed whitespace version of A
+           		char* trimmedB;    //trimmed whitespace version of B
                 	if(strcmp(columnToBeSorted, "color") == 0){
                     		trimmedA = A->color;
                     		trimmedB = B->color;
@@ -110,9 +111,7 @@ void merge(movieInfo** arr, char* columnToBeSorted,int left, int half, int right
 			    trimmedA = A->actor_2_name;
 			    trimmedB = B->actor_2_name;
                     	} else if(strcmp(columnToBeSorted, "actor_1_facebook_likes") == 0){
-                    
                     	} else if(strcmp(columnToBeSorted, "gross") == 0){
-                    
                     	} else if(strcmp(columnToBeSorted, "genres") == 0){
                    		trimmedA = A->genres;
                     		trimmedB = B->genres;
@@ -152,9 +151,9 @@ void merge(movieInfo** arr, char* columnToBeSorted,int left, int half, int right
                     	} else if(strcmp(columnToBeSorted, "movie_facebook_likes") == 0){                    
                     	} else{
                     		if(columnToBeSorted == '\0'){
-                       			return -1;
+                       			return;
                     		}
-                    		return -1;
+                    		return;
 		    	}
 			
   			int trimALen = strlen(trimmedA);
@@ -262,9 +261,9 @@ void merge(movieInfo** arr, char* columnToBeSorted,int left, int half, int right
 				intB = B->movie_facebook_likes;
 			} else{
 				if(columnToBeSorted == '\0'){
-					return -1;
+					return;
 				}
-				return -1;
+				return;
 			}
 			//printf("%f\n", intA);
 			//printf("%f\n", intB);
@@ -378,9 +377,9 @@ void merge(movieInfo** arr, char* columnToBeSorted,int left, int half, int right
 			} else if(strcmp(columnToBeSorted, "movie_facebook_likes") == 0){
 			} else{
 				if(columnToBeSorted == '\0'){
-					return -1;
+					return;
 				}
-				return -1;
+				return;
 			}
                 
 			int trimALen = strlen(trimmedA);
@@ -486,9 +485,9 @@ void merge(movieInfo** arr, char* columnToBeSorted,int left, int half, int right
 				intB = B->movie_facebook_likes;
 			} else{
 				if(columnToBeSorted == '\0'){
-				r	eturn -1;
+					return;
 				}
-				return -1;
+				return;
 			}
                 	comparison = intComparison(intA,intB);
 		}
@@ -527,7 +526,7 @@ void merge(movieInfo** arr, char* columnToBeSorted,int left, int half, int right
 
 
 
-movieInfo** mergeNodeData(movieInfo** arrA, movieInfo** arrB, int arrLenA, int arrLenB, char * columnToBeSorted) {
+movieInfo** mergeNodeData(movieInfo** arrA, movieInfo** arrB, int arrLenA, int arrLenB, char * columnToBeSorted, int isInt) {
 	movieInfo** mergedArr = malloc(sizeof(movieInfo) * (arrLenA + arrLenB));
 	
  	int ptrA = 0, ptrB = 0, ptrMerged = 0;	
@@ -726,16 +725,16 @@ movieInfo** mergeNodeData(movieInfo** arrA, movieInfo** arrB, int arrLenA, int a
         
         // check again to make sure we iterated through all of the temp arrays
         while(ptrA < (arrLenA - 1)){
-            movieInfo* A = arrA[i];
+            movieInfo* A = arrA[ptrA];
             mergedArr[ptrMerged] = A;
             ptrA++;
             ptrMerged++;
         }
         
         while(ptrB < (arrLenB - 1)){
-            movieInfo* B = tempB[j];
+            movieInfo* B = arrB[ptrB];
             mergedArr[ptrMerged] = B;
-            ptrA++;
+            ptrB++;
             ptrMerged++;
         }
 	
