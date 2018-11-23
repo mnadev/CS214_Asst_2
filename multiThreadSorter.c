@@ -274,7 +274,7 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 				isInQuotes = 1;
 			}
 		} else if(charIn == ',' && isInQuotes == 0) {
-			setData(A,  columnData, columns[numCommas]); 
+			setData(A, (char*) columnData, columns[numCommas]); 
 			numCommasCurr++;
 			columnData = (char*) malloc(sizeof(char) * 500);
 			columnDataInd = 0;
