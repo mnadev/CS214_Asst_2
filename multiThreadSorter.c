@@ -7,6 +7,7 @@
 #include<sys/stat.h>
 #include<errno.h>
 #include<fcntl.h>
+#include<math.h>
 #include "multiThreadSorter.h"
 
 void csvwrite(movieInfo** movieArr, int size ,char* categories, char* filename);
@@ -39,9 +40,10 @@ void mergeSortNodes(char* category){
 
 	// get third node in list, could be NULL, don't matter
 	movieNode* next = head -> next -> next;
-
+	//find out is Int
+	int isInt = 0;
 	// mergesort the data
-	movieInfo** mergedData = mergeNodeData(head -> data, head -> next -> data, head -> arrLen, head -> next -> arrLen, category);
+	movieInfo** mergedData = mergeNodeData(head -> data, head -> next -> data, head -> arrLen, head -> next -> arrLen, category, isInt);
 	
 	// create new head node and set data
 	movieNode* newHead = (movieNode *) malloc(sizeof(movieNode));
@@ -145,7 +147,7 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 	
 	// create var to keep track of the number of commas
 	int numCommasCurr = 0;
-	columnCurr = malloc(sizeof(char)*500);
+	char* columnCurr = malloc(sizeof(char)*500);
 	int i = 0;
 	int isInQuotes = 0;
 	//Reading in from STDIN char by char until a '\n' is reached to get a string containing all column names	
@@ -186,13 +188,11 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 	
 	if(locOfColumn == NULL ){
 		write(STDERR, "Error while checking validity: The column to be sorted that was input as the 2nd parameter is not contained within the CSV.\n", 124);
-		return 0;
+		return;
 	}
 	
 	//Searching for number of commas before column to be sorted
 	//(Assumes that column names don't have commas in them, which they shouldn't for this assignment.
-	
-	int i;
 	for(i = 0; i <= (locOfColumn - columnNames); i++){
 
 		if(columnNames[i] == ','){
@@ -202,7 +202,7 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 
 	if(hasHeaders(columnNames) == 0){
 		write(STDERR, "Error while checking validity: The CSV contained an unknown column header.\n", 75);
-		return 0;
+		return;
 	}
 	
 	//Reading through the rest of STDIN for data:
@@ -235,14 +235,14 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 		
 		if(doubleNewLines > 0 && eof > 0) {
 			write(STDERR, "Error while checking validity: Malformed CSV\n", 45);
-			return 0;
+			return;
 		}
 		
 		// if we have a disparate amount of commas in each line, we will check if we have
 		// the weird two lines error by checking if it is the end of the file
 		if(waiter == 1 && eof > 0) {
 			write(STDERR, "Error while checking validity: Malformed CSV\n", 45);
-			return 0;
+			return;
 		}
 
 		waiter = 0;
@@ -255,7 +255,7 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 		if(charIn == '\n') {
 			if(numCommasCurr != numCommas && doubleNewLines == 0){
 					write(STDERR, "Error while checking validity: Malformed CSV\n", 45);
-					return 0;
+					return;
 			}
 			
 			if(numCommasCurr != numCommas && doubleNewLines != 0) {
@@ -293,15 +293,15 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 	
 	if(movieInd == 0){
 		write(STDERR, "Error while checking validity: Malformed CSV\n", 45);
-		return 0;
+		return;
 	}	
 	
 	//int isNumeric = isInt(dataRows, sizeOfArray);
-	mergesort(dataRows, columnToBeSorted ,0, movieInd - 1);
+	mergesort(dataRows, columnToSort ,0, movieInd - 1);
 	close(csv);	
 	
 	
-	addToFront(dataRows, sizeOfArray);
+	addToFront(dataRows, movieInd);
 	
 	// we have to move this code to some other place.
 	/*
@@ -516,7 +516,7 @@ char* ftos(float number){
 	} 
 	
 	// create buffer and write to it.
-	char numBuffer[lenInt + lenDec + 1];
+	char* numBuffer = (char*) malloc(sizeof(char)*(lenInt + lenDec + 1));
 	snprintf(numBuffer, lenInt + lenDec + 1, "%d", number);
 	
 	
@@ -552,9 +552,9 @@ void csvwrite(movieInfo** movieArr, int size ,char* categories, char* filename){
 		fprintf(csvFile, ",");
 		fprintf(csvFile, A->actor_2_name);
 		fprintf(csvFile, ",");
-		fprintf(csvFile, A->ftos(actor_1_facebook_likes));
+		fprintf(csvFile, ftos(A->actor_1_facebook_likes));
 		fprintf(csvFile, ",");
-		fprintf(csvFile, A->ftos(gross));
+		fprintf(csvFile, ftos(A->gross));
 		fprintf(csvFile, ",");
 		fprintf(csvFile, A->genres);
 		fprintf(csvFile, ",");
@@ -562,19 +562,19 @@ void csvwrite(movieInfo** movieArr, int size ,char* categories, char* filename){
 		fprintf(csvFile, ",");
 		fprintf(csvFile, A->movie_title);
 		fprintf(csvFile, ",");
-		fprintf(csvFile, A->ftos(num_voted_users));
+		fprintf(csvFile, ftos(A->num_voted_users));
 		fprintf(csvFile, ",");
-		fprintf(csvFile, A->ftos(cast_total_facebook_likes));
+		fprintf(csvFile, ftos(A->cast_total_facebook_likes));
 		fprintf(csvFile, ",");
 		fprintf(csvFile, A->actor_3_name);
 		fprintf(csvFile, ",");
-		fprintf(csvFile, A->ftos(facenumber_in_poster));
+		fprintf(csvFile, ftos(A->facenumber_in_poster));
 		fprintf(csvFile, ",");
 		fprintf(csvFile, A->plot_keywords);
 		fprintf(csvFile, ",");
 		fprintf(csvFile, A->movie_imdb_link);
 		fprintf(csvFile, ",");
-		fprintf(csvFile, A->ftos(num_user_for_reviews));
+		fprintf(csvFile, ftos(A->num_user_for_reviews));
 		fprintf(csvFile, ",");
 		fprintf(csvFile, A->language);
 		fprintf(csvFile, ",");
@@ -582,17 +582,17 @@ void csvwrite(movieInfo** movieArr, int size ,char* categories, char* filename){
 		fprintf(csvFile, ",");
 		fprintf(csvFile, A->content_rating);
 		fprintf(csvFile, ",");
-		fprintf(csvFile, A->ftos(budget));
+		fprintf(csvFile, ftos(A->budget));
 		fprintf(csvFile, ",");
-		fprintf(csvFile, A->ftos(title_year));
+		fprintf(csvFile, ftos(A->title_year));
 		fprintf(csvFile, ",");
-		fprintf(csvFile, A->ftos(actor_2_facebook_likes));
+		fprintf(csvFile, ftos(A->actor_2_facebook_likes));
 		fprintf(csvFile, ",");
-		fprintf(csvFile, A->ftos(imdb_score));
+		fprintf(csvFile, ftos(A->imdb_score));
 		fprintf(csvFile, ",");
-		fprintf(csvFile, A->ftos(aspect_ratio));
+		fprintf(csvFile, ftos(A->aspect_ratio));
 		fprintf(csvFile, ",");
-		fprintf(csvFile, A->ftos(movie_facebook_likes));
+		fprintf(csvFile, ftos(A->movie_facebook_likes));
 		
 		/*if(A->sortHasQuotes == 1){
 			fprintf(csvFile,"\"");
@@ -951,25 +951,26 @@ int main(int argc, char** argv){
 
 	//TODO: There should probably be a call to csvwrite here once we have giant mega super linked list of movieInfo.
 	int isAbsolutePath = 1;
-	if(destDirectory != NULL) {
-		if(*(destDirectory) == '/') {
+	if(dirDest != NULL) {
+		if(*(dirDest) == '/') {
 			isAbsolutePath = 0;
 		}
 	}	
 	
 	char* fileToWrite = (char*) malloc(sizeof(char) * 256);
 	
-	if(destDirectory != NULL) {
+	if(dirDest != NULL) {
 		if(isAbsolutePath == 1) {
-			 snprintf(fileToWrite, 256, "%s/AllFiles-sorted-%s.csv\0",destDirectory,columnToSort);
+			 snprintf(fileToWrite, 256, "%s/AllFiles-sorted-%s.csv\0", dirDest,columnToSort);
 		} else {
-			snprintf(fileToWrite, 256, "./%s/AllFiles-sorted-%s.csv\0",destDirectory, columnToSort);
+			snprintf(fileToWrite, 256, "./%s/AllFiles-sorted-%s.csv\0", dirDest, columnToSort);
 		}
 	} else {
 		snprintf(fileToWrite, 256, "AllFiles-sorted-%s.csv\0",columnToSort);
 	}
-	
-	csvwrite(dataRows,sizeOfArray, columnNames, fileToWrite);
+	//TODO: write column names
+	char * columnNames = "";
+	csvwrite(head -> data, head -> arrLen, columnNames, fileToWrite);
 	
 	free(fileToWrite); 
 	
