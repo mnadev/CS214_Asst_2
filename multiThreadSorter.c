@@ -144,7 +144,7 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 	
 	// create var to keep track of the number of commas
 	int numCommasCurr = 0;
-	char* columnCurr = malloc(sizeof(char)*500);
+	char* columnCurr = (char * )malloc(sizeof(char)*500);
 	int i = 0;
 	int isInQuotes = 0;
 	//Reading in from STDIN char by char until a '\n' is reached to get a string containing all column names	
@@ -161,12 +161,14 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 		} else if(charIn == ',' && isInQuotes == 0) {
 			columnCurr[i] = '\0';
 			numCommasCurr++;
-			columnCurr = realloc(columnCurr, sizeof(char)*(i+1));
+			i++;
+			columnCurr = realloc(columnCurr, sizeof(char)*(i));
 			i = 0;
-			columns = realloc(columns, sizeof(char*)*(numCommasCurr+1));
-			columnCurr = columns[numCommasCurr];
+			columns = realloc(columns, sizeof(char*)*(numCommasCurr + 1));
+			columns[numCommasCurr - 1] = columnCurr;
+			columnCurr = (char*) malloc(sizeof(char) * 500);
 		} else {
-			if(i > 500) {
+			if(i >= 500) {
 				columnCurr = realloc(columnCurr, sizeof(char)*(1000));;
 			}
 			columnCurr[i] = charIn;
@@ -174,6 +176,10 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 		}
 		//printf("%c", charIn);
 	}while(charIn != '\n');
+	
+	if(columns[numCommasCurr] == NULL) {
+		columns = realloc(columns, sizeof(char*)*(numCommasCurr));	
+	}
 	
 	columnNames[columnNamesIndex] = '\0';
 	columnNames = realloc(columnNames, columnNamesIndex+1);
@@ -204,7 +210,7 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 	
 	//Reading through the rest of STDIN for data:
 	//int sizeOfArray = 0;
-	movieInfo** dataRows = NULL; //Array of pointers to each instance of movieInfo
+	movieInfo** dataRows = malloc(sizeof(movieInfo*)*1); //Array of pointers to each instance of movieInfo
 	movieInfo* A = (movieInfo*)malloc(sizeof(movieInfo));
 	
 	isInQuotes = 0;
@@ -973,7 +979,7 @@ int main(int argc, char** argv){
 		snprintf(fileToWrite, 256, "AllFiles-sorted-%s.csv\0",columnToSort);
 	}
 	//TODO: write column names
-	char * columnNames = "";
+	char * columnNames = "color,director_name,num_critic_for_reviews,duration,director_facebook_likes,actor_3_facebook_likes,actor_2_name,actor_1_facebook_likes,gross,genres,actor_1_name,movie_title,num_voted_users,cast_total_facebook_likes,actor_3_name,facenumber_in_poster,plot_keywords,movie_imdb_link,num_user_for_reviews,language,country,content_rating,budget,title_year,actor_2_facebook_likes,imdb_score,aspect_ratio,movie_facebook_likes";
 	csvwrite(head -> data, head -> arrLen, columnNames, fileToWrite);
 	
 	free(fileToWrite); 
