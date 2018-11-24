@@ -153,37 +153,52 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 	//Reading in from STDIN char by char until a '\n' is reached to get a string containing all column names	
 	do{
 		char* columnCurr = (char * )malloc(sizeof(char)*500);
-		read(csv, &charIn, 1);
-		columnNames[columnNamesIndex] = charIn;
-		columnNamesIndex++;
-		/*if(charIn == '\"') {
-			if(isInQuotes == 1) {
-				isInQuotes = 0;
-			} else {
-				isInQuotes = 1;
-			}*/ //Column headers should never have quotes in them, and if they do, it'd get tossed out as invalid anyways.
-		if(charIn == '\n'){
-			break;
-		} else if(charIn == ',') {
-			columnCurr[i] = '\0';
-			numCommasCurr++;
-			i++;
-			columnCurr = realloc(columnCurr, sizeof(char)*(i));
-			i = 0;
-			if(numCommasCurr > 28){
+		while(1){
+			int eof = read(csv, &charIn, 1);
+			if(eof == 0){
 				write(STDERR, "Error while checking validity: The CSV contained an unknown column header.\n", 75);	
-				return;		
+				return;	
 			}
-			columns[numCommasCurr - 1] = columnCurr;
-		} else {
-			if(i >= sizeColumnCurr) {
-				columnCurr = realloc(columnCurr, sizeof(char)*2*sizeColumnCurr);
+			columnNames[columnNamesIndex] = charIn;
+			columnNamesIndex++;
+
+			if(charIn == '\n'){
+				break;
+			} else if(charIn == ',') {
+				columnCurr[i] = '\0';
+				numCommasCurr++;
+				i++;
+				
+				char* reallocTest = realloc(columnCurr, sizeof(char)*(i));
+				if(reallocTest == NULL){
+					reallocTest = realloc(columnCurr, sizeof(char)*i);
+				} else{
+					columnCurr = reallocTest;
+				}
+				i = 0;
+				if(numCommasCurr > 28){
+					write(STDERR, "Error while checking validity: The CSV contained an unknown column header.\n", 75);	
+					return;		
+				}
+				columns[numCommasCurr - 1] = columnCurr;	
+				break;			
+			} else {
+				if(i >= sizeColumnCurr) {
+					char* reallocTest = realloc(columnCurr, sizeof(char)*2*sizeColumnCurr);
+					if(reallocTest == NULL){
+						reallocTest = realloc(columnCurr, sizeof(char)*2*sizeColumnCurr);
+					} else{
+						columnCurr = reallocTest;
+					}
+					sizeColumnCurr = sizeColumnCurr*2;
+				}
+				columnCurr[i] = charIn;
+				i++;
 			}
-			columnCurr[i] = charIn;
-			i++;
 		}
 		//printf("%c", charIn);
 	}while(charIn != '\n');
+
 	columns = realloc(columns, sizeof(char*)*(numCommasCurr + 1));
 
 	if(numCommasCurr > 0) {
