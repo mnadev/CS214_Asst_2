@@ -19,47 +19,7 @@ void* fileThread(void* args);
 
 movieNode* head = NULL;
 
-
-void addToFront(movieInfo** data, int arrLen) {
-	// create new head node and set data 
-	movieNode* newHead =(movieNode*) malloc(sizeof(movieNode));
-	newHead -> data = data;
-	newHead -> arrLen = arrLen;
-	//set next node to current head
-	newHead -> next = head;
-
-	//set head to new head
-	head = newHead;
-}
-
-void mergeSortNodes(char* category){
-	//return if head is null or there is only one node in list
-	if(head == NULL || head -> next == NULL) {
-		return;
-	}
-
-	// get third node in list, could be NULL, don't matter
-	movieNode* next = head -> next -> next;
-	//find out is Int
-	int isInt = 0;
-	// mergesort the data
-	movieInfo** mergedData = mergeNodeData(head -> data, head -> next -> data, head -> arrLen, head -> next -> arrLen, category, isInt);
-	
-	// create new head node and set data
-	movieNode* newHead = (movieNode *) malloc(sizeof(movieNode));
-	newHead -> data = mergedData;
-	newHead -> arrLen = (head -> next -> arrLen) + (head -> arrLen);
-
-	//set next node equal to third node, could be NULL
-	newHead -> next = next;
-	
-	// free first and second nodes, also, set head equal to new head
-	free(head -> next);
-	movieNode* oldHead = head;
-	head = newHead;
-	free(oldHead);
-	
-}
+int isInt = 1;
 
 void setData(movieInfo* A, void* data, char* column) {
 	// TODO: VERIFY floats casted to floats, char* casted to char*
@@ -297,37 +257,11 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 	}	
 	
 	//int isNumeric = isInt(dataRows, sizeOfArray);
-	mergesort(dataRows, columnToSort ,0, movieInd - 1);
+	mergesort(dataRows, columnToSort ,0, movieInd - 1, isInt);
 	close(csv);	
 	
 	
 	addToFront(dataRows, movieInd);
-	
-	// we have to move this code to some other place.
-	/*
-
-	int isAbsolutePath = 1;
-	if(destDirectory != NULL) {
-		if(*(destDirectory) == '/') {
-			isAbsolutePath = 0;
-		}
-	}	
-	
-	char* fileToWrite = (char*) malloc(sizeof(char) * 256);
-	
-	if(destDirectory != NULL) {
-		if(isAbsolutePath == 1) {
-			 snprintf(fileToWrite, 256, "%s/AllFiles-sorted-%s.csv\0",destDirectory,columnToSort);
-		} else {
-			snprintf(fileToWrite, 256, "./%s/AllFiles-sorted-%s.csv\0",destDirectory, columnToSort);
-		}
-	} else {
-		snprintf(fileToWrite, 256, "AllFiles-sorted-%s.csv\0",columnToSort);
-	}
-	
-	csvwrite(dataRows,sizeOfArray, columnNames, fileToWrite);
-	
-	free(fileToWrite); */
 }
 
 
@@ -593,15 +527,6 @@ void csvwrite(movieInfo** movieArr, int size ,char* categories, char* filename){
 		fprintf(csvFile, ftos(A->aspect_ratio));
 		fprintf(csvFile, ",");
 		fprintf(csvFile, ftos(A->movie_facebook_likes));
-		
-		/*if(A->sortHasQuotes == 1){
-			fprintf(csvFile,"\"");
-			fprintf(csvFile, A->toBeSorted);
-			fprintf(csvFile, "\"");
-		} else{
-			fprintf(csvFile, A->toBeSorted);
-		}*/
-		
 		fprintf(csvFile, "\n");
 		i++;
         }
@@ -830,6 +755,48 @@ int main(int argc, char** argv){
 		}
 	}
 
+	if(strcmp(columnToSort, "color") == 0){
+		isInt = 0;
+	} else if(strcmp(columnToSort, "director_name") == 0){
+		isInt = 0;
+	} else if(strcmp(columnToSort, "num_critic_for_reviews") == 0){
+	} else if(strcmp(columnToSort, "duration") == 0){
+	} else if(strcmp(columnToSort, "director_facebook_likes") == 0){
+	} else if(strcmp(columnToSort, "actor_3_facebook_likes") == 0){
+	} else if(strcmp(columnToSort, "actor_2_name") == 0){
+		isInt = 0;
+	} else if(strcmp(columnToSort, "actor_1_facebook_likes") == 0){
+	} else if(strcmp(columnToSort, "gross") == 0){
+	} else if(strcmp(columnToSort, "genres") == 0){
+		isInt = 0;
+	} else if(strcmp(columnToSort, "actor_1_name") == 0){
+		isInt = 0;
+	} else if(strcmp(columnToSort, "movie_title") == 0){
+		isInt = 0;
+	} else if(strcmp(columnToSort, "num_voted_users") == 0){
+	} else if(strcmp(columnToSort, "cast_total_facebook_likes") == 0){
+	} else if(strcmp(columnToSort, "actor_3_name") == 0){
+		isInt = 0;
+	} else if(strcmp(columnToSort, "facenumber_in_poster") == 0){
+	} else if(strcmp(columnToSort, "plot_keywords") == 0){
+		isInt = 0;
+	} else if(strcmp(columnToSort, "movie_imdb_link") == 0){
+		isInt = 0;
+	} else if(strcmp(columnToSort, "num_user_for_reviews") == 0){
+	} else if(strcmp(columnToSort, "language") == 0){
+		isInt = 0;
+	} else if(strcmp(columnToSort, "country") == 0){
+		isInt = 0;
+	} else if(strcmp(columnToSort, "content_rating") == 0){
+		isInt = 0;
+	} else if(strcmp(columnToSort, "budget") == 0){
+	} else if(strcmp(columnToSort, "title_year") == 0){
+	} else if(strcmp(columnToSort, "actor_2_facebook_likes") == 0){
+	} else if(strcmp(columnToSort, "imdb_score") == 0){
+	} else if(strcmp(columnToSort, "aspect_ratio") == 0){
+	} else if(strcmp(columnToSort, "movie_facebook_likes") == 0){
+	} else{
+	}
 	
 	DIR *currDir;
 	currDir = opendir(dirToSearch);
