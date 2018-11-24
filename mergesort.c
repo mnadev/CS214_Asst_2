@@ -428,7 +428,7 @@ movieInfo** mergeNodeData(movieInfo** arrA, movieInfo** arrB, int arrLenA, int a
 	
  	int ptrA = 0, ptrB = 0, ptrMerged = 0;	
 	
-	while(ptrA < (arrLenA - 1) && ptrB < (arrLenB - 1)){
+	while(ptrA <= (arrLenA - 1) && ptrB <= (arrLenB - 1)){
 		movieInfo* A = arrA[ptrA];
 		movieInfo* B = arrB[ptrB];
             
