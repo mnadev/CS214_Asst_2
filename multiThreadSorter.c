@@ -18,6 +18,7 @@ void* fileThread(void* args);
 movieNode* head = NULL;
 
 int isInt = 1;
+int processPID;
 
 void addToFront(movieInfo** data, int arrLen) {
 	// create new head node and set data 
@@ -709,6 +710,7 @@ void* dirSearch(void* arguments){
 
 int main(int argc, char** argv){
 	
+	processPID = getpid();	//Setting the global
 	//Input flags of the program and whether they are present: Index 0 = -c, Index 1 = -d, Index 2 = -o
 	int flagsPresent[] = {0,0,0};		
 	char* columnToSort;
@@ -849,10 +851,6 @@ int main(int argc, char** argv){
 		return -1;
 	}
 
-	printf("\nInitial PID: ");
-	int pid = getpid();
-	printf("%d\n",pid);
-
 
 	struct dirent* dirStruct;
 	//For use in giving each thread an ID.
@@ -862,10 +860,6 @@ int main(int argc, char** argv){
 	//Master list of threadIDs:
 	char** threadIDList_all = (char**)malloc(sizeof(char*)*256);	
 	memset(threadIDList_all, 0, 256*sizeof(char*))	;	//writing 0 bytes for easy iteration later. (Detect if == 0)
-
-	printf("TIDS of all child processes: ");
-	//threads share memspace so shouldn't need to flush?
-	//fflush(stdout);
 
 	char * file;		//used to determine i-node type: directory, file, or some other thing
 	while(31337) {
@@ -941,7 +935,7 @@ int main(int argc, char** argv){
 
 	int q; //counter variable lol
 	for(q = 0; q < threadIDListing; q++){
-		threadRetvals** retvals;
+		threadRetvals** retvals = (threadRetvals**)malloc(sizeof(threadRetvals*));
 		pthread_join(*childrenThreadHandles[q], (void**)retvals);
 		if(retvals[0]->spawnedThreadList == NULL){
 			continue;
@@ -952,7 +946,12 @@ int main(int argc, char** argv){
 		}
 		
 	}
-	
+
+	printf("\nInitial PID: %d\n", processPID);
+	printf("TIDS of all child processes: ");
+	for(q = 0; q < totalSpawned; q++){
+		printf("%s, ", threadIDList_all[q]);	
+	}
 	printf("\n Total number of Threads: %d\n", totalSpawned);
 	
 	while(head -> next != NULL) {
