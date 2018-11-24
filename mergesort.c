@@ -5,7 +5,47 @@
 #include "multiThreadSorter.h"
 
 
+
 void merge(movieInfo** arr, char * columnToBeSorted, int left, int half, int right, int isInt);
+
+void addToFront(movieInfo** data, int arrLen) {
+	// create new head node and set data 
+	movieNode* newHead =(movieNode*) malloc(sizeof(movieNode));
+	newHead -> data = data;
+	newHead -> arrLen = arrLen;
+	//set next node to current head
+	newHead -> next = head;
+
+	//set head to new head
+	head = newHead;
+}
+
+void mergeSortNodes(char* category){
+	//return if head is null or there is only one node in list
+	if(head == NULL || head -> next == NULL) {
+		return;
+	}
+
+	// get third node in list, could be NULL, don't matter
+	movieNode* next = head -> next -> next;
+	// mergesort the data
+	movieInfo** mergedData = mergeNodeData(head -> data, head -> next -> data, head -> arrLen, head -> next -> arrLen, category, isInt);
+	
+	// create new head node and set data
+	movieNode* newHead = (movieNode *) malloc(sizeof(movieNode));
+	newHead -> data = mergedData;
+	newHead -> arrLen = (head -> next -> arrLen) + (head -> arrLen);
+
+	//set next node equal to third node, could be NULL
+	newHead -> next = next;
+	
+	// free first and second nodes, also, set head equal to new head
+	free(head -> next);
+	movieNode* oldHead = head;
+	head = newHead;
+	free(oldHead);
+	
+}
 
 void swap(movieInfo* A, movieInfo* B){
     movieInfo temp = *A;
@@ -17,57 +57,9 @@ float intComparison(float intA, float intB) {
     return intA - intB;
 }
 
-void mergesort(movieInfo** arr, char * columnToBeSorted, int left, int right) {
+void mergesort(movieInfo** arr, char * columnToBeSorted, int left, int right, int isInt) {
 	if(left >= right) {
 	    return;
-	}
-    
-    	int isInt = 1;
-	if(strcmp(columnToBeSorted, "color") == 0){
-		isInt = 0;
-	} else if(strcmp(columnToBeSorted, "director_name") == 0){
-		isInt = 0;
-	} else if(strcmp(columnToBeSorted, "num_critic_for_reviews") == 0){
-	} else if(strcmp(columnToBeSorted, "duration") == 0){
-	} else if(strcmp(columnToBeSorted, "director_facebook_likes") == 0){
-	} else if(strcmp(columnToBeSorted, "actor_3_facebook_likes") == 0){
-	} else if(strcmp(columnToBeSorted, "actor_2_name") == 0){
-		isInt = 0;
-	} else if(strcmp(columnToBeSorted, "actor_1_facebook_likes") == 0){
-	} else if(strcmp(columnToBeSorted, "gross") == 0){
-	} else if(strcmp(columnToBeSorted, "genres") == 0){
-		isInt = 0;
-	} else if(strcmp(columnToBeSorted, "actor_1_name") == 0){
-		isInt = 0;
-	} else if(strcmp(columnToBeSorted, "movie_title") == 0){
-		isInt = 0;
-	} else if(strcmp(columnToBeSorted, "num_voted_users") == 0){
-	} else if(strcmp(columnToBeSorted, "cast_total_facebook_likes") == 0){
-	} else if(strcmp(columnToBeSorted, "actor_3_name") == 0){
-		isInt = 0;
-	} else if(strcmp(columnToBeSorted, "facenumber_in_poster") == 0){
-	} else if(strcmp(columnToBeSorted, "plot_keywords") == 0){
-		isInt = 0;
-	} else if(strcmp(columnToBeSorted, "movie_imdb_link") == 0){
-		isInt = 0;
-	} else if(strcmp(columnToBeSorted, "num_user_for_reviews") == 0){
-	} else if(strcmp(columnToBeSorted, "language") == 0){
-		isInt = 0;
-	} else if(strcmp(columnToBeSorted, "country") == 0){
-		isInt = 0;
-	} else if(strcmp(columnToBeSorted, "content_rating") == 0){
-		isInt = 0;
-	} else if(strcmp(columnToBeSorted, "budget") == 0){
-	} else if(strcmp(columnToBeSorted, "title_year") == 0){
-	} else if(strcmp(columnToBeSorted, "actor_2_facebook_likes") == 0){
-	} else if(strcmp(columnToBeSorted, "imdb_score") == 0){
-	} else if(strcmp(columnToBeSorted, "aspect_ratio") == 0){
-	} else if(strcmp(columnToBeSorted, "movie_facebook_likes") == 0){
-	} else{
-		if(columnToBeSorted == '\0'){
-		    return;
-		}
-		return;
 	}
     
 	//find mid point
@@ -102,16 +94,10 @@ void merge(movieInfo** arr, char* columnToBeSorted,int left, int half, int right
                     		trimmedB = B->color;
                    	} else if(strcmp(columnToBeSorted, "director_name") == 0){
                    		trimmedA = A->director_name;
-                    		trimmedB = B->director_name;
-                    	} else if(strcmp(columnToBeSorted, "num_critic_for_reviews") == 0){
-                    	} else if(strcmp(columnToBeSorted, "duration") == 0){
-                    	} else if(strcmp(columnToBeSorted, "director_facebook_likes") == 0){                    
-                    	} else if(strcmp(columnToBeSorted, "actor_3_facebook_likes") == 0){                    
+                    		trimmedB = B->director_name;              
                     	} else if(strcmp(columnToBeSorted, "actor_2_name") == 0){
 			    trimmedA = A->actor_2_name;
 			    trimmedB = B->actor_2_name;
-                    	} else if(strcmp(columnToBeSorted, "actor_1_facebook_likes") == 0){
-                    	} else if(strcmp(columnToBeSorted, "gross") == 0){
                     	} else if(strcmp(columnToBeSorted, "genres") == 0){
                    		trimmedA = A->genres;
                     		trimmedB = B->genres;
@@ -120,20 +106,16 @@ void merge(movieInfo** arr, char* columnToBeSorted,int left, int half, int right
                     		trimmedB = B->actor_1_name;
                     	} else if(strcmp(columnToBeSorted, "movie_title") == 0){
                     		trimmedA = A->movie_title;
-                    		trimmedB = B->movie_title;
-                    	} else if(strcmp(columnToBeSorted, "num_voted_users") == 0){
-                    	} else if(strcmp(columnToBeSorted, "cast_total_facebook_likes") == 0){                   
+                    		trimmedB = B->movie_title;                
                   	} else if(strcmp(columnToBeSorted, "actor_3_name") == 0){
                     		trimmedA = A->actor_3_name;
-                    		trimmedB = B->actor_3_name;
-                    	} else if(strcmp(columnToBeSorted, "facenumber_in_poster") == 0){                  
+                    		trimmedB = B->actor_3_name;            
                     	} else if(strcmp(columnToBeSorted, "plot_keywords") == 0){
                     		trimmedA = A->plot_keywords;
                     		trimmedB = B->plot_keywords;
                     	} else if(strcmp(columnToBeSorted, "movie_imdb_link") == 0){
                     		trimmedA = A->movie_imdb_link;
-                    		trimmedB = B->movie_imdb_link;
-                    	} else if(strcmp(columnToBeSorted, "num_user_for_reviews") == 0){                  
+                    		trimmedB = B->movie_imdb_link;                  
                    	} else if(strcmp(columnToBeSorted, "language") == 0){
                     		trimmedA = A->language;
                     		trimmedB = B->language;
@@ -142,13 +124,7 @@ void merge(movieInfo** arr, char* columnToBeSorted,int left, int half, int right
                     		trimmedB = B->country;
                     	} else if(strcmp(columnToBeSorted, "content_rating") == 0){
                     		trimmedA = A->content_rating;
-                    		trimmedB = B->content_rating;
-                    	} else if(strcmp(columnToBeSorted, "budget") == 0){                   
-                    	} else if(strcmp(columnToBeSorted, "title_year") == 0){                   
-                    	} else if(strcmp(columnToBeSorted, "actor_2_facebook_likes") == 0){                   
-                    	} else if(strcmp(columnToBeSorted, "imdb_score") == 0){                    
-                    	} else if(strcmp(columnToBeSorted, "aspect_ratio") == 0){                    
-                    	} else if(strcmp(columnToBeSorted, "movie_facebook_likes") == 0){                    
+                    		trimmedB = B->content_rating;                 
                     	} else{
                     		if(columnToBeSorted == '\0'){
                        			return;
@@ -199,9 +175,7 @@ void merge(movieInfo** arr, char* columnToBeSorted,int left, int half, int right
 		} else {
 			float intA;
 			float intB;
-			if(strcmp(columnToBeSorted, "color") == 0){
-                   	} else if(strcmp(columnToBeSorted, "director_name") == 0){
-                    	} else if(strcmp(columnToBeSorted, "num_critic_for_reviews") == 0){
+                    	if(strcmp(columnToBeSorted, "num_critic_for_reviews") == 0){
                     		intA = A->num_critic_for_reviews;
                     		intB = B->num_critic_for_reviews;
                     	} else if(strcmp(columnToBeSorted, "duration") == 0){
@@ -213,34 +187,24 @@ void merge(movieInfo** arr, char* columnToBeSorted,int left, int half, int right
                     	} else if(strcmp(columnToBeSorted, "actor_3_facebook_likes") == 0){
 			    intA = A->actor_3_facebook_likes;
 			    intB = B->actor_3_facebook_likes;
-			} else if(strcmp(columnToBeSorted, "actor_2_name") == 0){
 			} else if(strcmp(columnToBeSorted, "actor_1_facebook_likes") == 0){
 				intA = A->actor_1_facebook_likes;
 				intB = B->actor_1_facebook_likes;
 			} else if(strcmp(columnToBeSorted, "gross") == 0){
 				intA = A->gross;
 				intB = B->gross;
-			} else if(strcmp(columnToBeSorted, "genres") == 0){
-			} else if(strcmp(columnToBeSorted, "actor_1_name") == 0){
-			} else if(strcmp(columnToBeSorted, "movie_title") == 0){
 			} else if(strcmp(columnToBeSorted, "num_voted_users") == 0){
 				intA = A->num_voted_users;
 				intB = B->num_voted_users;
 			} else if(strcmp(columnToBeSorted, "cast_total_facebook_likes") == 0){
 				intA = A->cast_total_facebook_likes;
 				intB = B->cast_total_facebook_likes;
-			} else if(strcmp(columnToBeSorted, "actor_3_name") == 0){
 			} else if(strcmp(columnToBeSorted, "facenumber_in_poster") == 0){
 				intA = A->facenumber_in_poster;
 				intB = B->facenumber_in_poster;
-			} else if(strcmp(columnToBeSorted, "plot_keywords") == 0){
-			} else if(strcmp(columnToBeSorted, "movie_imdb_link") == 0){
 			} else if(strcmp(columnToBeSorted, "num_user_for_reviews") == 0){
 				intA = A->num_user_for_reviews;
 				intB = B->num_user_for_reviews;
-			} else if(strcmp(columnToBeSorted, "language") == 0){
-			} else if(strcmp(columnToBeSorted, "country") == 0){
-			} else if(strcmp(columnToBeSorted, "content_rating") == 0){
 			} else if(strcmp(columnToBeSorted, "budget") == 0){
 				intA = A->budget;
 				intB = B->budget;
@@ -329,15 +293,9 @@ void merge(movieInfo** arr, char* columnToBeSorted,int left, int half, int right
 			} else if(strcmp(columnToBeSorted, "director_name") == 0){
 				trimmedA = A->director_name;
 				trimmedB = B->director_name;
-			} else if(strcmp(columnToBeSorted, "num_critic_for_reviews") == 0){
-			} else if(strcmp(columnToBeSorted, "duration") == 0){
-			} else if(strcmp(columnToBeSorted, "director_facebook_likes") == 0){
-			} else if(strcmp(columnToBeSorted, "actor_3_facebook_likes") == 0){
 			} else if(strcmp(columnToBeSorted, "actor_2_name") == 0){
 				trimmedA = A->actor_2_name;
 				trimmedB = B->actor_2_name;
-			} else if(strcmp(columnToBeSorted, "actor_1_facebook_likes") == 0){
-			} else if(strcmp(columnToBeSorted, "gross") == 0){
 			} else if(strcmp(columnToBeSorted, "genres") == 0){
 				trimmedA = A->genres;
 				trimmedB = B->genres;
@@ -347,19 +305,15 @@ void merge(movieInfo** arr, char* columnToBeSorted,int left, int half, int right
 			} else if(strcmp(columnToBeSorted, "movie_title") == 0){
 				trimmedA = A->movie_title;
 				trimmedB = B->movie_title;
-			} else if(strcmp(columnToBeSorted, "num_voted_users") == 0){
-			} else if(strcmp(columnToBeSorted, "cast_total_facebook_likes") == 0){
 			} else if(strcmp(columnToBeSorted, "actor_3_name") == 0){
 				trimmedA = A->actor_3_name;
 				trimmedB = B->actor_3_name;
-			} else if(strcmp(columnToBeSorted, "facenumber_in_poster") == 0){
 			} else if(strcmp(columnToBeSorted, "plot_keywords") == 0){
 				trimmedA = A->plot_keywords;
 				trimmedB = B->plot_keywords;
 			} else if(strcmp(columnToBeSorted, "movie_imdb_link") == 0){
 				trimmedA = A->movie_imdb_link;
 				trimmedB = B->movie_imdb_link;
-			} else if(strcmp(columnToBeSorted, "num_user_for_reviews") == 0){
 			} else if(strcmp(columnToBeSorted, "language") == 0){
 				trimmedA = A->language;
 				trimmedB = B->language;
@@ -369,12 +323,6 @@ void merge(movieInfo** arr, char* columnToBeSorted,int left, int half, int right
 			} else if(strcmp(columnToBeSorted, "content_rating") == 0){
 				trimmedA = A->content_rating;
 				trimmedB = B->content_rating;
-			} else if(strcmp(columnToBeSorted, "budget") == 0){
-			} else if(strcmp(columnToBeSorted, "title_year") == 0){
-			} else if(strcmp(columnToBeSorted, "actor_2_facebook_likes") == 0){
-			} else if(strcmp(columnToBeSorted, "imdb_score") == 0){
-			} else if(strcmp(columnToBeSorted, "aspect_ratio") == 0){
-			} else if(strcmp(columnToBeSorted, "movie_facebook_likes") == 0){
 			} else{
 				if(columnToBeSorted == '\0'){
 					return;
@@ -423,9 +371,7 @@ void merge(movieInfo** arr, char* columnToBeSorted,int left, int half, int right
 			float intA;
 			float intB;
 			
-                	if(strcmp(columnToBeSorted, "color") == 0){
-			} else if(strcmp(columnToBeSorted, "director_name") == 0){
-			} else if(strcmp(columnToBeSorted, "num_critic_for_reviews") == 0){
+			if(strcmp(columnToBeSorted, "num_critic_for_reviews") == 0){
 				intA = A->num_critic_for_reviews;
 				intB = B->num_critic_for_reviews;
 			} else if(strcmp(columnToBeSorted, "duration") == 0){
@@ -437,34 +383,24 @@ void merge(movieInfo** arr, char* columnToBeSorted,int left, int half, int right
 			} else if(strcmp(columnToBeSorted, "actor_3_facebook_likes") == 0){
 				intA = A->actor_3_facebook_likes;
 				intB = B->actor_3_facebook_likes;
-			} else if(strcmp(columnToBeSorted, "actor_2_name") == 0){
 			} else if(strcmp(columnToBeSorted, "actor_1_facebook_likes") == 0){
 				intA = A->actor_1_facebook_likes;
 				intB = B->actor_1_facebook_likes;
 			} else if(strcmp(columnToBeSorted, "gross") == 0){
 				intA = A->gross;
 				intB = B->gross;
-			} else if(strcmp(columnToBeSorted, "genres") == 0){
-			} else if(strcmp(columnToBeSorted, "actor_1_name") == 0){
-			} else if(strcmp(columnToBeSorted, "movie_title") == 0){
 			} else if(strcmp(columnToBeSorted, "num_voted_users") == 0){
 				intA = A->num_voted_users;
 				intB = B->num_voted_users;
 			} else if(strcmp(columnToBeSorted, "cast_total_facebook_likes") == 0){
 				intA = A->cast_total_facebook_likes;
 				intB = B->cast_total_facebook_likes;
-			} else if(strcmp(columnToBeSorted, "actor_3_name") == 0){
 			} else if(strcmp(columnToBeSorted, "facenumber_in_poster") == 0){
 				intA = A->facenumber_in_poster;
 				intB = B->facenumber_in_poster;
-			} else if(strcmp(columnToBeSorted, "plot_keywords") == 0){
-			} else if(strcmp(columnToBeSorted, "movie_imdb_link") == 0){
 			} else if(strcmp(columnToBeSorted, "num_user_for_reviews") == 0){
 				intA = A->num_user_for_reviews;
 				intB = B->num_user_for_reviews;
-			} else if(strcmp(columnToBeSorted, "language") == 0){
-			} else if(strcmp(columnToBeSorted, "country") == 0){
-			} else if(strcmp(columnToBeSorted, "content_rating") == 0){
 			} else if(strcmp(columnToBeSorted, "budget") == 0){
 				intA = A->budget;
 				intB = B->budget;
@@ -548,15 +484,9 @@ movieInfo** mergeNodeData(movieInfo** arrA, movieInfo** arrB, int arrLenA, int a
 			} else if(strcmp(columnToBeSorted, "director_name") == 0){
 				trimmedA = A->director_name;
 				trimmedB = B->director_name;
-			} else if(strcmp(columnToBeSorted, "num_critic_for_reviews") == 0){
-			} else if(strcmp(columnToBeSorted, "duration") == 0){
-			} else if(strcmp(columnToBeSorted, "director_facebook_likes") == 0){
-			} else if(strcmp(columnToBeSorted, "actor_3_facebook_likes") == 0){
 			} else if(strcmp(columnToBeSorted, "actor_2_name") == 0){
 				trimmedA = A->actor_2_name;
 				trimmedB = B->actor_2_name;
-			} else if(strcmp(columnToBeSorted, "actor_1_facebook_likes") == 0){
-			} else if(strcmp(columnToBeSorted, "gross") == 0){
 			} else if(strcmp(columnToBeSorted, "genres") == 0){
 				trimmedA = A->genres;
 				trimmedB = B->genres;
@@ -566,19 +496,15 @@ movieInfo** mergeNodeData(movieInfo** arrA, movieInfo** arrB, int arrLenA, int a
 			} else if(strcmp(columnToBeSorted, "movie_title") == 0){
 				trimmedA = A->movie_title;
 				trimmedB = B->movie_title;
-			} else if(strcmp(columnToBeSorted, "num_voted_users") == 0){
-			} else if(strcmp(columnToBeSorted, "cast_total_facebook_likes") == 0){
 			} else if(strcmp(columnToBeSorted, "actor_3_name") == 0){
 				trimmedA = A->actor_3_name;
 				trimmedB = B->actor_3_name;
-			} else if(strcmp(columnToBeSorted, "facenumber_in_poster") == 0){
 			} else if(strcmp(columnToBeSorted, "plot_keywords") == 0){
 				trimmedA = A->plot_keywords;
 				trimmedB = B->plot_keywords;
 			} else if(strcmp(columnToBeSorted, "movie_imdb_link") == 0){
 				trimmedA = A->movie_imdb_link;
 				trimmedB = B->movie_imdb_link;
-			} else if(strcmp(columnToBeSorted, "num_user_for_reviews") == 0){
 			} else if(strcmp(columnToBeSorted, "language") == 0){
 				trimmedA = A->language;
 				trimmedB = B->language;
@@ -588,12 +514,6 @@ movieInfo** mergeNodeData(movieInfo** arrA, movieInfo** arrB, int arrLenA, int a
 			} else if(strcmp(columnToBeSorted, "content_rating") == 0){
 				trimmedA = A->content_rating;
 				trimmedB = B->content_rating;
-			} else if(strcmp(columnToBeSorted, "budget") == 0){
-			} else if(strcmp(columnToBeSorted, "title_year") == 0){
-			} else if(strcmp(columnToBeSorted, "actor_2_facebook_likes") == 0){
-			} else if(strcmp(columnToBeSorted, "imdb_score") == 0){
-			} else if(strcmp(columnToBeSorted, "aspect_ratio") == 0){
-			} else if(strcmp(columnToBeSorted, "movie_facebook_likes") == 0){
 			} else{
 				if(columnToBeSorted == '\0'){
 					//return -1;
@@ -643,9 +563,7 @@ movieInfo** mergeNodeData(movieInfo** arrA, movieInfo** arrB, int arrLenA, int a
                 } else {
 			float intA;
 			float intB;
-                	if(strcmp(columnToBeSorted, "color") == 0){
-			} else if(strcmp(columnToBeSorted, "director_name") == 0){
-			} else if(strcmp(columnToBeSorted, "num_critic_for_reviews") == 0){
+                	if(strcmp(columnToBeSorted, "num_critic_for_reviews") == 0){
 				intA = A->num_critic_for_reviews;
 				intB = B->num_critic_for_reviews;
 			} else if(strcmp(columnToBeSorted, "duration") == 0){
@@ -657,34 +575,24 @@ movieInfo** mergeNodeData(movieInfo** arrA, movieInfo** arrB, int arrLenA, int a
 			} else if(strcmp(columnToBeSorted, "actor_3_facebook_likes") == 0){
 				intA = A->actor_3_facebook_likes;
 				intB = B->actor_3_facebook_likes;
-			} else if(strcmp(columnToBeSorted, "actor_2_name") == 0){
 			} else if(strcmp(columnToBeSorted, "actor_1_facebook_likes") == 0){
 				intA = A->actor_1_facebook_likes;
 				intB = B->actor_1_facebook_likes;
 			} else if(strcmp(columnToBeSorted, "gross") == 0){
 				intA = A->gross;
 				intB = B->gross;
-			} else if(strcmp(columnToBeSorted, "genres") == 0){
-			} else if(strcmp(columnToBeSorted, "actor_1_name") == 0){
-			} else if(strcmp(columnToBeSorted, "movie_title") == 0){
 			} else if(strcmp(columnToBeSorted, "num_voted_users") == 0){
 				intA = A->num_voted_users;
 				intB = B->num_voted_users;
 			} else if(strcmp(columnToBeSorted, "cast_total_facebook_likes") == 0){
 				intA = A->cast_total_facebook_likes;
 				intB = B->cast_total_facebook_likes;
-			} else if(strcmp(columnToBeSorted, "actor_3_name") == 0){
 			} else if(strcmp(columnToBeSorted, "facenumber_in_poster") == 0){
 				intA = A->facenumber_in_poster;
 				intB = B->facenumber_in_poster;
-			} else if(strcmp(columnToBeSorted, "plot_keywords") == 0){
-			} else if(strcmp(columnToBeSorted, "movie_imdb_link") == 0){
 			} else if(strcmp(columnToBeSorted, "num_user_for_reviews") == 0){
 				intA = A->num_user_for_reviews;
 				intB = B->num_user_for_reviews;
-			} else if(strcmp(columnToBeSorted, "language") == 0){
-			} else if(strcmp(columnToBeSorted, "country") == 0){
-			} else if(strcmp(columnToBeSorted, "content_rating") == 0){
 			} else if(strcmp(columnToBeSorted, "budget") == 0){
 				intA = A->budget;
 				intB = B->budget;
