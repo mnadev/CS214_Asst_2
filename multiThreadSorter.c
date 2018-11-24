@@ -61,26 +61,26 @@ void mergeSortNodes(char* category){
 	
 }
 
-void setData(movieInfo* A, void data, char* column) {
+void setData(movieInfo* A, void* data, char* column) {
 	// TODO: VERIFY floats casted to floats, char* casted to char*
 	if(strcmp(column, "color") == 0){
 		A -> color = (char*) data;
 	} else if(strcmp(column, "director_name") == 0){
 		A -> director_name = (char*) data;
 	} else if(strcmp(column, "num_critic_for_reviews") == 0){
-		A -> num_critic_for_reviews = (float) data;
+		A -> num_critic_for_reviews = atof(data);
 	} else if(strcmp(column, "duration") == 0){
-		A -> duration = (float) data;
+		A -> duration = atof((char*)data);
 	} else if(strcmp(column, "director_facebook_likes") == 0){
-		A -> director_facebook_likes = (float) data;
+		A -> director_facebook_likes = atof((char*)data);
 	} else if(strcmp(column, "actor_3_facebook_likes") == 0){
-		A -> actor_3_facebook_likes = (float) data;
+		A -> actor_3_facebook_likes = atof((char*)data);
 	} else if(strcmp(column, "actor_2_name") == 0){
 		A -> actor_2_name = (char*) data;
 	} else if(strcmp(column, "actor_1_facebook_likes") == 0){
-		A -> actor_1_facebook_likes = (float) data;
+		A -> actor_1_facebook_likes = atof((char*)data);
 	} else if(strcmp(column, "gross") == 0){
-		A -> gross = (float) data;
+		A -> gross = atof((char*)data);
 	} else if(strcmp(column, "genres") == 0){
 		A -> genres = (char*) data;
 	} else if(strcmp(column, "actor_1_name") == 0){
@@ -88,19 +88,19 @@ void setData(movieInfo* A, void data, char* column) {
 	} else if(strcmp(column, "movie_title") == 0){
 		A -> movie_title = (char*) data;
 	} else if(strcmp(column, "num_voted_users") == 0){
-		A -> num_voted_users = (float) data;
+		A -> num_voted_users = atof((char*)data);
 	} else if(strcmp(column, "cast_total_facebook_likes") == 0){
-		A -> cast_total_facebook_likes = (float) data;
+		A -> cast_total_facebook_likes = atof((char*)data);
 	} else if(strcmp(column, "actor_3_name") == 0){
 		A -> actor_3_name = (char*) data;
 	} else if(strcmp(column, "facenumber_in_poster") == 0){
-		A -> facenumber_in_poster = (float) data;
+		A -> facenumber_in_poster = atof((char*)data);
 	} else if(strcmp(column, "plot_keywords") == 0){
 		A -> plot_keywords = (char*) data;
 	} else if(strcmp(column, "movie_imdb_link") == 0){
 		A -> movie_imdb_link = (char*) data;
 	} else if(strcmp(column, "num_user_for_reviews") == 0){
-		A -> num_user_for_reviews = (float) data;
+		A -> num_user_for_reviews = atof((char*)data);
 	} else if(strcmp(column, "language") == 0){
 		A -> language = (char*) data;
 	} else if(strcmp(column, "country") == 0){
@@ -108,17 +108,17 @@ void setData(movieInfo* A, void data, char* column) {
 	} else if(strcmp(column, "content_rating") == 0){
 		A -> content_rating = (char*) data;
 	} else if(strcmp(column, "budget") == 0){
-		A -> budget = (float) data;
+		A -> budget = atof((char*)data);
 	} else if(strcmp(column, "title_year") == 0){
-		A -> title_year = (float) data;
+		A -> title_year = atof((char*)data);
 	} else if(strcmp(column, "actor_2_facebook_likes") == 0){
-		A -> actor_2_facebook_likes = (float) data;
+		A -> actor_2_facebook_likes = atof((char*)data);
 	} else if(strcmp(column, "imdb_score") == 0){
-		A -> imdb_score = (float) data;
+		A -> imdb_score = atof((char*)data);
 	} else if(strcmp(column, "aspect_ratio") == 0){
-		A -> aspect_ratio = (float) data;
+		A -> aspect_ratio = atof((char*)data);
 	} else if(strcmp(column, "movie_facebook_likes") == 0){
-		A -> movie_facebook_likes = (float) data;
+		A -> movie_facebook_likes = atof((char*)data);
 	} else{
 		return;
 	}
@@ -289,7 +289,7 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 			columnDataInd++;
 		}
 		previousChar = charIn;
-	}
+	}//setData
 	
 	if(movieInd == 0){
 		write(STDERR, "Error while checking validity: Malformed CSV\n", 45);
