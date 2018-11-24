@@ -15,7 +15,7 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory);
 void* dirSearch(void* args);
 void* fileThread(void* args);
 
-movieNode* head = NULL;
+movieNode* head;
 
 int isInt = 1;
 
@@ -33,28 +33,32 @@ void addToFront(movieInfo** data, int arrLen) {
 
 void mergeSortNodes(char* category){
 	//return if head is null or there is only one node in list
-	if(head == NULL || head -> next == NULL) {
-	return;
+	if(head == NULL) {
+		return;
 	}
 
+	if(head -> next == NULL) {
+		return;
+	}
 	// get third node in list, could be NULL, don't matter
 	movieNode* next = head -> next -> next;
+	
+	movieInfo** headData = head -> data;
+	movieInfo** nextData = head -> next -> data;
 	// mergesort the data
-	movieInfo** mergedData = mergeNodeData(head -> data, head -> next -> data, head -> arrLen, head -> next -> arrLen, category, isInt);
+	movieInfo** mergedData = mergeNodeData(headData, nextData, head -> arrLen, head -> next -> arrLen, category, isInt);
 
-	// create new head node and set data
-	movieNode* newHead = (movieNode *) malloc(sizeof(movieNode));
-	newHead -> data = mergedData;
-	newHead -> arrLen = (head -> next -> arrLen) + (head -> arrLen);
+	// change head node and set data
+	head -> data = mergedData;
+	head -> arrLen = (head -> next -> arrLen) + (head -> arrLen);
 
 	//set next node equal to third node, could be NULL
-	newHead -> next = next;
+	head -> next = next;
 
-	// free first and second nodes, also, set head equal to new head
+	// free second nodes, also free movieInfo Arrs
+	free(headData);
+	free(nextData);
 	free(head -> next);
-	movieNode* oldHead = head;
-	head = newHead;
-	free(oldHead);
 
 }
 
@@ -125,7 +129,6 @@ void setData(movieInfo* A, void* data, char* column) {
 void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 	// functionality for isInt built into merge sort, not necessary to implement
 	int pathLen = strlen(filename);
-	
 	// return if no .csv file extension
 	if(!(filename[pathLen-1] == 'v' && filename[pathLen-2] == 's' && filename[pathLen-3] == 'c' && filename[pathLen-4] == '.')){
 		return;
@@ -135,7 +138,6 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 	
 	// create array of columns
 	char** columns = (char**) malloc(sizeof(char*)*1);
-	
 	char charIn = '\0';				//Buffer to put each char that's being read in from STDIN
 	char* columnNames = malloc(sizeof(char)*500);			//Buffer where we're going to put the first line containing all titles
 	int columnNamesIndex = 0;		//For use in the below do-while loop
@@ -176,14 +178,14 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 		}
 		//printf("%c", charIn);
 	}while(charIn != '\n');
-	
-	if(columns[numCommasCurr] == NULL) {
-		columns = realloc(columns, sizeof(char*)*(numCommasCurr));	
+	if(numCommasCurr > 0) {
+		if(columns[numCommasCurr] == NULL) {
+			columns = realloc(columns, sizeof(char*)*(numCommasCurr));	
+		}
 	}
 	
 	columnNames[columnNamesIndex] = '\0';
 	columnNames = realloc(columnNames, columnNamesIndex+1);
-	
 	//Determining if the column to be sorted parameter is in the list of columns using strstr()
 	
 	char* locOfColumn = strstr(columnNames, columnToSort);
@@ -193,7 +195,6 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 		write(STDERR, "Error while checking validity: The column to be sorted that was input as the 2nd parameter is not contained within the CSV.\n", 124);
 		return;
 	}
-	
 	//Searching for number of commas before column to be sorted
 	//(Assumes that column names don't have commas in them, which they shouldn't for this assignment.
 	for(i = 0; i <= (locOfColumn - columnNames); i++){
@@ -202,12 +203,11 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 			numCommasB4Sort++;		
 		}
 	}
-
 	if(hasHeaders(columnNames) == 0){
 		write(STDERR, "Error while checking validity: The CSV contained an unknown column header.\n", 75);
 		return;
 	}
-	
+				
 	//Reading through the rest of STDIN for data:
 	//int sizeOfArray = 0;
 	movieInfo** dataRows = malloc(sizeof(movieInfo*)*1); //Array of pointers to each instance of movieInfo
@@ -219,7 +219,6 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 	char* columnData = (char*) malloc(sizeof(char) * 500);
 	int columnDataSize = 500;
 	int columnDataInd = 0;
-	
 	int movieInd = 0;
 	// count number of commas in current line and number of commas in 
 	
@@ -278,7 +277,7 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 			}
 		} else if(charIn == ',' && isInQuotes == 0) {
 			setData(A, (char*) columnData, columns[numCommas]); 
-			numCommasCurr++;
+			numCommas++;
 			columnData = (char*) malloc(sizeof(char) * 500);
 			columnDataInd = 0;
 		} else if(charIn == '\0') {
@@ -292,8 +291,7 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 			columnDataInd++;
 		}
 		previousChar = charIn;
-	}//setData
-	
+	}
 	if(movieInd == 0){
 		write(STDERR, "Error while checking validity: Malformed CSV\n", 45);
 		return;
@@ -708,7 +706,7 @@ void* dirSearch(void* arguments){
 }
 
 int main(int argc, char** argv){
-	
+	printf("1\n");	
 	//Input flags of the program and whether they are present: Index 0 = -c, Index 1 = -d, Index 2 = -o
 	int flagsPresent[] = {0,0,0};		
 	char* columnToSort;
@@ -776,6 +774,7 @@ int main(int argc, char** argv){
 		}
 
 	}
+	printf("2\n");
 	//Handles excess arguments
 	if(optind < argc){
 		write(STDERR, "Fatal Error: Unknown arguments.\n", 33);
@@ -797,7 +796,7 @@ int main(int argc, char** argv){
 			return -1;
 		}
 	}
-
+	printf("3\n");
 	if(strcmp(columnToSort, "color") == 0){
 		isInt = 0;
 	} else if(strcmp(columnToSort, "director_name") == 0){
@@ -840,7 +839,7 @@ int main(int argc, char** argv){
 	} else if(strcmp(columnToSort, "movie_facebook_likes") == 0){
 	} else{
 	}
-	
+	printf("4\n");
 	DIR *currDir;
 	currDir = opendir(dirToSearch);
 	if(errno == ENOENT){
@@ -866,7 +865,7 @@ int main(int argc, char** argv){
 	printf("TIDS of all child processes: ");
 	//threads share memspace so shouldn't need to flush?
 	//fflush(stdout);
-
+	printf("5\n");
 	char * file;		//used to determine i-node type: directory, file, or some other thing
 	while(31337) {
 		if((dirStruct = readdir(currDir)) == NULL) {
@@ -934,7 +933,7 @@ int main(int argc, char** argv){
 			continue;
 		}
 	}
-
+	printf("6\n");
 	//Joining children threads (only immediate children)
 	int totalSpawned = threadIDListing;
 	
@@ -952,13 +951,14 @@ int main(int argc, char** argv){
 		}
 		
 	}
-	
+	printf("7\n");
 	printf("\n Total number of Threads: %d\n", totalSpawned);
-	
-	while(head -> next != NULL) {
-		mergeSortNodes(columnToSort);
+	if(head != NULL) {	
+		while(head -> next != NULL) {
+			mergeSortNodes(columnToSort);
+		}
 	}
-
+	printf("8\n");
 	//TODO: There should probably be a call to csvwrite here once we have giant mega super linked list of movieInfo.
 	int isAbsolutePath = 1;
 	if(dirDest != NULL) {
@@ -966,7 +966,7 @@ int main(int argc, char** argv){
 			isAbsolutePath = 0;
 		}
 	}	
-	
+	printf("9\n");
 	char* fileToWrite = (char*) malloc(sizeof(char) * 256);
 	
 	if(dirDest != NULL) {
@@ -978,12 +978,13 @@ int main(int argc, char** argv){
 	} else {
 		snprintf(fileToWrite, 256, "AllFiles-sorted-%s.csv\0",columnToSort);
 	}
+	printf("10\n");
 	//TODO: write column names
-	char * columnNames = "color,director_name,num_critic_for_reviews,duration,director_facebook_likes,actor_3_facebook_likes,actor_2_name,actor_1_facebook_likes,gross,genres,actor_1_name,movie_title,num_voted_users,cast_total_facebook_likes,actor_3_name,facenumber_in_poster,plot_keywords,movie_imdb_link,num_user_for_reviews,language,country,content_rating,budget,title_year,actor_2_facebook_likes,imdb_score,aspect_ratio,movie_facebook_likes";
+	char * columnNames = "color,director_name,num_critic_for_reviews,duration,director_facebook_likes,actor_3_facebook_likes,actor_2_name,actor_1_facebook_likes,gross,genres,actor_1_name,movie_title,num_voted_users,cast_total_facebook_likes,actor_3_name,facenumber_in_poster,plot_keywords,movie_imdb_link,num_user_for_reviews,language,country,content_rating,budget,title_year,actor_2_facebook_likes,imdb_score,aspect_ratio,movie_facebook_likes\n";
 	csvwrite(head -> data, head -> arrLen, columnNames, fileToWrite);
-	
+	printf("11\n");
 	free(fileToWrite); 
-	
+
 	free(dirDest);
 	free(columnToSort);
 	free(dirToSearch);
