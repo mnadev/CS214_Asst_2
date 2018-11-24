@@ -1,5 +1,5 @@
 all: multiThreadSorter.c mergesort.o
-	gcc multiThreadSorter.c mergesort.o -pthread -o multiThreadSorter
+	gcc multiThreadSorter.c mergesort.o -pthread -o multiThreadSorter -lm
 
 debug: multiThreadSorter.c mergesort.o
 	gcc -g multiThreadSorter.c mergesort.o -o scannerDebug
