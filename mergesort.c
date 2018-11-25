@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
+#include<limits.h>
 #include "multiThreadSorter.h"
 
 
@@ -233,9 +234,9 @@ void merge(movieInfo** arr, char* columnToBeSorted,int left, int half, int right
 			//printf("%f\n", intA);
 			//printf("%f\n", intB);
 			//printf("%f\n", intComparison((float)atof(A->toBeSorted), (float)atof(B->toBeSorted)));
-			if(intA == NULL) {
+			if(intA == (float) INT_MIN) {
 				comparison = -1;
-			} else if (intB == NULL) {
+			} else if (intB == (float) INT_MIN) {
 				comparison = 1;
 			} else { 
 				comparison = intComparison(intA,intB);
@@ -476,9 +477,9 @@ void merge(movieInfo** arr, char* columnToBeSorted,int left, int half, int right
 				}
 				return;
 			}
-                	if(intA == NULL) {
+                	if(intA == (float) INT_MIN) {
 				comparison = -1;
-			} else if (intB == NULL) {
+			} else if (intB == (float) INT_MIN) {
 				comparison = 1;
 			} else { 
 				comparison = intComparison(intA,intB);
@@ -716,9 +717,9 @@ movieInfo** mergeNodeData(movieInfo** arrA, movieInfo** arrB, int arrLenA, int a
 				}
 				return NULL;
 			}
-                	if(intA == NULL) {
+                	if(intA == (float) INT_MIN) {
 				comparison = -1;
-			} else if (intB == NULL) {
+			} else if (intB == (float) INT_MIN) {
 				comparison = 1;
 			} else { 
 				comparison = intComparison(intA,intB);
