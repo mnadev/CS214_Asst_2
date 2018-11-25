@@ -51,6 +51,7 @@ void merge(movieInfo** arr, char* columnToBeSorted,int left, int half, int right
         	if(isInt == 0) {
            		char* trimmedA;    //trimmed whitespace version of A
            		char* trimmedB;    //trimmed whitespace version of B
+			printf("merge column compare 1\n");
                 	if(strcmp(columnToBeSorted, "color") == 0){
                     		trimmedA = A->color;
                     		trimmedB = B->color;
@@ -170,6 +171,7 @@ void merge(movieInfo** arr, char* columnToBeSorted,int left, int half, int right
 			} else if(trimBLen == 0) {
 				comparison = 1;
 			} else { 
+				printf("merge1\n");
 				comparison = (float)strcmp(postTrimA, postTrimB);
 			}
 			if(needToFreeA == 1){    free(postTrimA); }
@@ -177,6 +179,7 @@ void merge(movieInfo** arr, char* columnToBeSorted,int left, int half, int right
 		} else {
 			float intA;
 			float intB;
+			printf("merge column compare 2\n");
                     	if(strcmp(columnToBeSorted, "num_critic_for_reviews") == 0){
                     		intA = A->num_critic_for_reviews;
                     		intB = B->num_critic_for_reviews;
@@ -294,7 +297,7 @@ void merge(movieInfo** arr, char* columnToBeSorted,int left, int half, int right
 		if(isInt == 0) {
 			char* trimmedA;    //trimmed whitespace version of A
 			char* trimmedB;    //trimmed whitespace version of B
-
+			printf("merge column compare 3\n");
 			if(strcmp(columnToBeSorted, "color") == 0){
 				trimmedA = A->color;
 				trimmedB = B->color;
@@ -415,6 +418,7 @@ void merge(movieInfo** arr, char* columnToBeSorted,int left, int half, int right
 			} else if(trimBLen == 0) {
 				comparison = 1;
 			} else { 
+				printf("merge2\n");
 				comparison = (float)strcmp(postTrimA, postTrimB);
 			}
 			if(needToFreeA == 1){    free(postTrimA); }
@@ -422,7 +426,7 @@ void merge(movieInfo** arr, char* columnToBeSorted,int left, int half, int right
 		} else {
 			float intA;
 			float intB;
-			
+			printf("merge column compare 4\n");
 			if(strcmp(columnToBeSorted, "num_critic_for_reviews") == 0){
 				intA = A->num_critic_for_reviews;
 				intB = B->num_critic_for_reviews;
@@ -535,7 +539,7 @@ movieInfo** mergeNodeData(movieInfo** arrA, movieInfo** arrB, int arrLenA, int a
 		    
 			char* trimmedA;    //trimmed whitespace version of A
 			char* trimmedB;    //trimmed whitespace version of B
-
+			printf("mergeNode column compare 1\n");
                     	if(strcmp(columnToBeSorted, "color") == 0){
 				trimmedA = A->color;
 				trimmedB = B->color;
@@ -656,6 +660,7 @@ movieInfo** mergeNodeData(movieInfo** arrA, movieInfo** arrB, int arrLenA, int a
 			} else if(trimBLen == 0) {
 				comparison = 1;
 			} else { 
+				printf("mergeNode 1\n");
 				comparison = (float)strcmp(postTrimA, postTrimB);
 			}
 			if(needToFreeA == 1){    free(postTrimA); }
@@ -663,6 +668,7 @@ movieInfo** mergeNodeData(movieInfo** arrA, movieInfo** arrB, int arrLenA, int a
                 } else {
 			float intA;
 			float intB;
+			printf("mergeNode column compare 2\n");
                 	if(strcmp(columnToBeSorted, "num_critic_for_reviews") == 0){
 				intA = A->num_critic_for_reviews;
 				intB = B->num_critic_for_reviews;
