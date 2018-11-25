@@ -54,14 +54,15 @@ void mergeSortNodes(char* category){
 	head -> data = mergedData;
 	head -> arrLen = (head -> next -> arrLen) + (head -> arrLen);
 
-	//set next node equal to third node, could be NULL
-	head -> next = next;
-
+	movieNode* nextToFree = head -> next;
+	head -> next = NULL;
 	// free second nodes, also free movieInfo Arrs
 	free(headData);
 	free(nextData);
-	free(head -> next);
-
+	free(nextToFree);
+	
+	//set next node equal to third node, could be NULL
+	head -> next = next;
 }
 
 void setData(movieInfo* A, void* data, char* column) {
@@ -144,7 +145,7 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 	char* columnNames = malloc(sizeof(char)*500);			//Buffer where we're going to put the first line containing all titles
 	int columnNamesIndex = 0;		//For use in the below do-while loop
 	int csv = open(filename,O_RDONLY);
-	
+	char previousChar = ',';
 	// create var to keep track of the number of commas
 	int numCommasCurr = 0;
 	int sizeColumnCurr = 500;
@@ -165,6 +166,10 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 			if(charIn == '\n'){
 				break;
 			} else if(charIn == ',') {
+				if(previousChar == ',') {
+					write(STDERR, "Error while checking validity: The CSV contained an unknown column header.\n", 75);	
+					return;	
+				}
 				columnCurr[i] = '\0';
 				numCommasCurr++;
 				i++;
@@ -193,6 +198,7 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 				i++;
 			}
 		}
+		previousChar = charIn;
 		//printf("%c", charIn);
 	}while(charIn != '\n');
 
@@ -242,7 +248,7 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 	int movieInd = 0;
 	// count number of commas in current line and number of commas in 
 	//checking previous char, will help us keep track of if the previous char is a new line if current is new line
-	char previousChar = '\0';
+	previousChar = ',';
 
 	//double new lines will keep track of if two new lines occur in a row
 	int doubleNewLines = 0;
