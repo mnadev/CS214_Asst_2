@@ -728,9 +728,9 @@ void* fileThread(void* arguments){
 	returnVals->spawnedThreadList = NULL;
 	returnVals->spawnedThreadNum = 0;
 
-	printf("\nInitial PID: %d\n", processPID);
+	/*printf("\nInitial PID: %d\n", processPID);
 	printf("TIDS of all child processes: ");
-	printf("\n Total number of Threads: 0\n");
+	printf("\n Total number of Threads: 0\n");*/
 
 	pthread_exit((void*)returnVals);
 
@@ -747,7 +747,6 @@ void* dirSearch(void* arguments){
 	//Master list of threadIDs:
 	char** threadIDList = (char**)malloc(sizeof(char*)*256);	
 	memset(threadIDList, 0, 256*sizeof(char*))	;	//writing 0 bytes for easy iteration later. (Detect if == 0)
-
 
 	//Initializing variables needed for the while loop that was pasta from before.
 	char* pathName = args->pathName;
@@ -850,12 +849,12 @@ void* dirSearch(void* arguments){
 	}
 	
 	//Printing metadata
-	printf("\nInitial PID: %d\n", processPID);
+	/*printf("\nInitial PID: %d\n", processPID);
 	printf("TIDS of all child processes: ");
 	for(q = 0; q < totalSpawned; q++){
 		printf("%s, ", threadIDList[q]);	
 	}
-	printf("\n Total number of Threads: %d\n", totalSpawned);
+	printf("\n Total number of Threads: %d\n", totalSpawned);*/
 
 	//Returning stuff
 	threadRetvals* returnVals = (threadRetvals*)malloc(sizeof(threadRetvals*));
