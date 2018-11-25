@@ -533,7 +533,7 @@ int hasHeaders(char* columnNames){
 }
 
 char* itos(int number) {
-	int len = (int)(ceil(log(number))+2);
+	int len = (int)(ceil(log(number))+3);
 	char* num = (char *)malloc(sizeof(char) * len);
 	snprintf(num, len, "%d\0", number);
 	return num;
@@ -569,7 +569,7 @@ char* ftos(float number){
 	int lenDec = 2;
 	// can't take log of 0 so making sure it's not 0;
 	if(decimalToInteger > 0) { 
-		lenDec = (int) (ceil(log(number)) + 2);
+		lenDec = (int) (ceil(log(decimalToInteger)) + 3);
 	} 
 	
 	// create buffer and write to it.
