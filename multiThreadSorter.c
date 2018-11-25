@@ -727,6 +727,11 @@ void* fileThread(void* arguments){
 	threadRetvals* returnVals = (threadRetvals*)malloc(sizeof(threadRetvals));
 	returnVals->spawnedThreadList = NULL;
 	returnVals->spawnedThreadNum = 0;
+
+	printf("\nInitial PID: %d\n", processPID);
+	printf("TIDS of all child processes: ");
+	printf("\n Total number of Threads: 0\n");
+
 	pthread_exit((void*)returnVals);
 
 }
@@ -843,6 +848,15 @@ void* dirSearch(void* arguments){
 		}
 		
 	}
+	
+	//Printing metadata
+	printf("\nInitial PID: %d\n", processPID);
+	printf("TIDS of all child processes: ");
+	for(q = 0; q < totalSpawned; q++){
+		printf("%s, ", threadIDList[q]);	
+	}
+	printf("\n Total number of Threads: %d\n", totalSpawned);
+
 	//Returning stuff
 	threadRetvals* returnVals = (threadRetvals*)malloc(sizeof(threadRetvals*));
 	//*returnVals = {childrenThreadHandles, threadCountID}
@@ -1119,12 +1133,12 @@ int main(int argc, char** argv){
 	for(q = 0; q < totalSpawned; q++){
 		printf("%s, ", threadIDList_all[q]);	
 	}
-	int total = totalSpawned + *numThreadSort;
+	//int total = totalSpawned + *numThreadSort;
 	/*while(*numThreadSort > 0) {
 		*numThreadSort--;
 		printf("%d, ", sortThreadIDs[*numThreadSort]);
 	}*/
-	printf("\n Total number of Threads: %d\n", total);
+	printf("\n Total number of Threads: %d\n", totalSpawned);
 	if(head != NULL) {	
 		while(head -> next != NULL) {
 			mergeSortNodes(columnToSort);
