@@ -51,7 +51,6 @@ void merge(movieInfo** arr, char* columnToBeSorted,int left, int half, int right
         	if(isInt == 0) {
            		char* trimmedA;    //trimmed whitespace version of A
            		char* trimmedB;    //trimmed whitespace version of B
-			printf("merge column compare 1\n");
                 	if(strcmp(columnToBeSorted, "color") == 0){
                     		trimmedA = A->color;
                     		trimmedB = B->color;
@@ -234,9 +233,6 @@ void merge(movieInfo** arr, char* columnToBeSorted,int left, int half, int right
 				}
 				return;
 			}
-			//printf("%f\n", intA);
-			//printf("%f\n", intB);
-			//printf("%f\n", intComparison((float)atof(A->toBeSorted), (float)atof(B->toBeSorted)));
 			if(intA == (float) INT_MIN) {
 				comparison = -1;
 			} else if (intB == (float) INT_MIN) {
@@ -655,7 +651,6 @@ movieInfo** mergeNodeData(movieInfo** arrA, movieInfo** arrB, int arrLenA, int a
 				} else if(trimBLen == 0) {
 					comparison = 1;
 				} else { 
-					printf("merge1\n");
 					comparison = (float)strcmp(postTrimA, postTrimB);
 				}
 				if(needToFreeA == 1){    free(postTrimA); }
