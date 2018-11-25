@@ -522,10 +522,10 @@ void merge(movieInfo** arr, char* columnToBeSorted,int left, int half, int right
 
 movieInfo** mergeNodeData(movieInfo** arrA, movieInfo** arrB, int arrLenA, int arrLenB, char * columnToBeSorted, int isInt) {
 	int newLen = arrLenA + arrLenB;
-	movieInfo** mergedArr = malloc(sizeof(movieInfo) * (newLen));
+	movieInfo** mergedArr = (movieInfo**) malloc(sizeof(movieInfo*) * (newLen));
  	int ptrA = 0, ptrB = 0, ptrMerged = 0;	
 	
-	while(ptrA <= (arrLenA - 1) && ptrB <= (arrLenB - 1) && ptrMerged < (newLen - 1)){
+	while(ptrA <= (arrLenA - 1) && ptrB <= (arrLenB - 1) && ptrMerged <= (newLen - 1)){
 		movieInfo* A = arrA[ptrA];
 		movieInfo* B = arrB[ptrB];
             
@@ -738,14 +738,14 @@ movieInfo** mergeNodeData(movieInfo** arrA, movieInfo** arrB, int arrLenA, int a
 	}
         
         // check again to make sure we iterated through all of the temp arrays
-        while(ptrA <= (arrLenA - 1) && ptrMerged < (newLen - 1)){
+        while(ptrA <= (arrLenA - 1) && ptrMerged <= (newLen - 1)){
             movieInfo* A = arrA[ptrA];
             mergedArr[ptrMerged] = A;
             ptrA++;
             ptrMerged++;
         }
         
-        while(ptrB <= (arrLenB - 1) && ptrMerged < (newLen - 1)){
+        while(ptrB <= (arrLenB - 1) && ptrMerged <= (newLen - 1)){
             movieInfo* B = arrB[ptrB];
             mergedArr[ptrMerged] = B;
             ptrB++;
