@@ -744,8 +744,7 @@ void* dirSearch(void* arguments){
 			threadIDList[threadCountID] = newThreadIDString;
 			childrenThreadHandles[threadCountID] = newFileThreadHandle;
 			threadCountID++;
-	
-			free(filepath);
+
 			continue;
 
 		} else if(fileMode == 4){
