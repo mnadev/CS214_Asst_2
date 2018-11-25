@@ -169,6 +169,10 @@ void setData(movieInfo* A, void* data, char* column) {
 
 //function to parse through csv file
 void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
+	if(filename == NULL || *filename == '\0') {
+		return;
+	}
+	
 	// functionality for isInt built into merge sort, not necessary to implement
 	int pathLen = strlen(filename);
 	// return if no .csv file extension
