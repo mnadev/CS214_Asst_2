@@ -533,7 +533,7 @@ int hasHeaders(char* columnNames){
 }
 
 char* itos(int number) {
-	int len = (int)(ceil(log(number))+3);
+	int len = (int)(ceil(log(number))+4);
 	char* num = (char *)malloc(sizeof(char) * len);
 	snprintf(num, len, "%d\0", number);
 	return num;
@@ -557,7 +557,7 @@ char* ftos(float number){
 	int decimalToInteger = 0;
 	
 	// convert the decimal to an int
-	while(decimal >= 0) { 
+	while(decimal > 0) { 
 		decimal = decimal * 10;
 		
 		int intPart = (int) decimal;
@@ -566,7 +566,7 @@ char* ftos(float number){
 		decimalToInteger = decimalToInteger * 10 +  intPart;
 	}
 	
-	int lenDec = 2;
+	int lenDec = 4;
 	// can't take log of 0 so making sure it's not 0;
 	if(decimalToInteger > 0) { 
 		lenDec = (int) (ceil(log(decimalToInteger)) + 3);
