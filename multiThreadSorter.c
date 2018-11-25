@@ -1118,7 +1118,7 @@ int main(int argc, char** argv){
 			childrenThreadHandles[threadIDListing] = newFileThreadHandle;	//Storing address of threadHandle for joining later
 			threadIDListing++;	
 
-			free(filepath);
+			//free(filepath);
 			continue;
 
 		} else if(fileMode == 4){
