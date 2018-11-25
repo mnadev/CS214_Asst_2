@@ -225,7 +225,8 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 					write(STDERR, "Error while checking validity: The CSV contained an unknown column header.\n", 75);	
 					return;		
 				}
-				columns[numCommasCurr - 1] = columnCurr;	
+				columns[numCommasCurr - 1] = columnCurr;
+				previousChar = charIn;	
 				break;			
 			} else {
 				// the max length of a valid header is 25.
@@ -235,9 +236,9 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 				}
 				columnCurr[i] = charIn;
 				i++;
+				previousChar = charIn;
 			}
 		}
-		previousChar = charIn;
 		//printf("%c", charIn);
 	}while(charIn != '\n');
 
@@ -1082,7 +1083,7 @@ int main(int argc, char** argv){
 			continue;
 		}
 		
-		/*if(head != NULL) {
+		if(head != NULL) {
 			if(head -> next != NULL) {
 				pthread_t* threadSort = (pthread_t*)malloc(sizeof(pthread_t));
 				pthread_attr_t threadAttr;
@@ -1092,7 +1093,7 @@ int main(int argc, char** argv){
 				pthread_create(threadSort, &threadAttr, mergeThread, columnToSort);
 
 			}
-		}*/
+		}
 
 	
 	}
