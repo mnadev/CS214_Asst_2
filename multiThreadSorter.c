@@ -631,7 +631,7 @@ void* dirSearch(void* arguments){
 	//Initializing variables needed for the while loop that was pasta from before.
 	char* pathName = args->pathName;
 	struct dirent* dirStruct;
-	char* dirToSearch;
+	char* dirToSearch = pathName;
 	DIR* currDir = opendir(pathName);
 	while(31337) {
 		if((dirStruct = readdir(currDir)) == NULL) {
@@ -642,7 +642,6 @@ void* dirSearch(void* arguments){
 		if(!strcmp(file, ".git") || strcmp(file, ".") == 0 || strcmp(file, "..") == 0) {
 			continue;
 		}
-
 		int status = 0;
  		if(fileMode == 8){
 			char* filepath = (char*)malloc(sizeof(char)*10000);
@@ -664,7 +663,7 @@ void* dirSearch(void* arguments){
 			pthread_t* newFileThreadHandle = (pthread_t*)malloc(sizeof(pthread_t));
 			pthread_attr_t threadAttrStruct;
 			pthread_attr_init(&threadAttrStruct);
-			pthread_create(newFileThreadHandle, &threadAttrStruct, fileThread, (void*)args);
+			pthread_create(newFileThreadHandle, &threadAttrStruct, fileThread, (void*)newArgs);
 
 			threadIDList[threadCountID] = newThreadIDString;
 			childrenThreadHandles[threadCountID] = newFileThreadHandle;
@@ -674,9 +673,16 @@ void* dirSearch(void* arguments){
 			continue;
 
 		} else if(fileMode == 4){
-			dirToSearch = realloc(dirToSearch, sizeof(char)*(strlen(dirToSearch)+strlen(file)+2));
-			strcat(dirToSearch, file);		//Appending new directory to current directory path;
-			strcat(dirToSearch, "/");		//Forcing the current directory path to always end in / for reasons.
+			char* newDirToSearch = malloc(sizeof(char)*strlen(dirToSearch));
+			strcpy(newDirToSearch, dirToSearch);
+			char* reallocTest = realloc(newDirToSearch, sizeof(char)*(strlen(newDirToSearch)+strlen(file)+2));
+			while(reallocTest == NULL){
+				reallocTest = realloc(newDirToSearch, sizeof(char)*(strlen(newDirToSearch)+strlen(file)+2)); 
+			}
+			newDirToSearch = reallocTest;
+			//newDirToSearch = realloc(newDirToSearch, sizeof(char)*(strlen(dirToSearch)+strlen(file)+2));
+			strcat(newDirToSearch, file);		//Appending new directory to current directory path;
+			strcat(newDirToSearch, "/");		//Forcing the current directory path to always end in / for reasons.
 
 			char* newThreadIDString = (char*)malloc(sizeof(char) * (strlen(args->prevThreadID)+20));
 			strcpy(newThreadIDString, args->prevThreadID);
@@ -686,7 +692,7 @@ void* dirSearch(void* arguments){
 			
 			threadArgs_DirFile* newArgs = (threadArgs_DirFile*)malloc(sizeof(threadArgs_DirFile));
 			//*args = {filepath, args->columnToSort, args->dirDest, newThreadIDString};
-			newArgs->pathName = dirToSearch;
+			newArgs->pathName = newDirToSearch;
 			newArgs->columnToSort = args->columnToSort;
 			newArgs->dirDest = args->dirDest;
 			newArgs->prevThreadID = newThreadIDString;
@@ -694,12 +700,11 @@ void* dirSearch(void* arguments){
 			pthread_t* newDirThreadHandle = (pthread_t*)malloc(sizeof(pthread_t));
 			pthread_attr_t threadAttrStruct;
 			pthread_attr_init(&threadAttrStruct);
-			pthread_create(newDirThreadHandle, &threadAttrStruct, dirSearch, (void*)args);
+			pthread_create(newDirThreadHandle, &threadAttrStruct, dirSearch, (void*)newArgs);
 
 			threadIDList[threadCountID] = newThreadIDString;
 			childrenThreadHandles[threadCountID] = newDirThreadHandle;
 			threadCountID++;
-
 			continue;
 		} else{
 			//If for some reason there's a thing that's not a file or directory. Gotta handle all the errors dawg.	
@@ -711,14 +716,14 @@ void* dirSearch(void* arguments){
 	
 	int q; //counter variable lol
 	for(q = 0; q < threadCountID; q++){
-		threadRetvals** retvals;
-		pthread_join(*childrenThreadHandles[q], (void**)retvals);
+		threadRetvals** retvals = (threadRetvals**)malloc(sizeof(threadRetvals*));
+		pthread_join(*(childrenThreadHandles[q]), (void**)retvals);
 		if(retvals[0]->spawnedThreadList == NULL){
 			continue;
 		} else{
 			memcpy((threadIDList + totalSpawned), retvals[0]->spawnedThreadList, sizeof(char*)*(retvals[0]->spawnedThreadNum));
 			totalSpawned = totalSpawned+(retvals[0]->spawnedThreadNum);
-			free(*retvals); //idk why i'm bothering to free this. this program is memoryleakcity.		
+			//free(*retvals); //idk why i'm bothering to free this. this program is memoryleakcity.		
 		}
 		
 	}
@@ -726,7 +731,7 @@ void* dirSearch(void* arguments){
 	threadRetvals* returnVals = (threadRetvals*)malloc(sizeof(threadRetvals*));
 	//*returnVals = {childrenThreadHandles, threadCountID}
 	returnVals->spawnedThreadList = threadIDList;
-	returnVals->spawnedThreadNum = threadCountID;
+	returnVals->spawnedThreadNum = totalSpawned;
 	pthread_exit((void*)returnVals);
 }
 
@@ -961,8 +966,7 @@ int main(int argc, char** argv){
 			continue;
 		}
 		
-		printf("Initial PID: %d\n", processPID);
-		if(head != NULL) {
+		/*if(head != NULL) {
 			if(head -> next != NULL) {
 				pthread_t* threadSort = (pthread_t*)malloc(sizeof(pthread_t));
 				pthread_attr_t threadAttr;
@@ -972,7 +976,7 @@ int main(int argc, char** argv){
 				pthread_create(threadSort, &threadAttr, mergeThread, columnToSort);
 
 			}
-		}
+		}*/
 
 	
 	}
@@ -981,15 +985,15 @@ int main(int argc, char** argv){
 	int totalSpawned = threadIDListing;
 
 	int q; //counter variable lol
-	for(q = 0; q < threadIDListing-1; q++){
+	for(q = 0; q < threadIDListing; q++){
 		threadRetvals** retvals = (threadRetvals**)malloc(sizeof(threadRetvals*));
-		pthread_join(*childrenThreadHandles[q], (void**)retvals);
+		pthread_join(*(childrenThreadHandles[q]), (void**)retvals);
 		if(retvals[0]->spawnedThreadList == NULL){
 			continue;
 		} else{
 			memcpy((threadIDList_all + totalSpawned), retvals[0]->spawnedThreadList, sizeof(char*)*(retvals[0]->spawnedThreadNum));
 			totalSpawned = totalSpawned+(retvals[0]->spawnedThreadNum);
-			free(*retvals); //idk why i'm bothering to free this. this program is memoryleakcity.		
+			//free(*retvals); //idk why i'm bothering to free this. this program is memoryleakcity.		
 		}
 		
 	}
