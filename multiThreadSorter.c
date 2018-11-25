@@ -528,8 +528,8 @@ int hasHeaders(char* columnNames){
 }
 
 char* itos(int number) {
-	int len = (int)((ceil(log(number))+1)
-	char num[len];
+	int len = (int)((ceil(log(number))+2));
+	char* num = (char *)malloc(sizeof(char) * len);
 	snprintf(num, len, "%d\0", number);
 	return num;
 }
