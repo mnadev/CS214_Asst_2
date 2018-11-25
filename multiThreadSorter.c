@@ -346,6 +346,10 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 				isInQuotes = 1;
 			}
 		} else if(charIn == ',' && isInQuotes == 0) {
+			if(numCommas >= numCommasCurr) {
+				write(STDERR, "Error while checking validity: Malformed CSV\n", 45);
+				return;
+			}
 			columnData[columnDataInd] = '\0';
 			columnDataInd++;
 			setData(A, (void*) columnData, columns[numCommas]); 
