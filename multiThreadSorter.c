@@ -1072,16 +1072,23 @@ int main(int argc, char** argv){
 			continue;
 
 		} else if(fileMode == 4){
-			dirToSearch = realloc(dirToSearch, sizeof(char)*(strlen(dirToSearch)+strlen(file)+2));
-			strcat(dirToSearch, file);		//Appending new directory to current directory path;
-			strcat(dirToSearch, "/");		//Forcing the current directory path to always end in / for reasons.
+			char* newDirToSearch = malloc(sizeof(char)*strlen(dirToSearch));
+			strcpy(newDirToSearch, dirToSearch);
+			char* reallocTest = realloc(newDirToSearch, sizeof(char)*(strlen(newDirToSearch)+strlen(file)+2));
+			while(reallocTest == NULL){
+				reallocTest = realloc(newDirToSearch, sizeof(char)*(strlen(newDirToSearch)+strlen(file)+2)); 
+			}
+			newDirToSearch = reallocTest;
+			//dirToSearch = realloc(dirToSearch, sizeof(char)*(strlen(dirToSearch)+strlen(file)+2));
+			strcat(newDirToSearch, file);		//Appending new directory to current directory path;
+			strcat(newDirToSearch, "/");		//Forcing the current directory path to always end in / for reasons.
 
 			char* spawnedThreadID = (char*)malloc(sizeof(char)*20);
 			snprintf(spawnedThreadID,19, "%d", threadIDListing);
 			
 			threadArgs_DirFile* args = (threadArgs_DirFile*)malloc(sizeof(threadArgs_DirFile));				
 			//*args = {filepath, columnToSort, dirDest, spawnedThreadID};
-			args->pathName = dirToSearch;
+			args->pathName = newDirToSearch;
 			args->columnToSort = columnToSort;
 			args->dirDest = dirDest;
 			args->prevThreadID = spawnedThreadID;
