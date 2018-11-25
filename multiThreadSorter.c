@@ -35,24 +35,54 @@ void addToFront(movieInfo** data, int arrLen) {
 }
 movieInfo* initMovieInfo() {
 	movieInfo* A = (movieInfo*)malloc(sizeof(movieInfo));
-	A->color = '\0';
-	A->director_name = '\0';
 
-	A->actor_2_name = '\0';
+	char* color = (char*)malloc(sizeof(char));
+	*color = '\0';
+	A->color = color;
 
-	A->genres = '\0';
-	A->actor_1_name = '\0';
-	A->movie_title = '\0';
+	char* director_name = (char*)malloc(sizeof(char));
+	*director_name = '\0';
+	A->director_name = director_name;
 
-	A->actor_3_name = '\0';
-
-	A->plot_keywords = '\0';
-	A->movie_imdb_link = '\0';
-
-	A->language = '\0';
-	A->country = '\0';
-	A->content_rating = '\0';
+	char* actor_2_name = (char*)malloc(sizeof(char));
+	*actor_2_name = '\0';
+	A->actor_2_name = actor_2_name;
 	
+	char* genres = (char*)malloc(sizeof(char));
+	*genres = '\0';
+	A->genres = genres;
+
+	char* actor_1_name = (char*)malloc(sizeof(char));
+	*actor_1_name = '\0';
+	A->actor_1_name = actor_1_name;
+
+	char* movie_title = (char*)malloc(sizeof(char));
+	*movie_title = '\0';
+	A->movie_title = movie_title;
+
+	char* actor_3_name = (char*)malloc(sizeof(char));
+	*actor_3_name = '\0';
+	A->actor_3_name = actor_3_name;
+
+	char* plot_keywords = (char*)malloc(sizeof(char));
+	*plot_keywords = '\0';
+	A->plot_keywords = plot_keywords;
+
+	char* movie_imdb_link = (char*)malloc(sizeof(char));
+	*movie_imdb_link = '\0';
+	A->movie_imdb_link = movie_imdb_link;
+
+	char* language = (char*)malloc(sizeof(char));
+	*language = '\0';
+	A->language = language;
+
+	char* country = (char*)malloc(sizeof(char));
+	*country = '\0';
+	A->country = country;
+
+	char* content_rating = (char*)malloc(sizeof(char));
+	*content_rating = '\0';
+	A->content_rating = content_rating;
 	
 	A -> num_critic_for_reviews = (float) INT_MIN;
 	A -> duration = (float) INT_MIN;
@@ -70,6 +100,71 @@ movieInfo* initMovieInfo() {
 	A -> imdb_score = (float) INT_MIN;
 	A -> aspect_ratio = (float) INT_MIN;
 	A -> movie_facebook_likes = (float) INT_MIN;
+
+	char* num_critic_for_reviews_Orig = (char*)malloc(sizeof(char));
+	*num_critic_for_reviews_Orig = '\0';
+	A->num_critic_for_reviews_Orig = num_critic_for_reviews_Orig;
+
+	char* duration_Orig = (char*)malloc(sizeof(char));
+	*duration_Orig = '\0';
+	A->duration_Orig = duration_Orig;
+
+	char* director_facebook_likes_Orig = (char*)malloc(sizeof(char));
+	*director_facebook_likes_Orig = '\0';
+	A->director_facebook_likes_Orig = director_facebook_likes_Orig;
+
+	char* actor_3_facebook_likes_Orig = (char*)malloc(sizeof(char));
+	*actor_3_facebook_likes_Orig = '\0';
+	A->actor_3_facebook_likes_Orig = actor_3_facebook_likes_Orig;
+
+	char* actor_1_facebook_likes_Orig = (char*)malloc(sizeof(char));
+	*actor_1_facebook_likes_Orig = '\0';
+	A->actor_1_facebook_likes_Orig = actor_1_facebook_likes_Orig;
+
+	char* gross_Orig = (char*)malloc(sizeof(char));
+	*gross_Orig = '\0';
+	A->gross_Orig = gross_Orig;
+
+	char* num_voted_users_Orig = (char*)malloc(sizeof(char));
+	*num_voted_users_Orig = '\0';
+	A->num_voted_users_Orig = num_voted_users_Orig;
+
+	char* cast_total_facebook_likes_Orig = (char*)malloc(sizeof(char));
+	*cast_total_facebook_likes_Orig = '\0';
+	A->cast_total_facebook_likes_Orig = cast_total_facebook_likes_Orig;
+
+	char* facenumber_in_poster_Orig = (char*)malloc(sizeof(char));
+	*facenumber_in_poster_Orig = '\0';
+	A->facenumber_in_poster_Orig = facenumber_in_poster_Orig;
+
+	char* num_user_for_reviews_Orig = (char*)malloc(sizeof(char));
+	*num_user_for_reviews_Orig = '\0';
+	A->num_user_for_reviews_Orig = num_user_for_reviews_Orig;
+
+	char* budget_Orig = (char*)malloc(sizeof(char));
+	*budget_Orig = '\0';
+	A->budget_Orig = budget_Orig;
+
+	char* title_year_Orig = (char*)malloc(sizeof(char));
+	*title_year_Orig = '\0';
+	A->title_year_Orig = title_year_Orig;
+
+	char* actor_2_facebook_likes_Orig = (char*)malloc(sizeof(char));
+	*actor_2_facebook_likes_Orig = '\0';
+	A->actor_2_facebook_likes_Orig = actor_2_facebook_likes_Orig;
+
+	char* imdb_score_Orig = (char*)malloc(sizeof(char));
+	*imdb_score_Orig = '\0';
+	A->imdb_score_Orig = imdb_score_Orig;
+
+	char* aspect_ratio_Orig = (char*)malloc(sizeof(char));
+	*aspect_ratio_Orig = '\0';
+	A->aspect_ratio_Orig = aspect_ratio_Orig;
+
+	char* movie_facebook_likes_Orig = (char*)malloc(sizeof(char));
+	*movie_facebook_likes_Orig = '\0';
+	A->movie_facebook_likes_Orig = movie_facebook_likes_Orig;
+	
 	return A;
 }
 void mergeSortNodes(char* category){
@@ -596,43 +691,19 @@ void csvwrite(movieInfo** movieArr, int size ,char* categories, char* filename){
 		fprintf(csvFile, ",");
 		fprintf(csvFile, "%s", A->director_name);
 		fprintf(csvFile, ",");
-		if(A->num_critic_for_reviews == (float) INT_MIN) {
-			fprintf(csvFile, "");
-		} else {
-			fprintf(csvFile, "%s", A->num_critic_for_reviews_Orig );
-		}
+		fprintf(csvFile, "%s", A->num_critic_for_reviews_Orig );
 		fprintf(csvFile, ",");
-		if(A->duration == (float) INT_MIN) {
-			fprintf(csvFile, "");
-		} else {
-			fprintf(csvFile, "%s", A->duration_Orig);
-		}
+		fprintf(csvFile, "%s", A->duration_Orig);
 		fprintf(csvFile, ",");
-		if(A->director_facebook_likes == (float) INT_MIN) {
-			fprintf(csvFile, "");
-		} else {
-			fprintf(csvFile, "%s", A->director_facebook_likes_Orig);
-		}
+		fprintf(csvFile, "%s", A->director_facebook_likes_Orig);
 		fprintf(csvFile, ",");
-		if(A->actor_3_facebook_likes == (float) INT_MIN) {
-			fprintf(csvFile, "");
-		} else {
-			fprintf(csvFile, "%s", A->actor_3_facebook_likes_Orig);
-		}
+		fprintf(csvFile, "%s", A->actor_3_facebook_likes_Orig);
 		fprintf(csvFile, ",");
 		fprintf(csvFile, "%s", A->actor_2_name);
 		fprintf(csvFile, ",");
-		if(A->actor_1_facebook_likes == (float) INT_MIN) {
-			fprintf(csvFile, "");
-		} else {
-			fprintf(csvFile, "%s",A->actor_1_facebook_likes_Orig);
-		}
+		fprintf(csvFile, "%s",A->actor_1_facebook_likes_Orig);
 		fprintf(csvFile, ",");
-		if(A->gross == (float) INT_MIN) {
-			fprintf(csvFile, "");
-		} else {
-			fprintf(csvFile,  "%s", A->gross_Orig);
-		}
+		fprintf(csvFile,  "%s", A->gross_Orig);
 		fprintf(csvFile, ",");
 		fprintf(csvFile, "%s", A->genres);
 		fprintf(csvFile, ",");
@@ -640,35 +711,19 @@ void csvwrite(movieInfo** movieArr, int size ,char* categories, char* filename){
 		fprintf(csvFile, ",");
 		fprintf(csvFile, "%s", A->movie_title);
 		fprintf(csvFile, ",");
-		if(A->num_voted_users == (float) INT_MIN) {
-			fprintf(csvFile, "");
-		} else {
-			fprintf(csvFile, "%s", A->num_voted_users_Orig);
-		}
+		fprintf(csvFile, "%s", A->num_voted_users_Orig);
 		fprintf(csvFile, ",");
-		if(A->cast_total_facebook_likes == (float) INT_MIN) {
-			fprintf(csvFile, "");
-		} else {
-			fprintf(csvFile, "%s", A->cast_total_facebook_likes_Orig);
-		}
+		fprintf(csvFile, "%s", A->cast_total_facebook_likes_Orig);
 		fprintf(csvFile, ",");
 		fprintf(csvFile, "%s", A->actor_3_name);
 		fprintf(csvFile, ",");
-		if(A->facenumber_in_poster == (float) INT_MIN) {
-			fprintf(csvFile, "");
-		} else {
-			fprintf(csvFile, "%s", A->facenumber_in_poster_Orig);
-		}
+		fprintf(csvFile, "%s", A->facenumber_in_poster_Orig);
 		fprintf(csvFile, ",");
 		fprintf(csvFile, "%s", A->plot_keywords);
 		fprintf(csvFile, ",");
 		fprintf(csvFile, "%s", A->movie_imdb_link);
 		fprintf(csvFile, ",");
-		if(A->num_user_for_reviews == (float) INT_MIN) {
-			fprintf(csvFile, "");
-		} else {
-			fprintf(csvFile, "%s", A->num_user_for_reviews_Orig);
-		}
+		fprintf(csvFile, "%s", A->num_user_for_reviews_Orig);
 		fprintf(csvFile, ",");
 		fprintf(csvFile, "%s", A->language);
 		fprintf(csvFile, ",");
@@ -676,41 +731,17 @@ void csvwrite(movieInfo** movieArr, int size ,char* categories, char* filename){
 		fprintf(csvFile, ",");
 		fprintf(csvFile, "%s", A->content_rating);
 		fprintf(csvFile, ",");
-		if(A->budget == (float) INT_MIN) {
-			fprintf(csvFile, "");
-		} else {
-			fprintf(csvFile, "%s", A->budget_Orig);
-		}
+		fprintf(csvFile, "%s", A->budget_Orig);
 		fprintf(csvFile, ",");
-		if(A->title_year == (float) INT_MIN) {
-			fprintf(csvFile, "");
-		} else {
-			fprintf(csvFile,  "%s", A->title_year_Orig);
-		}
+		fprintf(csvFile,  "%s", A->title_year_Orig);
 		fprintf(csvFile, ",");
-		if(A->actor_2_facebook_likes == (float) INT_MIN) {
-			fprintf(csvFile, "");
-		} else {
-			fprintf(csvFile, "%s", A->actor_2_facebook_likes_Orig);
-		}
+		fprintf(csvFile, "%s", A->actor_2_facebook_likes_Orig);
 		fprintf(csvFile, ",");
-		if(A->imdb_score == (float) INT_MIN) {
-			fprintf(csvFile, "");
-		} else {
-			fprintf(csvFile, "%s", A->imdb_score_Orig);
-		}
+		fprintf(csvFile, "%s", A->imdb_score_Orig);
 		fprintf(csvFile, ",");
-		if(A->aspect_ratio == (float) INT_MIN) {
-			fprintf(csvFile, "");
-		} else {
-			fprintf(csvFile, "%s", A->aspect_ratio_Orig);
-		}
+		fprintf(csvFile, "%s", A->aspect_ratio_Orig);
 		fprintf(csvFile, ",");
-		if(A->movie_facebook_likes == (float) INT_MIN) {
-			fprintf(csvFile, "");
-		} else {
-			fprintf(csvFile, "%s", A->movie_facebook_likes_Orig);
-		}
+		fprintf(csvFile, "%s", A->movie_facebook_likes_Orig);
 		fprintf(csvFile, "\n");
 		i++;
         }
