@@ -183,7 +183,7 @@ void setData(movieInfo* A, void* data, char* column) {
 	}
 }
 
-//function to parse through csv file
+///function to parse through csv file
 void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 	if(filename == NULL || *filename == '\0') {
 		return;
@@ -197,48 +197,64 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 	}
 
 	int numCommasB4Sort = 0;		//The number of commas before the column to be sorted is reached.
+
+	int csv = open(filename,O_RDONLY);
 	
 	// create array of columns
 	char** columns = (char**) malloc(sizeof(char*)*28);
 	char charIn = '\0';				//Buffer to put each char that's being read in from STDIN
 	char* columnNames = malloc(sizeof(char)*500);			//Buffer where we're going to put the first line containing all titles
+
 	int columnNamesIndex = 0;		//For use in the below do-while loop
-	int csv = open(filename,O_RDONLY);
 	char previousChar = ',';
+
 	// create var to keep track of the number of commas
 	int numCommasCurr = 0;
 	int sizeColumnCurr = 500;
+	
 	int i = 0;
 	int isInQuotes = 0;
 	int index = 0;
+	
 	//Reading in from STDIN char by char until a '\n' is reached to get a string containing all column names	
 	do{
 		char* columnCurr = (char * )malloc(sizeof(char)*26);
+
 		while(1){
 			int eof = read(csv, &charIn, 1);
+
 			if(eof == 0){
 				write(STDERR, "Error while checking validity: The CSV contained an unknown column header.\n", 75);	
 				return;	
 			}
+			
 			columnNames[columnNamesIndex] = charIn;
 			columnNamesIndex++;
 
 			if(charIn == '\n'){
+				//implies we have null column header
 				if(previousChar == ',') {
 					write(STDERR, "Error while checking validity: The CSV contained an unknown column header.\n", 75);	
 					return;	
 				}
+
+				//set last char to null
 				columnCurr[i] = '\0';
 				columns[index] = columnCurr;
 				i++;
 				break;
+				
 			} else if(charIn == ',') {
+				// implies we have null header
 				if(previousChar == ',') {
 					write(STDERR, "Error while checking validity: The CSV contained an unknown column header.\n", 75);	
 					return;	
 				}
-				columnCurr[i] = '\0';
+
 				numCommasCurr++;
+				
+				// set null terminator and increment
+				columnCurr[i] = '\0';
 				i++;
 				
 				char* reallocTest = realloc(columnCurr, sizeof(char)*(i));
@@ -247,6 +263,7 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 				} else{
 					columnCurr = reallocTest;
 				}
+				
 				i = 0;
 				// for 28 headers, we'd have 27 commas, anything above is bad.
 				if(numCommasCurr >= 28){
@@ -309,8 +326,10 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 	movieInfo* A = initMovieInfo();
 	
 	isInQuotes = 0;
+	
 	int numCommas = 0;
 	charIn = '\0';
+	
 	char* columnData = (char*) malloc(sizeof(char) * 500);
 	int columnDataSize = 500;
 	int columnDataInd = 0;
@@ -333,12 +352,15 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 			return;
 		}
 		if(eof == 0 && columnDataInd > 0) {
+			if(movieInd > 0) {
+				dataRows = realloc(dataRows, sizeof(movieInfo*)*(movieInd + 1));
+			}
+			
 			columnData[columnDataInd] = '\0';
 			columnDataInd++;
 			setData(A, (void*) columnData, columns[numCommas]); 
-			numCommas++;
-			columnData = (char*) malloc(sizeof(char) * 500);
-			columnDataInd = 0;
+			//columnData = (char*) malloc(sizeof(char) * 500);
+			//columnDataInd = 0;
 		}
 		
 		if(doubleNewLines > 0 && eof > 0) {
@@ -378,7 +400,6 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 				columnData[columnDataInd] = '\0';
 				columnDataInd++;
 				setData(A, (void*) columnData, columns[numCommas]); 
-				numCommas++;
 				columnData = (char*) malloc(sizeof(char) * 500);
 				columnDataInd = 0;
 				dataRows[movieInd] = A;
