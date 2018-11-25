@@ -208,6 +208,10 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 			columnNamesIndex++;
 
 			if(charIn == '\n'){
+				if(previousChar == ',') {
+					write(STDERR, "Error while checking validity: The CSV contained an unknown column header.\n", 75);	
+					return;	
+				}
 				columnCurr[i] = '\0';
 				columns[index] = columnCurr;
 				i++;
@@ -340,9 +344,11 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 			if(numCommasCurr != numCommas && doubleNewLines != 0) {
 				waiter = 1;
 			}
+			
 			if(movieInd > 0) {
 				dataRows = realloc(dataRows, sizeof(movieInfo*)*(movieInd + 1));
 			}
+			
 			if(doubleNewLines <=0) {
 				columnData[columnDataInd] = '\0';
 				columnDataInd++;
@@ -351,6 +357,7 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 				columnData = (char*) malloc(sizeof(char) * 500);
 				columnDataInd = 0;
 			}
+			
 			dataRows[movieInd] = A;
 			movieInd++;
 			numCommas = 0;
