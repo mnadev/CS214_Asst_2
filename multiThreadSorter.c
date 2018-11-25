@@ -190,6 +190,7 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 	int sizeColumnCurr = 500;
 	int i = 0;
 	int isInQuotes = 0;
+	int index = 0;
 	//Reading in from STDIN char by char until a '\n' is reached to get a string containing all column names	
 	do{
 		char* columnCurr = (char * )malloc(sizeof(char)*26);
@@ -203,6 +204,9 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 			columnNamesIndex++;
 
 			if(charIn == '\n'){
+				columnCurr[i] = '\0';
+				columns[index] = columnCurr;
+				i++;
 				break;
 			} else if(charIn == ',') {
 				if(previousChar == ',') {
@@ -225,7 +229,8 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 					write(STDERR, "Error while checking validity: The CSV contained an unknown column header.\n", 75);	
 					return;		
 				}
-				columns[numCommasCurr - 1] = columnCurr;
+				columns[index] = columnCurr;
+				index++;
 				previousChar = charIn;	
 				break;			
 			} else {
@@ -334,7 +339,14 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 			if(movieInd > 0) {
 				dataRows = realloc(dataRows, sizeof(movieInfo*)*(movieInd + 1));
 			}
-
+			if(doubleNewLines <=0) {
+				columnData[columnDataInd] = '\0';
+				columnDataInd++;
+				setData(A, (void*) columnData, columns[numCommas]); 
+				numCommas++;
+				columnData = (char*) malloc(sizeof(char) * 500);
+				columnDataInd = 0;
+			}
 			dataRows[movieInd] = A;
 			movieInd++;
 			numCommas = 0;
@@ -545,9 +557,9 @@ void csvwrite(movieInfo** movieArr, int size ,char* categories, char* filename){
 	// TODO: ACCOUNT FOR DECIMALS WHEN WRITING
         while(i < size){
                 movieInfo* A = movieArr[i];
-                fprintf(csvFile, A->color);
+                fprintf(csvFile, "%s", A->color);
 		fprintf(csvFile, ",");
-		fprintf(csvFile, A->director_name);
+		fprintf(csvFile, "%s", A->director_name);
 		fprintf(csvFile, ",");
 		if(A->num_critic_for_reviews == (float) INT_MIN) {
 			fprintf(csvFile, "");
@@ -573,7 +585,7 @@ void csvwrite(movieInfo** movieArr, int size ,char* categories, char* filename){
 			fprintf(csvFile, "%d", (int)A->actor_3_facebook_likes);
 		}
 		fprintf(csvFile, ",");
-		fprintf(csvFile, A->actor_2_name);
+		fprintf(csvFile, "%s", A->actor_2_name);
 		fprintf(csvFile, ",");
 		if(A->actor_1_facebook_likes == (float) INT_MIN) {
 			fprintf(csvFile, "");
@@ -587,11 +599,11 @@ void csvwrite(movieInfo** movieArr, int size ,char* categories, char* filename){
 			fprintf(csvFile,  "%d", A->gross);
 		}
 		fprintf(csvFile, ",");
-		fprintf(csvFile, A->genres);
+		fprintf(csvFile, "%s", A->genres);
 		fprintf(csvFile, ",");
-		fprintf(csvFile, A->actor_1_name);
+		fprintf(csvFile, "%s", A->actor_1_name);
 		fprintf(csvFile, ",");
-		fprintf(csvFile, A->movie_title);
+		fprintf(csvFile, "%s", A->movie_title);
 		fprintf(csvFile, ",");
 		if(A->num_voted_users == (float) INT_MIN) {
 			fprintf(csvFile, "");
@@ -605,7 +617,7 @@ void csvwrite(movieInfo** movieArr, int size ,char* categories, char* filename){
 			fprintf(csvFile, "%d", (int)A->cast_total_facebook_likes);
 		}
 		fprintf(csvFile, ",");
-		fprintf(csvFile, A->actor_3_name);
+		fprintf(csvFile, "%s", A->actor_3_name);
 		fprintf(csvFile, ",");
 		if(A->facenumber_in_poster == (float) INT_MIN) {
 			fprintf(csvFile, "");
@@ -613,9 +625,9 @@ void csvwrite(movieInfo** movieArr, int size ,char* categories, char* filename){
 			fprintf(csvFile, "%d", (int)A->facenumber_in_poster);
 		}
 		fprintf(csvFile, ",");
-		fprintf(csvFile, A->plot_keywords);
+		fprintf(csvFile, "%s", A->plot_keywords);
 		fprintf(csvFile, ",");
-		fprintf(csvFile, A->movie_imdb_link);
+		fprintf(csvFile, "%s", A->movie_imdb_link);
 		fprintf(csvFile, ",");
 		if(A->num_user_for_reviews == (float) INT_MIN) {
 			fprintf(csvFile, "");
@@ -623,11 +635,11 @@ void csvwrite(movieInfo** movieArr, int size ,char* categories, char* filename){
 			fprintf(csvFile, "%d", (int)A->num_user_for_reviews);
 		}
 		fprintf(csvFile, ",");
-		fprintf(csvFile, A->language);
+		fprintf(csvFile, "%s", A->language);
 		fprintf(csvFile, ",");
-		fprintf(csvFile, A->country);
+		fprintf(csvFile, "%s", A->country);
 		fprintf(csvFile, ",");
-		fprintf(csvFile, A->content_rating);
+		fprintf(csvFile, "%s", A->content_rating);
 		fprintf(csvFile, ",");
 		if(A->budget == (float) INT_MIN) {
 			fprintf(csvFile, "");
