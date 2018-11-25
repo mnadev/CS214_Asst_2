@@ -16,6 +16,7 @@ void* dirSearch(void* args);
 void* fileThread(void* args);
 
 movieNode* head = NULL;
+pthread_mutex_t* headMutex;
 
 int isInt = 1;
 int processPID;
@@ -323,8 +324,10 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 	}	
 	mergesort(dataRows, columnToSort ,0, movieInd - 1, isInt);
 	close(csv);	
-		
+	
+	pthread_mutex_lock(headMutex);
 	addToFront(dataRows, movieInd);
+	pthread_mutex_unlock(headMutex);
 }
 
 
@@ -870,6 +873,10 @@ int main(int argc, char** argv){
 		return -1;
 	}
 
+	//Initializing mutex stuff:
+	headMutex = (pthread_mutex_t*)malloc(sizeof(pthread_mutex_t));
+	pthread_mutex_init(headMutex, NULL);
+	
 
 	struct dirent* dirStruct;
 	//For use in giving each thread an ID.
@@ -1001,6 +1008,7 @@ int main(int argc, char** argv){
 	free(dirDest);
 	free(columnToSort);
 	free(dirToSearch);
+	pthread_mutex_destroy(headMutex);
 	return 0;
 }
 
