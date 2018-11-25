@@ -1009,10 +1009,10 @@ int main(int argc, char** argv){
 		printf("%s, ", threadIDList_all[q]);	
 	}
 	int total = totalSpawned + *numThreadSort;
-	while(*numThreadSort > 0) {
+	/*while(*numThreadSort > 0) {
 		*numThreadSort--;
 		printf("%d, ", sortThreadIDs[*numThreadSort]);
-	}
+	}*/
 	printf("\n Total number of Threads: %d\n", total);
 	if(head != NULL) {	
 		while(head -> next != NULL) {

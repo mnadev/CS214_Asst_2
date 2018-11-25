@@ -117,7 +117,7 @@ void merge(movieInfo** arr, char* columnToBeSorted,int left, int half, int right
 					postTrimA[trimALen-1] = '\0';
 					trimALen--;
 			    	}
-			}
+			} /*
 			int lenA = strlen(postTrimA);
 			int counter = 0;
 			while(*postTrimA == ' ' || *postTrimA == '\"' || *postTrimA == '\'') {
@@ -126,7 +126,7 @@ void merge(movieInfo** arr, char* columnToBeSorted,int left, int half, int right
 				if(counter == lenA - 1) {
 					break;
 				}
-			}
+			} */
 			
 			char* postTrimB = trimmedB;    //in case trimmedB has whitespace at the end
 			int needToFreeB = 0;
@@ -139,7 +139,7 @@ void merge(movieInfo** arr, char* columnToBeSorted,int left, int half, int right
 					trimBLen--;
 				}
 			}
-			
+			/*
 			int lenB = strlen(postTrimB);
 			counter = 0;
 			while(*postTrimB == ' ' || *postTrimB == '\"' || *postTrimB == '\'') {
@@ -148,11 +148,11 @@ void merge(movieInfo** arr, char* columnToBeSorted,int left, int half, int right
 				if(counter == lenB - 1) {
 					break;
 				}
-			}
+			}*/
 			
-			if(postTrimA == NULL || postTrimA == '\0' || postTrimA == '') {
+			if(postTrimA == NULL || postTrimA == '\0') {
 				comparison = -1;
-			} else if (postTrimB == NULL || postTrimB == '\0' || postTrimB == '') {
+			} else if (postTrimB == NULL || postTrimB == '\0') {
 				comparison = 1;
 			} else { 
 				comparison = (float)strcmp(postTrimA, postTrimB);
@@ -169,11 +169,11 @@ void merge(movieInfo** arr, char* columnToBeSorted,int left, int half, int right
                     		intA = A->duration;
                     		intB = B->duration;
                     	} else if(strcmp(columnToBeSorted, "director_facebook_likes") == 0){
-			    intA = A->director_facebook_likes;
-			    intB = B->director_facebook_likes;
+			    	intA = A->director_facebook_likes;
+			    	intB = B->director_facebook_likes;
                     	} else if(strcmp(columnToBeSorted, "actor_3_facebook_likes") == 0){
-			    intA = A->actor_3_facebook_likes;
-			    intB = B->actor_3_facebook_likes;
+			    	intA = A->actor_3_facebook_likes;
+			    	intB = B->actor_3_facebook_likes;
 			} else if(strcmp(columnToBeSorted, "actor_1_facebook_likes") == 0){
 				intA = A->actor_1_facebook_likes;
 				intB = B->actor_1_facebook_likes;
@@ -348,6 +348,7 @@ void merge(movieInfo** arr, char* columnToBeSorted,int left, int half, int right
 					trimALen--;
 			    	}
 			}
+			/*
 			int lenA = strlen(postTrimA);
 			int counter = 0;
 			while(*postTrimA == ' ' || *postTrimA == '\"' || *postTrimA == '\'') {
@@ -357,7 +358,7 @@ void merge(movieInfo** arr, char* columnToBeSorted,int left, int half, int right
 					break;
 				}
 			}
-			
+			*/
 			char* postTrimB = trimmedB;    //in case trimmedB has whitespace at the end
 			int needToFreeB = 0;
 			if(trimmedB[trimBLen-1] == ' '  || trimmedB[trimBLen-1] == '\"' || trimmedB[trimBLen-1] == '\''){
@@ -369,7 +370,7 @@ void merge(movieInfo** arr, char* columnToBeSorted,int left, int half, int right
 					trimBLen--;
 				}
 			}
-			
+			/*
 			int lenB = strlen(postTrimB);
 			counter = 0;
 			while(*postTrimB == ' ' || *postTrimB == '\"' || *postTrimB == '\'') {
@@ -378,11 +379,11 @@ void merge(movieInfo** arr, char* columnToBeSorted,int left, int half, int right
 				if(counter == lenB - 1) {
 					break;
 				}
-			}
+			} */
 
-			if(postTrimA == NULL || postTrimA == '\0' || postTrimA == '') {
+			if(postTrimA == NULL || postTrimA == '\0') {
 				comparison = -1;
-			} else if (postTrimB == NULL || postTrimB == '\0' || postTrimB == '') {
+			} else if (postTrimB == NULL || postTrimB == '\0') {
 				comparison = 1;
 			} else { 
 				comparison = (float)strcmp(postTrimA, postTrimB);
@@ -574,7 +575,7 @@ movieInfo** mergeNodeData(movieInfo** arrA, movieInfo** arrB, int arrLenA, int a
 					trimALen--;
 			    	}
 			}
-			
+			/*
 			int lenA = strlen(postTrimA);
 			int counter = 0;
 			while(*postTrimA == ' ' || *postTrimA == '\"' || *postTrimA == '\'') {
@@ -584,7 +585,7 @@ movieInfo** mergeNodeData(movieInfo** arrA, movieInfo** arrB, int arrLenA, int a
 					break;
 				}
 			}
-			
+			*/
 			char* postTrimB = trimmedB;    //in case trimmedB has whitespace at the end
 			int needToFreeB = 0;
 			if(trimmedB[trimBLen-1] == ' '  || trimmedB[trimBLen-1] == '\"' || trimmedB[trimBLen-1] == '\''){
@@ -596,7 +597,7 @@ movieInfo** mergeNodeData(movieInfo** arrA, movieInfo** arrB, int arrLenA, int a
 					trimBLen--;
 				}
 			}
-			
+			/*
 			int lenB = strlen(postTrimB);
 			counter = 0;
 			while(*postTrimB == ' ' || *postTrimB == '\"' || *postTrimB == '\'') {
@@ -606,9 +607,10 @@ movieInfo** mergeNodeData(movieInfo** arrA, movieInfo** arrB, int arrLenA, int a
 					break;
 				}
 			}
-			if(postTrimA == NULL || postTrimA == '\0' || postTrimA == '') {
+			*/
+			if(postTrimA == NULL || postTrimA == '\0') {
 				comparison = -1;
-			} else if (postTrimB == NULL || postTrimB == '\0' || postTrimB == '') {
+			} else if (postTrimB == NULL || postTrimB == '\0') {
 				comparison = 1;
 			} else { 
 				comparison = (float)strcmp(postTrimA, postTrimB);
