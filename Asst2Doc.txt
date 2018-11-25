@@ -105,10 +105,22 @@ This struct holds information for a given movie. The struct has the following pa
         int sortHasQuotes;
 beforeSortedCol holds all of the character that occur before the column that is to be sorted in a given line. toBeSorted holds the data that is part of the column that is to be sorted. afterSortedCol holds the data that is after the column that is to be sorted. sizeBefore is the amount of characters that occur before the sorted column. sizeOfSort is the amount of characters of the column that is to be sorted. sizeAfter is the amount of character after the column that is to be sorted. sortHasQuotes is an int that is 1 if the column to be sorted is surrounded by quotes and a 0 otherwise. 
 
+STRUCT _THREADARGS_DIRFILE
+This struct holds arguments that we can pass to a function that executes directory search or file parsing in another thread. 
+
+STRUCT _THREADRETVALS
+This struct holds the number of spawned threads and the list of strings of the spawned threads.
+
+STRUCT _MOVIENODE
+This struct acts as a node for a linked list that holds an array of movieInfo pointers. 
+
 MERGESORT
 void mergesort(movieInfo** arr, int leftInd, int rightInd, int isInt); 
 See MERGESORT.C
 
+MERGENODEDATA
+movieInfo** mergeNodeData(movieInfo** arrA, movieInfo** arrB, int arrLenA, int arrLenB, char * columnToBeSorted,int isInt);
+See MERGESORT.C
 
 EXIT STATUS
 Since this is a header file, exit status is not defined and not necessary for function of the code.
@@ -146,6 +158,11 @@ MERGE
 void merge(movieInfo** arr, int left, int half, int right, int isInt)
 
 merge takes an array of which both halfs are sorted already, a pointer to the leftmost index, a pointer to the rightmost index, a pointer to the middle index and an int that states if the data is numeric or not. Merge then merges these two arrays in place into a sorted array. 
+
+MERGENODEDATA
+movieInfo** mergeNodeData(movieInfo** arrA, movieInfo** arrB, int arrLenA, int arrLenB, char * columnToBeSorted, int isInt)
+
+Similar to merge, we  merge two sorted arrays in to one array. However, this function does not merge in place. Rather, we create a new array to hold the newly sorted array and return that. 
 
 EXIT STATUS
 Mergesort does not return a value. It sorts the array using pointers. 
