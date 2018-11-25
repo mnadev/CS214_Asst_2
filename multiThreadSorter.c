@@ -394,12 +394,12 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 	
 	char* locOfColumn = strstr(columnNames, columnToSort);
 
-	if(locOfColumn == NULL ){
+	/*if(locOfColumn == NULL ){
 		free(columns);
 		free(columnNames);
 		write(STDERR, "Error while checking validity: The column to be sorted that was input as the 2nd parameter is not contained within the CSV.\n", 124);
 		return;
-	}
+	}*/
 	//Searching for number of commas before column to be sorted
 	//(Assumes that column names don't have commas in them, which they shouldn't for this assignment.
 	for(i = 0; i <= (locOfColumn - columnNames); i++){
@@ -783,9 +783,9 @@ void* fileThread(void* arguments){
 	returnVals->spawnedThreadList = NULL;
 	returnVals->spawnedThreadNum = 0;
 
-	/*printf("\nInitial PID: %d\n", processPID);
+	printf("\nInitial PID: %d\n", processPID);
 	printf("TIDS of all child processes: ");
-	printf("\n Total number of Threads: 0\n");*/
+	printf("\n Total number of Threads: 0\n");
 
 	pthread_exit((void*)returnVals);
 
@@ -903,12 +903,12 @@ void* dirSearch(void* arguments){
 	}
 	
 	//Printing metadata
-	/*printf("\nInitial PID: %d\n", processPID);
+	printf("\nInitial PID: %d\n", processPID);
 	printf("TIDS of all child processes: ");
 	for(q = 0; q < totalSpawned; q++){
 		printf("%s, ", threadIDList[q]);	
 	}
-	printf("\n Total number of Threads: %d\n", totalSpawned);*/
+	printf("\n Total number of Threads: %d\n", totalSpawned);
 
 	//Returning stuff
 	threadRetvals* returnVals = (threadRetvals*)malloc(sizeof(threadRetvals*));
