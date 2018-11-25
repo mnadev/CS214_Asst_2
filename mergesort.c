@@ -28,8 +28,8 @@ void mergesort(movieInfo** arr, char * columnToBeSorted, int left, int right, in
 	int half = (left + right)/2;
     
 	//sort both halves
-	mergesort(arr, left, half, isInt);
-	mergesort(arr, half + 1, right, isInt);
+	mergesort(arr, columnToBeSorted, left, half, isInt);
+	mergesort(arr, columnToBeSorted, half + 1, right, isInt);
 
 	//
 	merge(arr, columnToBeSorted, left, half, right, isInt);
@@ -94,11 +94,11 @@ void merge(movieInfo** arr, char* columnToBeSorted,int left, int half, int right
                     		return;
 		    	}
 			int trimALen = 0;
-			if(trimmedA != NULL) {
+			if(trimmedA != '\0') {
   				trimALen = strlen(trimmedA);
 			} 
                 	int trimBLen = 0;
-			if(trimmedB != NULL) {
+			if(trimmedB != '\0') {
   				trimBLen =strlen(trimmedB);
 			} 
 			
@@ -339,11 +339,11 @@ void merge(movieInfo** arr, char* columnToBeSorted,int left, int half, int right
 			}
                 
 			int trimALen = 0;
-			if(trimmedA != NULL) {
+			if(trimmedA != '\0') {
   				trimALen = strlen(trimmedA);
 			} 
                 	int trimBLen = 0;
-			if(trimmedB != NULL) {
+			if(trimmedB != '\0') {
   				trimBLen =strlen(trimmedB);
 			} 
 			
@@ -580,11 +580,11 @@ movieInfo** mergeNodeData(movieInfo** arrA, movieInfo** arrB, int arrLenA, int a
 			}
                 
 			int trimALen = 0;
-			if(trimmedA != NULL) {
+			if(trimmedA != '\0') {
   				trimALen = strlen(trimmedA);
 			} 
                 	int trimBLen = 0;
-			if(trimmedB != NULL) {
+			if(trimmedB != '\0') {
   				trimBLen =strlen(trimmedB);
 			} 
 			
@@ -752,7 +752,7 @@ movieInfo** mergeNodeData(movieInfo** arrA, movieInfo** arrB, int arrLenA, int a
             ptrMerged++;
         }
 	
-	free(arrA);
-	free(arrB);
+	//free(arrA);
+	//free(arrB);
 	return mergedArr;
 }
