@@ -546,7 +546,7 @@ char* ftos(float number){
 	}
 	
 	// find out how many digits in float value
-	int lenInt = (int) (floor(log(number)) + 2);
+	int lenInt = (int) (ceil(log((int) number)) + 3);
 	
 	// extract decimal and integer values
 	int integer = (int) number;
@@ -566,10 +566,10 @@ char* ftos(float number){
 		decimalToInteger = decimalToInteger * 10 +  intPart;
 	}
 	
-	int lenDec = 1;
+	int lenDec = 2;
 	// can't take log of 0 so making sure it's not 0;
 	if(decimalToInteger > 0) { 
-		lenDec = (int) (floor(log(number)) + 2);
+		lenDec = (int) (ceil(log(number)) + 2);
 	} 
 	
 	// create buffer and write to it.
