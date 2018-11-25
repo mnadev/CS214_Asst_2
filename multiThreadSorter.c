@@ -134,8 +134,9 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 	if(!(filename[pathLen-1] == 'v' && filename[pathLen-2] == 's' && filename[pathLen-3] == 'c' && filename[pathLen-4] == '.')){
 		return;
 	}
+
 	printf("filename: %s\n",filename); 
-	printf("p1\n");
+	printf("%s: p1\n", filename);
 	int numCommasB4Sort = 0;		//The number of commas before the column to be sorted is reached.
 	
 	// create array of columns
@@ -143,7 +144,7 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 	char charIn = '\0';				//Buffer to put each char that's being read in from STDIN
 	char* columnNames = malloc(sizeof(char)*500);			//Buffer where we're going to put the first line containing all titles
 	int columnNamesIndex = 0;		//For use in the below do-while loop
-	printf("p2\n");
+	printf("%s: p2\n", filename);
 	int csv = open(filename,O_RDONLY);
 	
 	// create var to keep track of the number of commas
@@ -151,10 +152,10 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 	int sizeColumnCurr = 500;
 	int i = 0;
 	int isInQuotes = 0;
-	printf("p3\n");
+	printf("%s: p3\n", filename);
 	//Reading in from STDIN char by char until a '\n' is reached to get a string containing all column names	
 	do{
-		char* columnCurr = (char * )malloc(sizeof(char)*500);
+		char* columnCurr = (char * )malloc(sizeof(char)*26);
 		while(1){
 			int eof = read(csv, &charIn, 1);
 			if(eof == 0){
@@ -178,21 +179,18 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 					columnCurr = reallocTest;
 				}
 				i = 0;
-				if(numCommasCurr > 28){
+				// for 28 headers, we'd have 27 commas, anything above is bad.
+				if(numCommasCurr >= 28){
 					write(STDERR, "Error while checking validity: The CSV contained an unknown column header.\n", 75);	
 					return;		
 				}
 				columns[numCommasCurr - 1] = columnCurr;	
 				break;			
 			} else {
-				if(i >= sizeColumnCurr) {
-					char* reallocTest = realloc(columnCurr, sizeof(char)*2*sizeColumnCurr);
-					if(reallocTest == NULL){
-						reallocTest = realloc(columnCurr, sizeof(char)*2*sizeColumnCurr);
-					} else{
-						columnCurr = reallocTest;
-					}
-					sizeColumnCurr = sizeColumnCurr*2;
+				// the max length of a valid header is 25.
+				if(i >= 25) {
+					write(STDERR, "Error while checking validity: The CSV contained an unknown column header.\n", 75);	
+					return;			
 				}
 				columnCurr[i] = charIn;
 				i++;
@@ -200,24 +198,26 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 		}
 		//printf("%c", charIn);
 	}while(charIn != '\n');
-	printf("p4\n");
-	columns = realloc(columns, sizeof(char*)*(numCommasCurr + 1));
+	printf("%s: p4\n", filename);
+	//columns = realloc(columns, sizeof(char*)*(numCommasCurr + 1));
 
 	if(numCommasCurr > 0) {
 		if(columns[numCommasCurr] == NULL) {
-			columns = realloc(columns, sizeof(char*)*(numCommasCurr));	
+			//columns = realloc(columns, sizeof(char*)*(numCommasCurr));	
 		}
 	}
 	printf("%s: p5\n", filename);
 	columnNames[columnNamesIndex] = '\0';
-	columnNames = realloc(columnNames, columnNamesIndex+1);
+	//columnNames = realloc(columnNames, columnNamesIndex+1);
 	//Determining if the column to be sorted parameter is in the list of columns using strstr()
 	
 	char* locOfColumn = strstr(columnNames, columnToSort);
-
+	/*
 	printf("%s: p6\n", filename);
 	if(locOfColumn == NULL ){
 		printf("%s: p6a\n",filename);
+		free(columns);
+		free(columnNames);
 		write(STDERR, "Error while checking validity: The column to be sorted that was input as the 2nd parameter is not contained within the CSV.\n", 124);
 		return;
 	}
@@ -231,10 +231,12 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 	} 
 	//printf("here\n");
 	if(hasHeaders(columnNames) == 0){
-		printf("%s: p6b\n",filename);
+		printf("%s: p6b\n",filename);	
+		free(columns);
+		free(columnNames);
 		write(STDERR, "Error while checking validity: The CSV contained an unknown column header.\n", 75);
 		return;
-	}
+	} */
 	printf("%s: p7\n", filename);		
 	//Reading through the rest of STDIN for data:
 	//int sizeOfArray = 0;
@@ -255,14 +257,17 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 
 	//double new lines will keep track of if two new lines occur in a row
 	int doubleNewLines = 0;
-	
+	/*
 	//waiter waits and sees for when we come across a malformed csv.
 	//if there are two new lines and such then it will wait and see the next char before throwing error
 	int waiter = 0;
 	int eof = 1;
 	while(eof > 0) {
 		eof = read(csv, &charIn, 1);
-		
+		if(eof == 0 && movieInd == 0) {
+			write(STDERR, "Error while checking validity, Malformed CSV\n", 45);
+			return;
+		}
 		if(doubleNewLines > 0 && eof > 0) {
 			write(STDERR, "Error while checking validity: Malformed CSV\n", 45);
 			return;
@@ -291,8 +296,10 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 			if(numCommasCurr != numCommas && doubleNewLines != 0) {
 				waiter = 1;
 			}
-			
-			dataRows = realloc(dataRows, sizeof(movieInfo*)*(movieInd + 1));
+			if(movieInd > 0) {
+				dataRows = realloc(dataRows, sizeof(movieInfo*)*(movieInd + 1));
+			}
+
 			dataRows[movieInd] = A;
 			movieInd++;
 			numCommas = 0;
@@ -304,7 +311,9 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 				isInQuotes = 1;
 			}
 		} else if(charIn == ',' && isInQuotes == 0) {
-			setData(A, (char*) columnData, columns[numCommas]); 
+			columnData[columnDataInd] = '\0';
+			columnDataInd++;
+			setData(A, (void*) columnData, columns[numCommas]); 
 			numCommas++;
 			columnData = (char*) malloc(sizeof(char) * 500);
 			columnDataInd = 0;
@@ -325,12 +334,11 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 		return;
 	}	
 	printf("p9\n");
-	//int isNumeric = isInt(dataRows, sizeOfArray);
-	mergesort(dataRows, columnToSort ,0, movieInd - 1, isInt);
+	//mergesort(dataRows, columnToSort ,0, movieInd - 1, isInt);
 	close(csv);	
-	
+	*/	
 	printf("p10\n");
-	addToFront(dataRows, movieInd);
+	//addToFront(dataRows, movieInd);
 }
 
 
@@ -529,7 +537,7 @@ char* ftos(float number){
 
 // will write output to csv file
 void csvwrite(movieInfo** movieArr, int size ,char* categories, char* filename){
-	/*//printf("writing to file %s \n",filename);
+	printf("writing to file %s \n",filename);
 	// though about using file descriptors but we'd have to keep track of size
 	// although we could use strlen?
 	//int p_csv = open(filename, O_WRONLY);
@@ -600,7 +608,7 @@ void csvwrite(movieInfo** movieArr, int size ,char* categories, char* filename){
 		fprintf(csvFile, "\n");
 		i++;
         }
-	fclose(csvFile);*/
+	fclose(csvFile);
 }
 
 void* fileThread(void* arguments){
