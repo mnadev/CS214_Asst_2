@@ -529,7 +529,7 @@ int hasHeaders(char* columnNames){
 }
 
 char* itos(int number) {
-	int len = (int)((ceil(log(number))+2));
+	int len = (int)(ceil(log(number))+2);
 	char* num = (char *)malloc(sizeof(char) * len);
 	snprintf(num, len, "%d\0", number);
 	return num;
@@ -542,7 +542,7 @@ char* ftos(float number){
 	}
 	
 	// find out how many digits in float value
-	int lenInt = (int) (floor(log(number)) + 1);
+	int lenInt = (int) (floor(log(number)) + 2);
 	
 	// extract decimal and integer values
 	int integer = (int) number;
@@ -565,16 +565,15 @@ char* ftos(float number){
 	int lenDec = 1;
 	// can't take log of 0 so making sure it's not 0;
 	if(decimalToInteger > 0) { 
-		lenDec = (int) (floor(log(number)) + 1);
+		lenDec = (int) (floor(log(number)) + 2);
 	} 
 	
 	// create buffer and write to it.
 	char* numBuffer = (char*) malloc(sizeof(char)*(lenInt + lenDec + 3));
-	snprintf(numBuffer, lenInt + lenDec + 2, "%d\0", number);
+	snprintf(numBuffer, lenInt + lenDec + 3, "%d\0", number);
 	
 	
 	return numBuffer;
-	return  "0.0";
 }
 
 // will write output to csv file
@@ -950,6 +949,7 @@ int main(int argc, char** argv){
 			return -1;
 		}
 	}
+	
 	if(strcmp(columnToSort, "color") == 0){
 		isInt = 0;
 	} else if(strcmp(columnToSort, "director_name") == 0){
