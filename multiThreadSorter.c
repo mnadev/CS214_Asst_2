@@ -112,18 +112,24 @@ void setData(movieInfo* A, void* data, char* column) {
 		A -> director_name = (char*) data;
 	} else if(strcmp(column, "num_critic_for_reviews") == 0){
 		A -> num_critic_for_reviews = atof((char*)data);
+		A -> num_critic_for_reviews_Orig = (char*)data;
 	} else if(strcmp(column, "duration") == 0){
 		A -> duration = atof((char*)data);
+		A -> duration_Orig = (char*)data;
 	} else if(strcmp(column, "director_facebook_likes") == 0){
 		A -> director_facebook_likes = atof((char*)data);
+		A -> director_facebook_likes_Orig = (char*)data;
 	} else if(strcmp(column, "actor_3_facebook_likes") == 0){
 		A -> actor_3_facebook_likes = atof((char*)data);
+		A -> actor_3_facebook_likes_Orig = (char*)data;
 	} else if(strcmp(column, "actor_2_name") == 0){
 		A -> actor_2_name = (char*) data;
 	} else if(strcmp(column, "actor_1_facebook_likes") == 0){
 		A -> actor_1_facebook_likes = atof((char*)data);
+		A -> actor_1_facebook_likes_Orig = (char*)data;
 	} else if(strcmp(column, "gross") == 0){
 		A -> gross = atof((char*)data);
+		A -> gross_Orig = (char*)data;
 	} else if(strcmp(column, "genres") == 0){
 		A -> genres = (char*) data;
 	} else if(strcmp(column, "actor_1_name") == 0){
@@ -132,18 +138,22 @@ void setData(movieInfo* A, void* data, char* column) {
 		A -> movie_title = (char*) data;
 	} else if(strcmp(column, "num_voted_users") == 0){
 		A -> num_voted_users = atof((char*)data);
+		A -> num_voted_users_Orig = (char*)data;
 	} else if(strcmp(column, "cast_total_facebook_likes") == 0){
 		A -> cast_total_facebook_likes = atof((char*)data);
+		A -> cast_total_facebook_likes_Orig = (char*)data;
 	} else if(strcmp(column, "actor_3_name") == 0){
 		A -> actor_3_name = (char*) data;
 	} else if(strcmp(column, "facenumber_in_poster") == 0){
 		A -> facenumber_in_poster = atof((char*)data);
+		A -> facenumber_in_poster_Orig = (char*)data;
 	} else if(strcmp(column, "plot_keywords") == 0){
 		A -> plot_keywords = (char*) data;
 	} else if(strcmp(column, "movie_imdb_link") == 0){
 		A -> movie_imdb_link = (char*) data;
 	} else if(strcmp(column, "num_user_for_reviews") == 0){
 		A -> num_user_for_reviews = atof((char*)data);
+		A -> num_user_for_reviews_Orig = (char*)data;
 	} else if(strcmp(column, "language") == 0){
 		A -> language = (char*) data;
 	} else if(strcmp(column, "country") == 0){
@@ -152,16 +162,22 @@ void setData(movieInfo* A, void* data, char* column) {
 		A -> content_rating = (char*) data;
 	} else if(strcmp(column, "budget") == 0){
 		A -> budget = atof((char*)data);
+		A -> budget_Orig = (char*)data;
 	} else if(strcmp(column, "title_year") == 0){
 		A -> title_year = atof((char*)data);
+		A -> title_year_Orig = (char*)data;
 	} else if(strcmp(column, "actor_2_facebook_likes") == 0){
 		A -> actor_2_facebook_likes = atof((char*)data);
+		A -> actor_2_facebook_likes_Orig = (char*)data;
 	} else if(strcmp(column, "imdb_score") == 0){
 		A -> imdb_score = atof((char*)data);
+		A -> imdb_score_Orig = (char*)data;
 	} else if(strcmp(column, "aspect_ratio") == 0){
 		A -> aspect_ratio = atof((char*)data);
+		A -> aspect_ratio_Orig = (char*)data;
 	} else if(strcmp(column, "movie_facebook_likes") == 0){
 		A -> movie_facebook_likes = atof((char*)data);
+		A -> movie_facebook_likes_Orig = (char*)data;
 	} else{
 		return;
 	}
@@ -568,25 +584,25 @@ void csvwrite(movieInfo** movieArr, int size ,char* categories, char* filename){
 		if(A->num_critic_for_reviews == (float) INT_MIN) {
 			fprintf(csvFile, "");
 		} else {
-			fprintf(csvFile, "%d", (int)A->num_critic_for_reviews );
+			fprintf(csvFile, "%s", A->num_critic_for_reviews_Orig );
 		}
 		fprintf(csvFile, ",");
 		if(A->duration == (float) INT_MIN) {
 			fprintf(csvFile, "");
 		} else {
-			fprintf(csvFile, "%d", A->duration);
+			fprintf(csvFile, "%s", A->duration_Orig);
 		}
 		fprintf(csvFile, ",");
 		if(A->director_facebook_likes == (float) INT_MIN) {
 			fprintf(csvFile, "");
 		} else {
-			fprintf(csvFile, "%d", (int)A->director_facebook_likes);
+			fprintf(csvFile, "%s", A->director_facebook_likes_Orig);
 		}
 		fprintf(csvFile, ",");
 		if(A->actor_3_facebook_likes == (float) INT_MIN) {
 			fprintf(csvFile, "");
 		} else {
-			fprintf(csvFile, "%d", (int)A->actor_3_facebook_likes);
+			fprintf(csvFile, "%s", A->actor_3_facebook_likes_Orig);
 		}
 		fprintf(csvFile, ",");
 		fprintf(csvFile, "%s", A->actor_2_name);
@@ -594,13 +610,13 @@ void csvwrite(movieInfo** movieArr, int size ,char* categories, char* filename){
 		if(A->actor_1_facebook_likes == (float) INT_MIN) {
 			fprintf(csvFile, "");
 		} else {
-			fprintf(csvFile, "%d",(int)A->actor_1_facebook_likes);
+			fprintf(csvFile, "%s",A->actor_1_facebook_likes_Orig);
 		}
 		fprintf(csvFile, ",");
 		if(A->gross == (float) INT_MIN) {
 			fprintf(csvFile, "");
 		} else {
-			fprintf(csvFile,  "%d", A->gross);
+			fprintf(csvFile,  "%s", A->gross_Orig);
 		}
 		fprintf(csvFile, ",");
 		fprintf(csvFile, "%s", A->genres);
@@ -612,13 +628,13 @@ void csvwrite(movieInfo** movieArr, int size ,char* categories, char* filename){
 		if(A->num_voted_users == (float) INT_MIN) {
 			fprintf(csvFile, "");
 		} else {
-			fprintf(csvFile, "%d", (int)A->num_voted_users);
+			fprintf(csvFile, "%s", A->num_voted_users_Orig);
 		}
 		fprintf(csvFile, ",");
 		if(A->cast_total_facebook_likes == (float) INT_MIN) {
 			fprintf(csvFile, "");
 		} else {
-			fprintf(csvFile, "%d", (int)A->cast_total_facebook_likes);
+			fprintf(csvFile, "%s", A->cast_total_facebook_likes_Orig);
 		}
 		fprintf(csvFile, ",");
 		fprintf(csvFile, "%s", A->actor_3_name);
@@ -626,7 +642,7 @@ void csvwrite(movieInfo** movieArr, int size ,char* categories, char* filename){
 		if(A->facenumber_in_poster == (float) INT_MIN) {
 			fprintf(csvFile, "");
 		} else {
-			fprintf(csvFile, "%d", (int)A->facenumber_in_poster);
+			fprintf(csvFile, "%s", A->facenumber_in_poster_Orig);
 		}
 		fprintf(csvFile, ",");
 		fprintf(csvFile, "%s", A->plot_keywords);
@@ -636,7 +652,7 @@ void csvwrite(movieInfo** movieArr, int size ,char* categories, char* filename){
 		if(A->num_user_for_reviews == (float) INT_MIN) {
 			fprintf(csvFile, "");
 		} else {
-			fprintf(csvFile, "%d", (int)A->num_user_for_reviews);
+			fprintf(csvFile, "%s", A->num_user_for_reviews_Orig);
 		}
 		fprintf(csvFile, ",");
 		fprintf(csvFile, "%s", A->language);
@@ -648,37 +664,37 @@ void csvwrite(movieInfo** movieArr, int size ,char* categories, char* filename){
 		if(A->budget == (float) INT_MIN) {
 			fprintf(csvFile, "");
 		} else {
-			fprintf(csvFile, "%d", A->budget);
+			fprintf(csvFile, "%s", A->budget_Orig);
 		}
 		fprintf(csvFile, ",");
 		if(A->title_year == (float) INT_MIN) {
 			fprintf(csvFile, "");
 		} else {
-			fprintf(csvFile,  "%d", (int)A->title_year);
+			fprintf(csvFile,  "%s", A->title_year_Orig);
 		}
 		fprintf(csvFile, ",");
 		if(A->actor_2_facebook_likes == (float) INT_MIN) {
 			fprintf(csvFile, "");
 		} else {
-			fprintf(csvFile, "%d", (int)A->actor_2_facebook_likes);
+			fprintf(csvFile, "%s", A->actor_2_facebook_likes_Orig);
 		}
 		fprintf(csvFile, ",");
 		if(A->imdb_score == (float) INT_MIN) {
 			fprintf(csvFile, "");
 		} else {
-			fprintf(csvFile, "%d", A->imdb_score);
+			fprintf(csvFile, "%s", A->imdb_score_Orig);
 		}
 		fprintf(csvFile, ",");
 		if(A->aspect_ratio == (float) INT_MIN) {
 			fprintf(csvFile, "");
 		} else {
-			fprintf(csvFile, "%d", A->aspect_ratio);
+			fprintf(csvFile, "%s", A->aspect_ratio_Orig);
 		}
 		fprintf(csvFile, ",");
 		if(A->movie_facebook_likes == (float) INT_MIN) {
 			fprintf(csvFile, "");
 		} else {
-			fprintf(csvFile, "%d", (int)A->movie_facebook_likes);
+			fprintf(csvFile, "%s", A->movie_facebook_likes_Orig);
 		}
 		fprintf(csvFile, "\n");
 		i++;
