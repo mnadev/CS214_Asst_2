@@ -706,7 +706,6 @@ void* dirSearch(void* arguments){
 			continue;
 		}
 	}
-
 	//Joining children threads (only immediate children)
 	int totalSpawned = threadCountID;
 	
@@ -729,6 +728,12 @@ void* dirSearch(void* arguments){
 	returnVals->spawnedThreadList = threadIDList;
 	returnVals->spawnedThreadNum = threadCountID;
 	pthread_exit((void*)returnVals);
+}
+
+void mergeThread(char* column) {	
+	pthread_mutex_lock(headMutex);
+	mergeSortNodes(column);
+	pthread_mutex_unlock(headMutex);
 }
 
 int main(int argc, char** argv){
@@ -886,7 +891,9 @@ int main(int argc, char** argv){
 	//Master list of threadIDs:
 	char** threadIDList_all = (char**)malloc(sizeof(char*)*256);	
 	memset(threadIDList_all, 0, 256*sizeof(char*))	;	//writing 0 bytes for easy iteration later. (Detect if == 0)
-
+	int* numThreadSort =(int *) malloc(sizeof(int));
+	*numThreadSort = 0;
+	int* sortThreadIDs = (int *) malloc(sizeof(int)*256); 
 	char * file;		//used to determine i-node type: directory, file, or some other thing
 	while(31337) {
 		if((dirStruct = readdir(currDir)) == NULL) {
@@ -953,7 +960,23 @@ int main(int argc, char** argv){
 			//If for some reason there's a thing that's not a file or directory. Gotta handle all the errors dawg.	
 			continue;
 		}
+		
+		printf("Initial PID: %d\n", processPID);
+		if(head != NULL) {
+			if(head -> next != NULL) {
+				pthread_t* threadSort = (pthread_t*)malloc(sizeof(pthread_t));
+				pthread_attr_t threadAttr;
+				pthread_attr_init(&threadAttr);
+				*numThreadSort++;
+				sortThreadIDs[*numThreadSort - 1] = (int) processPID / *numThreadSort;
+				pthread_create(threadSort, &threadAttr, mergeThread, columnToSort);
+
+			}
+		}
+
+	
 	}
+
 	//Joining children threads (only immediate children)
 	int totalSpawned = threadIDListing;
 
@@ -975,8 +998,12 @@ int main(int argc, char** argv){
 	for(q = 0; q < totalSpawned; q++){
 		printf("%s, ", threadIDList_all[q]);	
 	}
-
-	printf("\n Total number of Threads: %d\n", totalSpawned);
+	int total = totalSpawned + *numThreadSort;
+	while(*numThreadSort > 0) {
+		*numThreadSort--;
+		printf("%d, ", sortThreadIDs[*numThreadSort]);
+	}
+	printf("\n Total number of Threads: %d\n", total);
 	if(head != NULL) {	
 		while(head -> next != NULL) {
 			mergeSortNodes(columnToSort);
