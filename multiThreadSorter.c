@@ -92,7 +92,7 @@ void setData(movieInfo* A, void* data, char* column) {
 	} else if(strcmp(column, "director_name") == 0){
 		A -> director_name = (char*) data;
 	} else if(strcmp(column, "num_critic_for_reviews") == 0){
-		A -> num_critic_for_reviews = atof(data);
+		A -> num_critic_for_reviews = atof((char*)data);
 	} else if(strcmp(column, "duration") == 0){
 		A -> duration = atof((char*)data);
 	} else if(strcmp(column, "director_facebook_likes") == 0){
