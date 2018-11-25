@@ -24,14 +24,6 @@ DESCRIPTION
   
   setData takes data and the column it corresponds to and sets the equivalent column equal to the data in the movieInfo struct.
   
-  ITOS:
-  char* itos(int number) 
-  This function converts an integer to the corresponding string.
-  
-  FTOS:
-  char* ftos(float number)
-  This function converts a float to the corresponding string.
-  
   FILETHREAD:
   void* fileThread(void* arguments)
   
