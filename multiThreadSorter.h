@@ -7,7 +7,7 @@
 ******/
 
 //Suggestion: define a struct that mirrors a record (row) of the data set
-
+#include<limits.h>
 //Defining standard file descriptors for code readability
 #define STDIN 0
 #define STDOUT 1
@@ -17,32 +17,32 @@ typedef
 struct _movieInfo{
 		char* color;
 		char* director_name;
-		float num_critic_for_reviews;
-		float duration;
-		float director_facebook_likes;
-		float actor_3_facebook_likes;
+		float num_critic_for_reviews = (float) INT_MIN;
+		float duration = (float) INT_MIN;
+		float director_facebook_likes = (float) INT_MIN;
+		float actor_3_facebook_likes = (float) INT_MIN;
 		char* actor_2_name;
-		float actor_1_facebook_likes;
-		float gross;
+		float actor_1_facebook_likes = (float) INT_MIN;
+		float gross = (float) INT_MIN;
 		char* genres;
 		char* actor_1_name;
 		char* movie_title;
-		float num_voted_users;
-		float cast_total_facebook_likes;
+		float num_voted_users = (float) INT_MIN;
+		float cast_total_facebook_likes = (float) INT_MIN;
 		char* actor_3_name;
-		float facenumber_in_poster;
+		float facenumber_in_poster = (float) INT_MIN;
 		char* plot_keywords;
 		char* movie_imdb_link;
-		float num_user_for_reviews;
+		float num_user_for_reviews = (float) INT_MIN;
 		char* language;
 		char* country;
 		char* content_rating;
-		float budget;
-		float title_year;
-		float actor_2_facebook_likes;
-		float imdb_score;
-		float aspect_ratio;
-		float movie_facebook_likes;
+		float budget = (float) INT_MIN;
+		float title_year = (float) INT_MIN;
+		float actor_2_facebook_likes = (float) INT_MIN;
+		float imdb_score = (float) INT_MIN;
+		float aspect_ratio = (float) INT_MIN;
+		float movie_facebook_likes = (float) INT_MIN;
 } movieInfo;
 
 //Struct to be used to pass arguments into the thread functions.
