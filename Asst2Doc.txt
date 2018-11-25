@@ -4,30 +4,64 @@ SYNOPSIS
   multiThreadSorter.out -c <ColumnToSortBy> -d <directoryToSearch> -o <outputDirectory>
 DESCRIPTION
   multiThreadSorter looks through the entire directory that is to be searched and looks at all files and subdirectories. Then, the CSV file is sorted by the given parameter and the output is written to a file of the form filename-sorted-columnSortedBy.csv to the output directory. 
+  ADDTOFRONT:
+  void addToFront(movieInfo** data, int arrLen) 
+  
+  addToFront creates a movieNode, sets the values to data and arrLen and then sets this as the head of the linked list. The previous head is now the next node.
+  
+  INITMOVIEINFO:
+  movieInfo* initMovieInfo()
+  
+  This function initializes a movieInfo struct to default values so we can account for null values.
+  
+  MERGESORTNODES:
+  void mergeSortNodes(char* category)
+  
+  mergeSortNodes takes the head node and the next node of the head node and merges the two data arrays of these two nodes. Thus, we have a new node that is set at head with a larger movieInfo** arr that is sorted.
+  
+  SETDATA:
+  void setData(movieInfo* A, void* data, char* column)
+  
+  setData takes data and the column it corresponds to and sets the equivalent column equal to the data in the movieInfo struct.
+  
+  ITOS:
+  char* itos(int number) 
+  This function converts an integer to the corresponding string.
+  
+  FTOS:
+  char* ftos(float number)
+  This function converts a float to the corresponding string.
+  
+  FILETHREAD:
+  void* fileThread(void* arguments)
+  
+  fileThread parses a file using a pthread.
+  
+  DIRSEARCH:
+  void* dirSearch(void* arguments)
+  
+  dirSearch searches a directory using a pthread.
+  
+  MERGETHREAD:
+  void mergeThread(char* column)
+  
+  mergeThread calls mergeSortNodes using pthreads.
   
   CSVWRITE:
   void csvwrite(movieInfo** movieArr, int size ,char* categories, char* filename);
-  
+ 
   csvwrite is a function that takes in a (sorted) array of movieInfo structs, the size of the array, the column headers of the csv file, and the output filename. Using these parameters, the csvwrite function writes the column headers and the movieInfo array to the file with the given filename.
   HAS HEADERS:
   int hasHeaders(char* columnNames)
   
   hasHeaders verifies that all of the column headers in the csv are part of movie database. It will return 0 if there is a column header that is not part of movie database and a 1 otherwise.
-  
-  ISINT:
-  int isInt(movieInfo** dataRows, int sizeOfArray);
-  
-  isInt is a function that takes in an array of movieInfo structs and the size of the array. The function iterates through the array and output a 1 if the data values that we want to sort are numeric in nature and a 0 otherwise.
+ 
   
   PARSECSV:
   void parseCSV(char* filename, char* columnToSort, char* destDirectory);
   
-  parseCSV is a function that takes a filename corresponding to a csv file, a column to sort the file by and the destination directory. parseCSV then parses the CSV and creates a movieInfo struct. Then, parseCSV uses mergesort to sort the file by the given column. Then, the sorted array is written into an output file in the destination directory by calling csvwrite();
-  
-  ISVALIDCSV:
-  int isValidCSV(char* filename, char* columnToSort);
-  
-  isValidCSV is a function that validates a csv file. Given a filename and a column to sort by, isValidCSV checks if the file has the ".csv" extension and checks if the file has the given column. isValidCSV also checks if the file is actually a valid csv by validating that each line has the same number of commmas. isValidCSV returns a 1 if the csv is valid and a 0 otherwise. 
+  parseCSV is a function that takes a filename corresponding to a csv file, a column to sort the file by and the destination directory. parseCSV then parses the CSV and creates a movieInfo struct. Then, parseCSV uses mergesort to sort the file by the given column. Then, the sorted array is written to a movieNode using addToFront.
+ 
   
 OPTIONS
   "-c" indicates that the sorting of data entries is to be done based on columns
