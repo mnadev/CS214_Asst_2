@@ -8,6 +8,7 @@
 #include<errno.h>
 #include<fcntl.h>
 #include<math.h>
+#include<limits.h>
 #include "multiThreadSorter.h"
 
 void csvwrite(movieInfo** movieArr, int size ,char* categories, char* filename);
@@ -32,7 +33,26 @@ void addToFront(movieInfo** data, int arrLen) {
 	//set head to new head
 	head = newHead;
 }
-
+movieInfo* initMovieInfo() {
+	movieInfo* A = (movieInfo*)malloc(sizeof(movieInfo));
+	A -> num_critic_for_reviews = (float) INT_MIN;
+	A -> duration = (float) INT_MIN;
+	A -> director_facebook_likes = (float) INT_MIN;
+	A -> actor_3_facebook_likes = (float) INT_MIN;
+	A -> actor_1_facebook_likes = (float) INT_MIN;
+	A -> gross = (float) INT_MIN;
+	A -> num_voted_users = (float) INT_MIN;
+	A -> cast_total_facebook_likes = (float) INT_MIN;
+	A -> facenumber_in_poster = (float) INT_MIN;
+	A -> num_user_for_reviews = (float) INT_MIN;
+	A -> budget = (float) INT_MIN;
+	A -> title_year = (float) INT_MIN;
+	A -> actor_2_facebook_likes = (float) INT_MIN;
+	A -> imdb_score = (float) INT_MIN;
+	A -> aspect_ratio = (float) INT_MIN;
+	A -> movie_facebook_likes = (float) INT_MIN;
+	return A;
+}
 void mergeSortNodes(char* category){
 	//return if head is null or there is only one node in list
 	if(head == NULL) {
@@ -237,7 +257,7 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 	//Reading through the rest of STDIN for data:
 	//int sizeOfArray = 0;
 	movieInfo** dataRows = malloc(sizeof(movieInfo*)*1); //Array of pointers to each instance of movieInfo
-	movieInfo* A = (movieInfo*)malloc(sizeof(movieInfo));
+	movieInfo* A = initMovieInfo();
 	
 	isInQuotes = 0;
 	int numCommas = 0;
@@ -298,7 +318,7 @@ void parseCSV(char* filename, char* columnToSort, char* destDirectory) {
 			dataRows[movieInd] = A;
 			movieInd++;
 			numCommas = 0;
-			A = (movieInfo*)malloc(sizeof(movieInfo));
+			A = initMovieInfo();
 		} else if(charIn == '\"') {
 			if(isInQuotes == 1) {
 				isInQuotes = 0;
@@ -547,19 +567,43 @@ void csvwrite(movieInfo** movieArr, int size ,char* categories, char* filename){
 		fprintf(csvFile, ",");
 		fprintf(csvFile, A->director_name);
 		fprintf(csvFile, ",");
-		fprintf(csvFile, ftos(A->num_critic_for_reviews));
+		if(A->num_critic_for_reviews == (float) INT_MIN) {
+			fprintf(csvFile, "");
+		} else {
+			fprintf(csvFile, ftos(A->num_critic_for_reviews));
+		}
 		fprintf(csvFile, ",");
-		fprintf(csvFile, ftos(A->duration));
+		if(A->duration == (float) INT_MIN) {
+			fprintf(csvFile, "");
+		} else {
+			fprintf(csvFile, ftos(A->duration));
+		}
 		fprintf(csvFile, ",");
-		fprintf(csvFile, ftos(A->director_facebook_likes));
+		if(A->director_facebook_likes == (float) INT_MIN) {
+			fprintf(csvFile, "");
+		} else {
+			fprintf(csvFile, ftos(A->director_facebook_likes));
+		}
 		fprintf(csvFile, ",");
-		fprintf(csvFile, ftos(A->actor_3_facebook_likes));
+		if(A->actor_3_facebook_likes == (float) INT_MIN) {
+			fprintf(csvFile, "");
+		} else {
+			fprintf(csvFile, ftos(A->actor_3_facebook_likes));
+		}
 		fprintf(csvFile, ",");
 		fprintf(csvFile, A->actor_2_name);
 		fprintf(csvFile, ",");
-		fprintf(csvFile, ftos(A->actor_1_facebook_likes));
+		if(A->actor_1_facebook_likes == (float) INT_MIN) {
+			fprintf(csvFile, "");
+		} else {
+			fprintf(csvFile, ftos(A->actor_1_facebook_likes));
+		}
 		fprintf(csvFile, ",");
-		fprintf(csvFile, ftos(A->gross));
+		if(A->gross == (float) INT_MIN) {
+			fprintf(csvFile, "");
+		} else {
+			fprintf(csvFile, ftos(A->gross));
+		}
 		fprintf(csvFile, ",");
 		fprintf(csvFile, A->genres);
 		fprintf(csvFile, ",");
@@ -567,19 +611,35 @@ void csvwrite(movieInfo** movieArr, int size ,char* categories, char* filename){
 		fprintf(csvFile, ",");
 		fprintf(csvFile, A->movie_title);
 		fprintf(csvFile, ",");
-		fprintf(csvFile, ftos(A->num_voted_users));
+		if(A->num_voted_users == (float) INT_MIN) {
+			fprintf(csvFile, "");
+		} else {
+			fprintf(csvFile, ftos(A->num_voted_users));
+		}
 		fprintf(csvFile, ",");
-		fprintf(csvFile, ftos(A->cast_total_facebook_likes));
+		if(A->cast_total_facebook_likes == (float) INT_MIN) {
+			fprintf(csvFile, "");
+		} else {
+			fprintf(csvFile, ftos(A->cast_total_facebook_likes));
+		}
 		fprintf(csvFile, ",");
 		fprintf(csvFile, A->actor_3_name);
 		fprintf(csvFile, ",");
-		fprintf(csvFile, ftos(A->facenumber_in_poster));
+		if(A->facenumber_in_poster == (float) INT_MIN) {
+			fprintf(csvFile, "");
+		} else {
+			fprintf(csvFile, ftos(A->facenumber_in_poster));
+		}
 		fprintf(csvFile, ",");
 		fprintf(csvFile, A->plot_keywords);
 		fprintf(csvFile, ",");
 		fprintf(csvFile, A->movie_imdb_link);
 		fprintf(csvFile, ",");
-		fprintf(csvFile, ftos(A->num_user_for_reviews));
+		if(A->num_user_for_reviews == (float) INT_MIN) {
+			fprintf(csvFile, "");
+		} else {
+			fprintf(csvFile, ftos(A->num_user_for_reviews));
+		}
 		fprintf(csvFile, ",");
 		fprintf(csvFile, A->language);
 		fprintf(csvFile, ",");
@@ -587,17 +647,41 @@ void csvwrite(movieInfo** movieArr, int size ,char* categories, char* filename){
 		fprintf(csvFile, ",");
 		fprintf(csvFile, A->content_rating);
 		fprintf(csvFile, ",");
-		fprintf(csvFile, ftos(A->budget));
+		if(A->budget == (float) INT_MIN) {
+			fprintf(csvFile, "");
+		} else {
+			fprintf(csvFile, ftos(A->budget));
+		}
 		fprintf(csvFile, ",");
-		fprintf(csvFile, ftos(A->title_year));
+		if(A->title_year == (float) INT_MIN) {
+			fprintf(csvFile, "");
+		} else {
+			fprintf(csvFile, ftos(A->title_year));
+		}
 		fprintf(csvFile, ",");
-		fprintf(csvFile, ftos(A->actor_2_facebook_likes));
+		if(A->actor_2_facebook_likes == (float) INT_MIN) {
+			fprintf(csvFile, "");
+		} else {
+			fprintf(csvFile, ftos(A->actor_2_facebook_likes));
+		}
 		fprintf(csvFile, ",");
-		fprintf(csvFile, ftos(A->imdb_score));
+		if(A->imdb_score == (float) INT_MIN) {
+			fprintf(csvFile, "");
+		} else {
+			fprintf(csvFile, ftos(A->imdb_score));
+		}
 		fprintf(csvFile, ",");
-		fprintf(csvFile, ftos(A->aspect_ratio));
+		if(A->aspect_ratio == (float) INT_MIN) {
+			fprintf(csvFile, "");
+		} else {
+			fprintf(csvFile, ftos(A->aspect_ratio));
+		}
 		fprintf(csvFile, ",");
-		fprintf(csvFile, ftos(A->movie_facebook_likes));
+		if(A->movie_facebook_likes == (float) INT_MIN) {
+			fprintf(csvFile, "");
+		} else {
+			fprintf(csvFile, ftos(A->movie_facebook_likes));
+		}
 		fprintf(csvFile, "\n");
 		i++;
         }
