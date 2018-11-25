@@ -92,9 +92,14 @@ void merge(movieInfo** arr, char* columnToBeSorted,int left, int half, int right
                     		}
                     		return;
 		    	}
-			
-  			int trimALen = strlen(trimmedA);
-                	int trimBLen =strlen(trimmedB);
+			int trimALen = 0;
+			if(trimmedA != NULL) {
+  				trimALen = strlen(trimmedA);
+			} 
+                	int trimBLen = 0;
+			if(trimmedB != NULL) {
+  				trimBLen =strlen(trimmedB);
+			} 
 			
 			while((trimmedA[0] == ' ' || trimmedA[0] == '\'' || trimmedA[0] == '\"') && trimALen > 0){
 			    trimmedA++;
@@ -107,17 +112,22 @@ void merge(movieInfo** arr, char* columnToBeSorted,int left, int half, int right
 			
 			char* postTrimA = trimmedA;     //In case trimmedA has whitespace at end
 			int needToFreeA = 0;            //If we do malloc, we need to free. This is to indicate if we need to or not.
-			
-			if(trimmedA[trimALen-1] == ' ' || trimmedA[trimALen-1] == '\"' || trimmedA[trimALen-1] == '\''){
-			    
-				postTrimA = malloc(trimALen);
-			    	needToFreeA = 1;
-			    	memcpy(postTrimA, trimmedA, trimALen);
-			   	while(postTrimA[trimALen-1] == ' ' || postTrimA[trimALen-1] == '\"' || postTrimA[trimALen-1] == '\''){
-					postTrimA[trimALen-1] = '\0';
-					trimALen--;
-			    	}
-			} /*
+			if(trimALen > 0) {
+				if(trimmedA[trimALen-1] == ' ' || trimmedA[trimALen-1] == '\"' || trimmedA[trimALen-1] == '\''){
+
+					postTrimA = malloc(trimALen);
+					needToFreeA = 1;
+					memcpy(postTrimA, trimmedA, trimALen);
+					while(postTrimA[trimALen-1] == ' ' || postTrimA[trimALen-1] == '\"' || postTrimA[trimALen-1] == '\''){
+						postTrimA[trimALen-1] = '\0';
+						trimALen--;
+						if(trimALen == 0) {
+							break;
+						}
+					}
+				}
+			}
+			/*
 			int lenA = strlen(postTrimA);
 			int counter = 0;
 			while(*postTrimA == ' ' || *postTrimA == '\"' || *postTrimA == '\'') {
@@ -130,13 +140,18 @@ void merge(movieInfo** arr, char* columnToBeSorted,int left, int half, int right
 			
 			char* postTrimB = trimmedB;    //in case trimmedB has whitespace at the end
 			int needToFreeB = 0;
-			if(trimmedB[trimBLen-1] == ' '  || trimmedB[trimBLen-1] == '\"' || trimmedB[trimBLen-1] == '\''){
-				postTrimB = malloc(trimBLen);
-				needToFreeB = 1;
-				memcpy(postTrimB, trimmedB, trimBLen);
-				while(postTrimB[trimBLen-1] == ' ' || postTrimB[trimBLen-1] == '\"' || postTrimB[trimBLen-1] == '\''){
-					postTrimB[trimBLen-1] = '\0';
-					trimBLen--;
+			if(trimBLen > 0) {
+				if(trimmedB[trimBLen-1] == ' '  || trimmedB[trimBLen-1] == '\"' || trimmedB[trimBLen-1] == '\''){
+					postTrimB = malloc(trimBLen);
+					needToFreeB = 1;
+					memcpy(postTrimB, trimmedB, trimBLen);
+					while(postTrimB[trimBLen-1] == ' ' || postTrimB[trimBLen-1] == '\"' || postTrimB[trimBLen-1] == '\''){	
+						postTrimB[trimBLen-1] = '\0';
+						trimBLen--;
+						if(trimBLen == 0) {
+							break;
+						}
+					}
 				}
 			}
 			/*
@@ -149,10 +164,9 @@ void merge(movieInfo** arr, char* columnToBeSorted,int left, int half, int right
 					break;
 				}
 			}*/
-			
-			if(postTrimA == NULL || postTrimA == '\0') {
+			if(trimALen == 0) {
 				comparison = -1;
-			} else if (postTrimB == NULL || postTrimB == '\0') {
+			} else if(trimBLen == 0) {
 				comparison = 1;
 			} else { 
 				comparison = (float)strcmp(postTrimA, postTrimB);
@@ -323,8 +337,14 @@ void merge(movieInfo** arr, char* columnToBeSorted,int left, int half, int right
 				return;
 			}
                 
-			int trimALen = strlen(trimmedA);
-                	int trimBLen =strlen(trimmedB);
+			int trimALen = 0;
+			if(trimmedA != NULL) {
+  				trimALen = strlen(trimmedA);
+			} 
+                	int trimBLen = 0;
+			if(trimmedB != NULL) {
+  				trimBLen =strlen(trimmedB);
+			} 
 			
 			while((trimmedA[0] == ' ' || trimmedA[0] == '\'' || trimmedA[0] == '\"') && trimALen > 0){
 			    trimmedA++;
@@ -337,16 +357,20 @@ void merge(movieInfo** arr, char* columnToBeSorted,int left, int half, int right
 			
 			char* postTrimA = trimmedA;     //In case trimmedA has whitespace at end
 			int needToFreeA = 0;            //If we do malloc, we need to free. This is to indicate if we need to or not.
-			
-			if(trimmedA[trimALen-1] == ' ' || trimmedA[trimALen-1] == '\"' || trimmedA[trimALen-1] == '\''){
-			    
-				postTrimA = malloc(trimALen);
-			    	needToFreeA = 1;
-			    	memcpy(postTrimA, trimmedA, trimALen);
-			   	while(postTrimA[trimALen-1] == ' ' || postTrimA[trimALen-1] == '\"' || postTrimA[trimALen-1] == '\''){
-					postTrimA[trimALen-1] = '\0';
-					trimALen--;
-			    	}
+			if(trimALen > 0) {
+				if(trimmedA[trimALen-1] == ' ' || trimmedA[trimALen-1] == '\"' || trimmedA[trimALen-1] == '\''){
+
+					postTrimA = malloc(trimALen);
+					needToFreeA = 1;
+					memcpy(postTrimA, trimmedA, trimALen);
+					while(postTrimA[trimALen-1] == ' ' || postTrimA[trimALen-1] == '\"' || postTrimA[trimALen-1] == '\''){
+						postTrimA[trimALen-1] = '\0';
+						trimALen--;
+						if(trimALen == 0) {
+							break;
+						}
+					}
+				}
 			}
 			/*
 			int lenA = strlen(postTrimA);
@@ -357,17 +381,22 @@ void merge(movieInfo** arr, char* columnToBeSorted,int left, int half, int right
 				if(counter == lenA - 1) {
 					break;
 				}
-			}
-			*/
+			} */
+			
 			char* postTrimB = trimmedB;    //in case trimmedB has whitespace at the end
 			int needToFreeB = 0;
-			if(trimmedB[trimBLen-1] == ' '  || trimmedB[trimBLen-1] == '\"' || trimmedB[trimBLen-1] == '\''){
-				postTrimB = malloc(trimBLen);
-				needToFreeB = 1;
-				memcpy(postTrimB, trimmedB, trimBLen);
-				while(postTrimB[trimBLen-1] == ' ' || postTrimB[trimBLen-1] == '\"' || postTrimB[trimBLen-1] == '\''){
-					postTrimB[trimBLen-1] = '\0';
-					trimBLen--;
+			if(trimBLen > 0) {
+				if(trimmedB[trimBLen-1] == ' '  || trimmedB[trimBLen-1] == '\"' || trimmedB[trimBLen-1] == '\''){
+					postTrimB = malloc(trimBLen);
+					needToFreeB = 1;
+					memcpy(postTrimB, trimmedB, trimBLen);
+					while(postTrimB[trimBLen-1] == ' ' || postTrimB[trimBLen-1] == '\"' || postTrimB[trimBLen-1] == '\''){	
+						postTrimB[trimBLen-1] = '\0';
+						trimBLen--;
+						if(trimBLen == 0) {
+							break;
+						}
+					}
 				}
 			}
 			/*
@@ -379,11 +408,10 @@ void merge(movieInfo** arr, char* columnToBeSorted,int left, int half, int right
 				if(counter == lenB - 1) {
 					break;
 				}
-			} */
-
-			if(postTrimA == NULL || postTrimA == '\0') {
+			}*/
+			if(trimALen == 0) {
 				comparison = -1;
-			} else if (postTrimB == NULL || postTrimB == '\0') {
+			} else if(trimBLen == 0) {
 				comparison = 1;
 			} else { 
 				comparison = (float)strcmp(postTrimA, postTrimB);
@@ -550,8 +578,14 @@ movieInfo** mergeNodeData(movieInfo** arrA, movieInfo** arrB, int arrLenA, int a
 				return NULL;
 			}
                 
-			int trimALen = strlen(trimmedA);
-                	int trimBLen =strlen(trimmedB);
+			int trimALen = 0;
+			if(trimmedA != NULL) {
+  				trimALen = strlen(trimmedA);
+			} 
+                	int trimBLen = 0;
+			if(trimmedB != NULL) {
+  				trimBLen =strlen(trimmedB);
+			} 
 			
 			while((trimmedA[0] == ' ' || trimmedA[0] == '\'' || trimmedA[0] == '\"') && trimALen > 0){
 			    trimmedA++;
@@ -564,16 +598,20 @@ movieInfo** mergeNodeData(movieInfo** arrA, movieInfo** arrB, int arrLenA, int a
 			
 			char* postTrimA = trimmedA;     //In case trimmedA has whitespace at end
 			int needToFreeA = 0;            //If we do malloc, we need to free. This is to indicate if we need to or not.
-			
-			if(trimmedA[trimALen-1] == ' ' || trimmedA[trimALen-1] == '\"' || trimmedA[trimALen-1] == '\''){
-			    
-				postTrimA = malloc(trimALen);
-			    	needToFreeA = 1;
-			    	memcpy(postTrimA, trimmedA, trimALen);
-			   	while(postTrimA[trimALen-1] == ' ' || postTrimA[trimALen-1] == '\"' || postTrimA[trimALen-1] == '\''){
-					postTrimA[trimALen-1] = '\0';
-					trimALen--;
-			    	}
+			if(trimALen > 0) {
+				if(trimmedA[trimALen-1] == ' ' || trimmedA[trimALen-1] == '\"' || trimmedA[trimALen-1] == '\''){
+
+					postTrimA = malloc(trimALen);
+					needToFreeA = 1;
+					memcpy(postTrimA, trimmedA, trimALen);
+					while(postTrimA[trimALen-1] == ' ' || postTrimA[trimALen-1] == '\"' || postTrimA[trimALen-1] == '\''){
+						postTrimA[trimALen-1] = '\0';
+						trimALen--;
+						if(trimALen == 0) {
+							break;
+						}
+					}
+				}
 			}
 			/*
 			int lenA = strlen(postTrimA);
@@ -584,17 +622,22 @@ movieInfo** mergeNodeData(movieInfo** arrA, movieInfo** arrB, int arrLenA, int a
 				if(counter == lenA - 1) {
 					break;
 				}
-			}
-			*/
+			} */
+			
 			char* postTrimB = trimmedB;    //in case trimmedB has whitespace at the end
 			int needToFreeB = 0;
-			if(trimmedB[trimBLen-1] == ' '  || trimmedB[trimBLen-1] == '\"' || trimmedB[trimBLen-1] == '\''){
-				postTrimB = malloc(trimBLen);
-				needToFreeB = 1;
-				memcpy(postTrimB, trimmedB, trimBLen);
-				while(postTrimB[trimBLen-1] == ' ' || postTrimB[trimBLen-1] == '\"' || postTrimB[trimBLen-1] == '\''){
-					postTrimB[trimBLen-1] = '\0';
-					trimBLen--;
+			if(trimBLen > 0) {
+				if(trimmedB[trimBLen-1] == ' '  || trimmedB[trimBLen-1] == '\"' || trimmedB[trimBLen-1] == '\''){
+					postTrimB = malloc(trimBLen);
+					needToFreeB = 1;
+					memcpy(postTrimB, trimmedB, trimBLen);
+					while(postTrimB[trimBLen-1] == ' ' || postTrimB[trimBLen-1] == '\"' || postTrimB[trimBLen-1] == '\''){	
+						postTrimB[trimBLen-1] = '\0';
+						trimBLen--;
+						if(trimBLen == 0) {
+							break;
+						}
+					}
 				}
 			}
 			/*
@@ -606,11 +649,10 @@ movieInfo** mergeNodeData(movieInfo** arrA, movieInfo** arrB, int arrLenA, int a
 				if(counter == lenB - 1) {
 					break;
 				}
-			}
-			*/
-			if(postTrimA == NULL || postTrimA == '\0') {
+			}*/
+			if(trimALen == 0) {
 				comparison = -1;
-			} else if (postTrimB == NULL || postTrimB == '\0') {
+			} else if(trimBLen == 0) {
 				comparison = 1;
 			} else { 
 				comparison = (float)strcmp(postTrimA, postTrimB);
