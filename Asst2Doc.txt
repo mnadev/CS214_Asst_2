@@ -170,14 +170,13 @@ For mergesort, there are 4 parameters needed to run mergesort. The first is, tri
 	In mergesort.c, there exists a comparator function that is useful for comparing numeric values. The necessity for this was because strcmp does not correctly compare strings that represent numeric values. 
 
 ISSUES
-In creating this program, a number of issues arose. First and foremost, there were a lot of issues with forking. It was difficult to print the PIDs of each process to STDOUT in the correct format until we realized we had to flush the buffer since we used printf(). 
-We also had some issues with having an excessive amount of processes until we realized that the program was also searching our .git directory and we then prevented that from occuring. 
-We had some issues with parsing the CSV which was just due to some minor bugs that were fixed. 
+In creating this program, a number of issues arose. Long story short, we had a lot of segfaults. Some of these segfaults were caused by us having null values for variables of forgetting to set a null terminating character for strings. Also, we had some segfaults which occured because we overcounted our array sizes in our code which led us to access memory beyond the bounds of a given array. We also had some issues with how threading was going to work. We multithreaded reading files and directories. But, we were still being bottlenecked by merging all the data. So, we decided to thread that and allow it to run concurrently as we parsed files and directories. Thus, we were merging data and parsing files and directories at the same time. 
 
 TESTING METHODOLOGY
 In order to determine the causes of the segmentation faults, portions of the code were commented out to see if the program would run without a segmentation fault. If the program ran without errors, lines of code were uncommented small segments at a time until the segmentation fault appeared again, allowing us to identify the specific portions of the program that were written incorrectly.
 Use of the GDB debugger was also used to trace the behavior of the program in cases where the program was behaving in unexpected ways, such as not properly reading the final column header in the first line.
 In order to test the functionality of the program, a few test CSVs were made that were specifically tailored to test specific portions of the program, such as having lines with whitespace, null entries, quoted entries, and columns with ony numbers.
+We then created directories with 1,2,4,8,16,32,64,128 and 256 files and directories so we could compare our multithreaded code with our multiprocessing code. 
 
 TESTING
 Various CSVs were created to test the program. These includes a CSV with more headers than columns, a CSV with more columns than headers, a CSV with a single column, a CSV with only a header line, a CSV with an invalid column name, CSVs with subsets of the given column names, a CSV with blank lines, and more.
