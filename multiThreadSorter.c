@@ -1058,6 +1058,9 @@ int main(int argc, char** argv){
 	} else if(strcmp(columnToSort, "aspect_ratio") == 0){
 	} else if(strcmp(columnToSort, "movie_facebook_likes") == 0){
 	} else{
+		write(STDERR, "Fatal Error: Column to be sorted is not a valid column.\n", 56);
+		write(STDOUT, "Fatal Error: Column to be sorted is not a valid column.\n", 56);
+		return -1;
 	}
 	DIR *currDir;
 	currDir = opendir(dirToSearch);
